@@ -63,6 +63,38 @@ O usuário envia uma foto do posto de trabalho (mesa, cadeira, monitor, notebook
 
 ---
 
+## Documentação
+
+- [Especificação de Requisitos (ErgoAI v1.0)](./docs/especificacao-requisitos.md)
+- [Roteiro de Implementação do Protótipo](./docs/roteiro-prototipo.md)
+
+---
+
+## Como Rodar o Protótipo Localmente (MacBook / Windows / Linux)
+
+O protótipo em `prototipo/` roda 100% no navegador utilizando a webcam local e `@mediapipe/tasks-vision` (nenhuma imagem é enviada ao servidor).
+
+**Com Python 3 (nativo no macOS):**
+```bash
+python3 -m http.server 8000 --directory prototipo
+```
+
+**Ou com Node.js:**
+```bash
+npx serve prototipo -l 8000
+```
+
+Em seguida, acesse no navegador (`Chrome`, `Edge` ou `Firefox`):
+```text
+http://localhost:8000
+```
+
+1. Clique em **Ligar Webcam e Carregar IA** e autorize a câmera.
+2. **Etapa 1:** Ajuste sua postura confortável na cadeira e clique em **Regular / Calibrar Postura Ideal (3s)**.
+3. **Etapa 2:** O algoritmo passa a comparar sua postura atual com a silhueta ideal calibrada e emite alertas apenas para desvios persistentes.
+
+---
+
 ## Sugestão de Frentes de Trabalho
 
 1. **Base de conhecimento + RAG + avaliação**

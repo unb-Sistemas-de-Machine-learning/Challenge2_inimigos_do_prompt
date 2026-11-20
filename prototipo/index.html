@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ErgoAI — Protótipo Local de Monitoramento Postural</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">EA</div>
+        <div>
+          <h1>ErgoAI <span class="badge-mvp">Protótipo MVP</span></h1>
+          <p class="subtitle">Monitoramento postural local com calibração individual e fontes rastreáveis</p>
+        </div>
+      </div>
+
+      <div class="topbar-status">
+        <span class="pill pill-privacy" title="RNF02: O vídeo é processado localmente no navegador e nunca sai da sua máquina.">
+          🔒 100% Local (Sem envio de vídeo)
+        </span>
+        <span id="latencyBadge" class="pill pill-neutral">Latência: -- ms</span>
+        <span id="statusBadge" class="pill pill-idle">Aguardando Webcam</span>
+        <button id="toggleAuditBtn" class="btn btn-secondary btn-sm" type="button" aria-expanded="false">
+          🔍 Modo Auditoria
+        </button>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- GRADE PRINCIPAL: CÂMERA (ESQ) + COMPARADOR E ALERTAS (DIR) -->
+      <section class="main-grid">
+        <!-- COLUNA ESQUERDA: WEBCAM + ETAPA 1 (CALIBRAÇÃO) -->
+        <div class="card camera-card">
+          <div class="card-header">
+            <div>
+              <h2 id="stageTitle">Etapa 1 — Regulagem da Postura Ideal</h2>
+              <p id="stageDescription" class="muted">
+                Ligue a webcam, ajuste sua posição confortável e calibre sua referência individual.
+              </p>
+            </div>
+            <div class="camera-actions-inline">
+              <label class="toggle-inline" title="Exibe ou oculta o contorno tracejado da postura ideal calibrada">
+                <input type="checkbox" id="showGhostCheckbox" checked />
+                <span>Silhueta Ideal</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="video-stage">
+            <video id="webcamVideo" autoplay playsinline muted></video>
+            <canvas id="overlayCanvas"></canvas>
+
+            <!-- Overlay inicial antes de ligar câmera -->
+            <div id="startOverlay" class="stage-overlay">
+              <div class="overlay-box">
+                <div class="overlay-icon" aria-hidden="true">📷</div>
+                <h3>Iniciar Monitoramento Postural</h3>
+                <p>
+                  Solicitaremos acesso à sua webcam (RF02). Todo o processamento com MediaPipe acontece
+                  no próprio navegador — nenhuma imagem é gravada ou enviada a servidores (RNF02).
+                </p>
+                <button id="startCameraBtn" class="btn btn-primary btn-lg" type="button">
+                  Ligar Webcam e Carregar IA
+                </button>
+                <p id="cameraErrorMsg" class="error-text hidden"></p>
+              </div>
+            </div>
+
+            <!-- Overlay de contagem regressiva durante calibração -->
+            <div id="calibrationOverlay" class="stage-overlay stage-overlay-translucent hidden">
+              <div class="overlay-box overlay-box-compact">
+                <span class="calib-tag">CALIBRANDO REFERÊNCIA IDEAL</span>
+                <div id="calibCountdown" class="countdown-number">3</div>
+                <p>Mantenha-se na postura ideal, olhando para a tela com os ombros relaxados...</p>
+                <div class="progress-track">
+                  <div id="calibProgressBar" class="progress-fill progress-cyan"></div>
+                </div>
+                <small id="calibSampleInfo" class="muted">Coletando pontos corporais: 0 amostras</small>
+              </div>
+            </div>
+
+            <!-- Legenda flutuante sobre o vídeo -->
+            <div id="canvasLegend" class="canvas-legend hidden">
+              <span class="legend-item"><i class="dot dot-cyan"></i> Ideal Calibrada</span>
+              <span class="legend-item"><i class="dot dot-green"></i> Postura Atual</span>
+              <span id="confidenceLegend" class="legend-conf">Confiança: --%</span>
+            </div>
+          </div>
+
+          <!-- Painel de controle da Etapa 1 (Calibração) e Sessão -->
+          <div class="calibration-controls">
+            <div id="calibrationTips" class="tips-box">
+              <strong>Como regular sua postura antes de calibrar (RF04):</strong>
+              <ol>
+                <li>Apoie as costas no encosto da cadeira e deixe os ombros relaxados e nivelados.</li>
+                <li>Posicione o rosto centralizado e na altura confortável de leitura da tela.</li>
+                <li>Clique em <strong>Calibrar Postura Ideal</strong> e segure essa posição por 3 segundos.</li>
+              </ol>
+            </div>
+
+            <div class="action-row">
+              <button id="calibrateBtn" class="btn btn-primary" type="button" disabled>
+                🎯 Regular / Calibrar Postura Ideal (3s)
+              </button>
+              <button id="useSavedCalibBtn" class="btn btn-secondary hidden" type="button">
+                Usar Última Calibração Salva
+              </button>
+              <button id="stopSessionBtn" class="btn btn-danger hidden" type="button">
+                ⏹ Encerrar Sessão
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUNA DIREITA: ETAPA 2 (COMPARAÇÃO EM TEMPO REAL + CARTÕES DE CONHECIMENTO) -->
+        <div class="right-column">
+          <!-- Comparador de Métricas -->
+          <section class="card comparator-card">
+            <div class="card-header">
+              <div>
+                <h2>Etapa 2 — Comparação: Atual vs. Ideal</h2>
+                <p class="muted">Desvios geométricos comparados continuamente com sua calibração.</p>
+              </div>
+              <span id="tolerancePill" class="pill pill-neutral">Tolerância: 1.00x</span>
+            </div>
+
+            <div id="uncalibratedNotice" class="empty-state">
+              Complete a <strong>Etapa 1 (Calibração)</strong> ao lado para ativar o comparador em tempo real.
+            </div>
+
+            <div id="metricsList" class="metrics-list hidden">
+              <!-- Métrica 1: Anteriorização -->
+              <div class="metric-row" data-metric="FORWARD_HEAD">
+                <div class="metric-top">
+                  <span class="metric-name">Anteriorização / "Camarão"</span>
+                  <span class="metric-value" id="val-FORWARD_HEAD">0.0% / 16.0%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="bar-FORWARD_HEAD"></div>
+                </div>
+              </div>
+
+              <!-- Métrica 2: Aproximação -->
+              <div class="metric-row" data-metric="TOO_CLOSE">
+                <div class="metric-top">
+                  <span class="metric-name">Aproximação da Tela</span>
+                  <span class="metric-value" id="val-TOO_CLOSE">0.0% / 20.0%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="bar-TOO_CLOSE"></div>
+                </div>
+              </div>
+
+              <!-- Métrica 3: Ombros -->
+              <div class="metric-row" data-metric="SHOULDER_TILT">
+                <div class="metric-top">
+                  <span class="metric-name">Inclinação dos Ombros</span>
+                  <span class="metric-value" id="val-SHOULDER_TILT">0.0° / 7.5°</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="bar-SHOULDER_TILT"></div>
+                </div>
+              </div>
+
+              <!-- Métrica 4: Cabeça -->
+              <div class="metric-row" data-metric="HEAD_TILT">
+                <div class="metric-top">
+                  <span class="metric-name">Inclinação da Cabeça</span>
+                  <span class="metric-value" id="val-HEAD_TILT">0.0° / 10.0°</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="bar-HEAD_TILT"></div>
+                </div>
+              </div>
+
+              <!-- Barra de Histerese / Persistência -->
+              <div class="hysteresis-box">
+                <div class="metric-top">
+                  <span>⏱ Filtro de Persistência (evita alertas por movimentos rápidos — RF07)</span>
+                  <strong id="persistenceLabel">0.0s / 4.0s</strong>
+                </div>
+                <div class="progress-track">
+                  <div id="persistenceBar" class="progress-fill progress-amber"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Cartão de Alerta & Conhecimento Rastreável -->
+          <section id="knowledgeSection" class="card alert-card">
+            <div class="card-header">
+              <h2>Orientação e Base Rastreável</h2>
+              <span id="alertSeverityPill" class="pill pill-idle">Em espera</span>
+            </div>
+
+            <div id="adequateCard" class="status-feedback status-ok">
+              <strong>Aguardando calibração ou monitoramento ativo.</strong>
+              <p>
+                Quando um desvio persistir além do filtro temporal (ou chegar a hora da pausa ativa),
+                a recomendação com a fonte oficial (NR-17 / OMS) aparecerá aqui.
+              </p>
+            </div>
+
+            <div id="activeKnowledgeCard" class="knowledge-box hidden">
+              <div class="knowledge-head">
+                <h3 id="cardTitle">--</h3>
+                <span id="cardCategory" class="tag-category">--</span>
+              </div>
+              <p id="cardShort" class="knowledge-short">--</p>
+              <div class="knowledge-action">
+                <strong>Como corrigir agora:</strong>
+                <p id="cardAction">--</p>
+              </div>
+              <blockquote class="knowledge-source">
+                <div class="source-title">📚 Fonte: <span id="cardSource">--</span></div>
+                <p id="cardEvidence">--</p>
+              </blockquote>
+
+              <div id="feedbackRow" class="feedback-row">
+                <span>Este alerta fez sentido para sua postura? (RF10/RF11)</span>
+                <div class="feedback-btns">
+                  <button id="feedbackUsefulBtn" class="btn btn-sm btn-success" type="button">
+                    👍 Alerta Útil
+                  </button>
+                  <button id="feedbackFalseBtn" class="btn btn-sm btn-warning" type="button">
+                    👎 Falso Alerta (+Tolerância)
+                  </button>
+                </div>
+              </div>
+              <p id="feedbackConfirmation" class="feedback-msg hidden"></p>
+            </div>
+
+            <p id="clinicalDisclaimer" class="disclaimer"></p>
+          </section>
+        </div>
+      </section>
+
+      <!-- PAINEL INFERIOR: DASHBOARD + CONFIGURAÇÕES -->
+      <section class="bottom-grid">
+        <!-- Dashboard da Sessão (RF17 / RF18) -->
+        <div class="card dashboard-card">
+          <div class="card-header">
+            <h2>Painel da Sessão & Histórico (RF17 / RF18)</h2>
+            <button id="clearHistoryBtn" class="btn btn-secondary btn-sm" type="button" title="RNF09">
+              🗑️ Limpar Histórico Local
+            </button>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi">
+              <span class="kpi-label">Postura Adequada</span>
+              <strong id="kpiAdequatePct" class="kpi-value">--%</strong>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Duração da Sessão</span>
+              <strong id="kpiDuration" class="kpi-value">00:00</strong>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Alertas Emitidos</span>
+              <strong id="kpiAlerts" class="kpi-value">0</strong>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Próxima Pausa Ativa</span>
+              <strong id="kpiNextBreak" class="kpi-value">--:--</strong>
+            </div>
+          </div>
+
+          <div class="history-wrap">
+            <h3>Últimas Sessões Salvas Localmente (Sem Imagens)</h3>
+            <div id="historyEmpty" class="muted">Nenhuma sessão concluída salva ainda.</div>
+            <table id="historyTable" class="history-table hidden">
+              <thead>
+                <tr>
+                  <th>Início</th>
+                  <th>Duração</th>
+                  <th>Adequada</th>
+                  <th>Alertas</th>
+                  <th>Feedbacks</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Preferências (RF21 / RF22) -->
+        <div class="card settings-card">
+          <div class="card-header">
+            <h2>Preferências de Monitoramento (RF22)</h2>
+          </div>
+
+          <div class="settings-form">
+            <label class="setting-item">
+              <div class="setting-label">
+                <span>Persistência para Alerta (Histerese)</span>
+                <strong id="settingPersistenceVal">4.0s</strong>
+              </div>
+              <input id="persistenceSlider" type="range" min="2" max="10" step="0.5" value="4" />
+            </label>
+
+            <label class="setting-item">
+              <div class="setting-label">
+                <span>Tolerância Individual (RF11)</span>
+                <strong id="settingToleranceVal">1.00x</strong>
+              </div>
+              <input id="toleranceSlider" type="range" min="0.75" max="1.6" step="0.05" value="1" />
+            </label>
+
+            <label class="setting-item">
+              <div class="setting-label">
+                <span>Intervalo de Pausa Ativa (RF21)</span>
+              </div>
+              <select id="breakIntervalSelect">
+                <option value="10">10 segundos (Modo Demo / Teste)</option>
+                <option value="1500">25 minutos (Pomodoro)</option>
+                <option value="2700" selected>45 minutos (Recomendado)</option>
+                <option value="3600">60 minutos</option>
+              </select>
+            </label>
+
+            <div class="setting-checks">
+              <label class="checkbox-row">
+                <input type="checkbox" id="soundAlertCheckbox" checked />
+                <span>Aviso sonoro suave ao disparar alerta</span>
+              </label>
+              <label class="checkbox-row">
+                <input type="checkbox" id="browserNotifCheckbox" />
+                <span>Notificações do navegador (útil em segundo plano no MacBook)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODO AUDITORIA (RF19 / RNF14) -->
+      <section id="auditPanel" class="card audit-card hidden">
+        <div class="card-header">
+          <div>
+            <h2>Modo Auditoria e Observabilidade (RF19 / RNF14)</h2>
+            <p class="muted">
+              Exibe vetores de referência, confiança em tempo real, decisões determinísticas e registros sem dados pessoais.
+            </p>
+          </div>
+          <span id="auditVersionPill" class="pill pill-neutral">Versão: 1.0.0-mvp</span>
+        </div>
+
+        <div class="audit-grid">
+          <div>
+            <h3>Estado Técnico Atual</h3>
+            <pre id="auditSnapshot" class="audit-pre">{ "status": "aguardando" }</pre>
+          </div>
+          <div>
+            <h3>Log de Eventos e Decisões</h3>
+            <div id="auditLog" class="audit-log"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

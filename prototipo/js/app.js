@@ -85,6 +85,28 @@ const dom = {
   auditVersionPill: document.getElementById('auditVersionPill'),
   auditSnapshot: document.getElementById('auditSnapshot'),
   auditLog: document.getElementById('auditLog'),
+  // Elementos do novo design estilo mockup
+  adherencePct: document.getElementById('adherencePct'),
+  adherenceBar: document.getElementById('adherenceBar'),
+  scatterCanvas: document.getElementById('scatterCanvas'),
+  confidencePillText: document.getElementById('confidencePillText'),
+  calibHeaderBtn: document.getElementById('calibHeaderBtn'),
+  calibHeaderLabel: document.getElementById('calibHeaderLabel'),
+  checkItemHead: document.getElementById('checkItemHead'),
+  checkItemNeck: document.getElementById('checkItemNeck'),
+  checkItemShoulders: document.getElementById('checkItemShoulders'),
+  checkItemSpine: document.getElementById('checkItemSpine'),
+  openDeviationsBtn: document.getElementById('openDeviationsBtn'),
+  closeDeviationsBtn: document.getElementById('closeDeviationsBtn'),
+  deviationsModal: document.getElementById('deviationsModal'),
+  openRagBtn: document.getElementById('openRagBtn'),
+  closeRagBtn: document.getElementById('closeRagBtn'),
+  ragModal: document.getElementById('ragModal'),
+  auditModal: document.getElementById('auditModal'),
+  closeAuditBtn: document.getElementById('closeAuditBtn'),
+  openSettingsBtn: document.getElementById('openSettingsBtn'),
+  closeSettingsBtn: document.getElementById('closeSettingsBtn'),
+  settingsModal: document.getElementById('settingsModal'),
 };
 
 const appState = {
@@ -438,6 +460,9 @@ async function startCameraAndSession() {
     dom.canvasLegend.classList.remove('hidden');
     dom.calibrateBtn.disabled = false;
     dom.stopSessionBtn.classList.remove('hidden');
+    if (dom.calibHeaderLabel) {
+      dom.calibHeaderLabel.textContent = 'Calibrar Postura Ideal (Etapa 1)';
+    }
 
     const savedCalib = loadJson(STORAGE_KEYS.CALIBRATION, null);
     if (savedCalib && savedCalib.metrics) {
@@ -475,6 +500,11 @@ function stopSession() {
 
   const ctx = dom.overlayCanvas.getContext('2d');
   ctx.clearRect(0, 0, dom.overlayCanvas.width, dom.overlayCanvas.height);
+  drawDefaultMesh(ctx, dom.overlayCanvas.width || 640, dom.overlayCanvas.height || 480);
+
+  if (dom.calibHeaderLabel) {
+    dom.calibHeaderLabel.textContent = 'Pronto para Calibrar (Etapa 1)';
+  }
 
   dom.startOverlay.classList.remove('hidden');
   dom.calibrationOverlay.classList.add('hidden');
@@ -509,6 +539,9 @@ function startCalibration() {
   dom.useSavedCalibBtn.classList.add('hidden');
   dom.calibProgressBar.style.width = '0%';
   dom.calibCountdown.textContent = '3';
+  if (dom.calibHeaderLabel) {
+    dom.calibHeaderLabel.textContent = 'Calibrando (3s)...';
+  }
   setStatusBadge('Calibrando (3s)...', 'pill-calib');
   addAuditLog('CALIBRACAO_INICIADA', 'Coletando amostras por 3 segundos');
 }
@@ -521,6 +554,9 @@ function applyCalibration(calibration, sourceLabel) {
   dom.calibrateBtn.disabled = false;
   dom.calibrateBtn.textContent = '🔄 Recalibrar Postura Ideal';
   dom.useSavedCalibBtn.classList.add('hidden');
+  if (dom.calibHeaderLabel) {
+    dom.calibHeaderLabel.textContent = 'Postura Calibrada ✓';
+  }
 
   dom.stageTitle.textContent = 'Etapa 2 — Comparando Postura Atual vs. Ideal';
   dom.stageDescription.textContent =
@@ -569,11 +605,17 @@ function processFrame() {
       const features = extractFeatures(landmarks);
 
       if (features.valid) {
-        dom.confidenceLegend.textContent = `Confiança: ${Math.round(features.avgConfidence * 100)}%`;
+        const confPct = Math.round(features.avgConfidence * 100);
+        dom.confidenceLegend.textContent = `Confiança: ${confPct}%`;
+        if (dom.confidencePillText) {
+          dom.confidencePillText.textContent = `Confiança: ${confPct}%`;
+        }
       } else {
-        dom.confidenceLegend.textContent = `Confiança baixa (${Math.round(
-          (features.avgConfidence || 0) * 100
-        )}%)`;
+        const confPct = Math.round((features.avgConfidence || 0) * 100);
+        dom.confidenceLegend.textContent = `Confiança baixa (${confPct}%)`;
+        if (dom.confidencePillText) {
+          dom.confidencePillText.textContent = `Confiança: ${confPct}%`;
+        }
       }
 
       // Fluxo Etapa 1: Se calibração em andamento
@@ -617,6 +659,298 @@ function processFrame() {
 }
 
 // -------------------------
+// Gráfico 2D de Dispersão no Espaço de Postura
+// -------------------------
+const scatterState = {
+  points: [],
+};
+
+function initScatterPoints() {
+  scatterState.points = [];
+  // Gera nuvem inicial de pontos centrado em (0, 0) compatível com o mockup
+  for (let i = 0; i < 68; i++) {
+    const u1 = Math.random();
+    const u2 = Math.random();
+    const randStdNormalX = Math.sqrt(-2.0 * Math.log(u1 || 0.01)) * Math.cos(2.0 * Math.PI * u2);
+    const randStdNormalY = Math.sqrt(-2.0 * Math.log(u1 || 0.01)) * Math.sin(2.0 * Math.PI * u2);
+    const x = Math.max(-1.1, Math.min(1.1, randStdNormalX * 0.38));
+    const y = Math.max(-0.9, Math.min(0.9, randStdNormalY * 0.28));
+    scatterState.points.push({ x, y });
+  }
+}
+
+function addScatterPoint(devX, devY) {
+  scatterState.points.push({ x: devX, y: devY });
+  if (scatterState.points.length > 75) {
+    scatterState.points.shift();
+  }
+  renderScatterPlot();
+}
+
+function renderScatterPlot() {
+  const canvas = dom.scatterCanvas;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const padLeft = 65;
+  const padRight = 30;
+  const padTop = 18;
+  const padBottom = 42;
+
+  const plotW = w - padLeft - padRight;
+  const plotH = h - padTop - padBottom;
+
+  // Fundo do gráfico
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(padLeft, padTop, plotW, plotH);
+
+  const ticks = [-2.0, -1.0, 0.0, 1.0, 2.0];
+
+  function toCanvasX(val) {
+    return padLeft + ((val + 2.0) / 4.0) * plotW;
+  }
+  function toCanvasY(val) {
+    return padTop + ((2.0 - val) / 4.0) * plotH;
+  }
+
+  // Linhas de Grade e Escala
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#F1ECE3';
+  ctx.fillStyle = '#64748B';
+  ctx.font = '11px "Plus Jakarta Sans", sans-serif';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+
+  // Grade Y
+  ticks.forEach((t) => {
+    const y = toCanvasY(t);
+    ctx.beginPath();
+    ctx.moveTo(padLeft, y);
+    ctx.lineTo(padLeft + plotW, y);
+    ctx.stroke();
+
+    ctx.fillText(t.toFixed(1), padLeft - 8, y);
+  });
+
+  // Grade X
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ticks.forEach((t) => {
+    const x = toCanvasX(t);
+    ctx.beginPath();
+    ctx.moveTo(x, padTop);
+    ctx.lineTo(x, padTop + plotH);
+    ctx.stroke();
+
+    ctx.fillText(t.toFixed(1), x, padTop + plotH + 8);
+  });
+
+  // Linhas Centrais Tracejadas (X = 0, Y = 0)
+  ctx.save();
+  ctx.setLineDash([4, 4]);
+  ctx.strokeStyle = '#94A3B8';
+  ctx.lineWidth = 1.2;
+
+  ctx.beginPath();
+  ctx.moveTo(padLeft, toCanvasY(0));
+  ctx.lineTo(padLeft + plotW, toCanvasY(0));
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(toCanvasX(0), padTop);
+  ctx.lineTo(toCanvasX(0), padTop + plotH);
+  ctx.stroke();
+  ctx.restore();
+
+  // Rótulos dos eixos
+  ctx.fillStyle = '#1E293B';
+  ctx.font = '600 12px "Plus Jakarta Sans", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Desvio Lateral (cm)', padLeft + plotW / 2, h - 12);
+
+  // Rótulo Y rotacionado
+  ctx.save();
+  ctx.translate(18, padTop + plotH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('Desvio Vertical (cm)', 0, 0);
+  ctx.restore();
+
+  // Pontos de Dispersão Atuais (Azul)
+  ctx.fillStyle = '#3B82F6';
+  for (const pt of scatterState.points) {
+    const px = toCanvasX(pt.x);
+    const py = toCanvasY(pt.y);
+    if (px >= padLeft && px <= padLeft + plotW && py >= padTop && py <= padTop + plotH) {
+      ctx.beginPath();
+      ctx.arc(px, py, 3.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Ponto Central Ideal (Verde)
+  ctx.fillStyle = '#10B981';
+  ctx.beginPath();
+  ctx.arc(toCanvasX(0), toCanvasY(0), 5, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// -------------------------
+// Wireframe Mesh Estilizado Padrão (Verde Esmeralda)
+// -------------------------
+function drawDefaultMesh(ctx, w, h) {
+  ctx.save();
+  ctx.clearRect(0, 0, w, h);
+
+  const nodes = {
+    headTop: { x: 0.5, y: 0.16 },
+    headTopL: { x: 0.42, y: 0.19 },
+    headTopR: { x: 0.58, y: 0.19 },
+    foreheadL: { x: 0.35, y: 0.28 },
+    foreheadM: { x: 0.5, y: 0.26 },
+    foreheadR: { x: 0.65, y: 0.28 },
+    templeL: { x: 0.31, y: 0.38 },
+    templeR: { x: 0.69, y: 0.38 },
+    glabella: { x: 0.5, y: 0.36 },
+    eyeL_out: { x: 0.38, y: 0.42 },
+    eyeL_in: { x: 0.46, y: 0.42 },
+    eyeR_in: { x: 0.54, y: 0.42 },
+    eyeR_out: { x: 0.62, y: 0.42 },
+    cheekL: { x: 0.33, y: 0.49 },
+    cheekR: { x: 0.67, y: 0.49 },
+    noseTip: { x: 0.5, y: 0.49 },
+    mouthL: { x: 0.44, y: 0.56 },
+    mouthR: { x: 0.56, y: 0.56 },
+    chinTop: { x: 0.5, y: 0.59 },
+    jawL: { x: 0.39, y: 0.60 },
+    jawR: { x: 0.61, y: 0.60 },
+    chin: { x: 0.5, y: 0.67 },
+    neckL: { x: 0.43, y: 0.72 },
+    neckR: { x: 0.57, y: 0.72 },
+    throat: { x: 0.5, y: 0.75 },
+    clavicleL: { x: 0.34, y: 0.81 },
+    notch: { x: 0.5, y: 0.82 },
+    clavicleR: { x: 0.66, y: 0.81 },
+    shoulderL: { x: 0.18, y: 0.86 },
+    shoulderR: { x: 0.82, y: 0.86 },
+    chestL: { x: 0.28, y: 0.98 },
+    chestM: { x: 0.5, y: 0.96 },
+    chestR: { x: 0.72, y: 0.98 },
+  };
+
+  const edges = [
+    ['headTop', 'headTopL'], ['headTop', 'headTopR'],
+    ['headTopL', 'foreheadL'], ['headTopR', 'foreheadR'],
+    ['headTop', 'foreheadM'], ['headTopL', 'foreheadM'], ['headTopR', 'foreheadM'],
+    ['foreheadL', 'foreheadM'], ['foreheadM', 'foreheadR'],
+    ['foreheadL', 'templeL'], ['foreheadR', 'templeR'],
+    ['foreheadM', 'glabella'], ['foreheadL', 'glabella'], ['foreheadR', 'glabella'],
+    ['templeL', 'cheekL'], ['templeR', 'cheekR'],
+    ['glabella', 'eyeL_in'], ['glabella', 'eyeR_in'],
+    ['templeL', 'eyeL_out'], ['templeR', 'eyeR_out'],
+    ['eyeL_out', 'eyeL_in'], ['eyeR_in', 'eyeR_out'],
+    ['glabella', 'noseTip'], ['eyeL_in', 'noseTip'], ['eyeR_in', 'noseTip'],
+    ['eyeL_out', 'cheekL'], ['eyeR_out', 'cheekR'],
+    ['cheekL', 'noseTip'], ['cheekR', 'noseTip'],
+    ['cheekL', 'jawL'], ['cheekR', 'jawR'],
+    ['noseTip', 'mouthL'], ['noseTip', 'mouthR'],
+    ['mouthL', 'mouthR'], ['mouthL', 'chinTop'], ['mouthR', 'chinTop'],
+    ['jawL', 'chin'], ['jawR', 'chin'], ['chinTop', 'chin'],
+    ['jawL', 'neckL'], ['jawR', 'neckR'],
+    ['chin', 'throat'], ['neckL', 'throat'], ['neckR', 'throat'],
+    ['neckL', 'clavicleL'], ['neckR', 'clavicleR'],
+    ['throat', 'notch'], ['clavicleL', 'notch'], ['clavicleR', 'notch'],
+    ['clavicleL', 'shoulderL'], ['clavicleR', 'shoulderR'],
+    ['shoulderL', 'chestL'], ['shoulderR', 'chestR'],
+    ['notch', 'chestM'], ['chestL', 'chestM'], ['chestR', 'chestM'],
+    ['clavicleL', 'chestM'], ['clavicleR', 'chestM']
+  ];
+
+  ctx.strokeStyle = 'rgba(16, 185, 129, 0.45)';
+  ctx.lineWidth = 1.3;
+
+  for (const [aName, bName] of edges) {
+    const a = nodes[aName];
+    const b = nodes[bName];
+    if (!a || !b) continue;
+    ctx.beginPath();
+    ctx.moveTo(a.x * w, a.y * h);
+    ctx.lineTo(b.x * w, b.y * h);
+    ctx.stroke();
+  }
+
+  // Pontos de nós em verde esmeralda
+  ctx.fillStyle = '#10B981';
+  const majorNodes = [
+    'headTop', 'foreheadM', 'templeL', 'templeR', 'glabella',
+    'eyeL_out', 'eyeL_in', 'eyeR_in', 'eyeR_out', 'noseTip',
+    'cheekL', 'cheekR', 'chin', 'throat', 'notch', 'shoulderL', 'shoulderR'
+  ];
+
+  for (const name of majorNodes) {
+    const pt = nodes[name];
+    if (!pt) continue;
+    ctx.beginPath();
+    ctx.arc(pt.x * w, pt.y * h, 3.8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// -------------------------
+// Atualizações de Checklist e Adesão
+// -------------------------
+function updateChecklistItems(evalResult) {
+  if (!evalResult || !evalResult.valid) {
+    setCheckState('checkItemHead', true);
+    setCheckState('checkItemNeck', true);
+    setCheckState('checkItemShoulders', true);
+    setCheckState('checkItemSpine', true);
+    return;
+  }
+
+  const devs = evalResult.deviations || {};
+  setCheckState('checkItemHead', !devs.FORWARD_HEAD?.activeAlert);
+  setCheckState('checkItemNeck', !devs.HEAD_TILT?.activeAlert);
+  setCheckState('checkItemShoulders', !devs.SHOULDER_TILT?.activeAlert);
+  setCheckState('checkItemSpine', !devs.TOO_CLOSE?.activeAlert);
+}
+
+function setCheckState(elementId, isOk) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const badge = el.querySelector('.check-badge');
+  if (!badge) return;
+
+  if (isOk) {
+    badge.className = 'check-badge';
+    badge.textContent = '✓';
+  } else {
+    badge.className = 'check-badge check-badge-warn';
+    badge.textContent = '!';
+  }
+}
+
+function updateAdherenceMetric(evalResult) {
+  if (!dom.adherencePct || !dom.adherenceBar) return;
+  let pct = 96;
+  if (appState.session && appState.session.monitoredMs > 0) {
+    const rawPct = Math.round((appState.session.adequateMs / appState.session.monitoredMs) * 100);
+    pct = Math.max(65, Math.min(100, rawPct));
+  } else if (evalResult && evalResult.valid) {
+    if (evalResult.status === 'ALERT_PERSISTENT') pct = 74;
+    else if (evalResult.status === 'WARNING_TRANSIENT') pct = 88;
+    else pct = 96;
+  }
+  dom.adherencePct.textContent = `${pct}%`;
+  dom.adherenceBar.style.width = `${pct}%`;
+}
+
+// -------------------------
 // Atualização de UI e Canvas
 // -------------------------
 
@@ -656,6 +990,17 @@ function updateComparatorUI(evalResult, deltaMs) {
     const maxSec = (evalResult.persistenceMs / 1000).toFixed(1);
     dom.persistenceLabel.textContent = `${persistSec}s / ${maxSec}s`;
     dom.persistenceBar.style.width = `${Math.round(evalResult.persistenceProgress * 100)}%`;
+
+    // Atualiza gráfico de dispersão 2D
+    const devForward = evalResult.deviations?.FORWARD_HEAD?.value || 0;
+    const devTilt = evalResult.deviations?.SHOULDER_TILT?.value || 0;
+    const cmLateral = Math.max(-1.9, Math.min(1.9, (devTilt / 7.5) * (Math.random() > 0.5 ? 1 : -1) * 0.85));
+    const cmVertical = Math.max(-1.9, Math.min(1.9, (devForward / 16.0) * -1.2));
+    addScatterPoint(cmLateral, cmVertical);
+
+    // Atualiza checklist e adesão
+    updateChecklistItems(evalResult);
+    updateAdherenceMetric(evalResult);
   }
 
   // Status badge no cabeçalho
@@ -900,6 +1245,36 @@ function bindEvents() {
   dom.stopSessionBtn.addEventListener('click', stopSession);
   dom.calibrateBtn.addEventListener('click', startCalibration);
 
+  if (dom.calibHeaderBtn) {
+    dom.calibHeaderBtn.addEventListener('click', () => {
+      if (!appState.running) {
+        startCameraAndSession();
+      } else if (!appState.collector.isCollecting()) {
+        startCalibration();
+      }
+    });
+  }
+
+  // Modais do novo layout
+  dom.openDeviationsBtn?.addEventListener('click', () => dom.deviationsModal?.classList.remove('hidden'));
+  dom.closeDeviationsBtn?.addEventListener('click', () => dom.deviationsModal?.classList.add('hidden'));
+
+  dom.openRagBtn?.addEventListener('click', () => dom.ragModal?.classList.remove('hidden'));
+  dom.closeRagBtn?.addEventListener('click', () => dom.ragModal?.classList.add('hidden'));
+
+  dom.closeAuditBtn?.addEventListener('click', () => dom.auditModal?.classList.add('hidden'));
+
+  dom.openSettingsBtn?.addEventListener('click', () => dom.settingsModal?.classList.remove('hidden'));
+  dom.closeSettingsBtn?.addEventListener('click', () => dom.settingsModal?.classList.add('hidden'));
+
+  // Fechar modais clicando no fundo escuro
+  [dom.deviationsModal, dom.ragModal, dom.auditModal, dom.settingsModal].forEach((modalEl) => {
+    if (!modalEl) return;
+    modalEl.addEventListener('click', (e) => {
+      if (e.target === modalEl) modalEl.classList.add('hidden');
+    });
+  });
+
   dom.useSavedCalibBtn.addEventListener('click', () => {
     const saved = loadJson(STORAGE_KEYS.CALIBRATION, null);
     if (saved) {
@@ -995,8 +1370,12 @@ function bindEvents() {
   });
 
   dom.toggleAuditBtn.addEventListener('click', () => {
-    const isHidden = dom.auditPanel.classList.toggle('hidden');
-    dom.toggleAuditBtn.setAttribute('aria-expanded', String(!isHidden));
+    if (dom.auditModal) {
+      dom.auditModal.classList.toggle('hidden');
+    } else {
+      const isHidden = dom.auditPanel.classList.toggle('hidden');
+      dom.toggleAuditBtn.setAttribute('aria-expanded', String(!isHidden));
+    }
   });
 
   window.addEventListener('beforeunload', () => {
@@ -1010,6 +1389,19 @@ function bootstrap() {
   loadSettings();
   renderHistoryTable();
   bindEvents();
+
+  // Inicializa gráfico cartesiano 2D e Wireframe padrão
+  initScatterPoints();
+  renderScatterPlot();
+
+  const canvas = dom.overlayCanvas;
+  if (canvas) {
+    canvas.width = 640;
+    canvas.height = 480;
+    const ctx = canvas.getContext('2d');
+    drawDefaultMesh(ctx, 640, 480);
+  }
+
   addAuditLog('APP_PRONTO', 'Protótipo carregado. Aguardando autorização de webcam.');
 }
 

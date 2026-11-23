@@ -4,6 +4,7 @@ import pytest
 
 from pipeline.chunk import chunk_text
 from pipeline.clean import clean_text, remove_repeated_lines
+from pipeline.ingest import UNSPECIFIED_SECTION, atualizar_secao
 
 
 def test_chunks_respeitam_tamanho_e_nao_perdem_texto():
@@ -36,6 +37,96 @@ def test_clean_junta_linhas_mas_preserva_itens():
     assert "\n12" not in limpo
 
 
+def test_atualizar_secao_nr17_corpo_sumario_e_anexos():
+    # Sumário cortado no fim de um chunk (terminando em 17.7 após 17.6) não deve rotular como 17.7
+    sumario_cortado = (
+        "SUMÁRIO\n"
+        "17.6 Mobiliário dos postos de trabalho\n"
+        "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais"
+    )
+    assert atualizar_secao(sumario_cortado, UNSPECIFIED_SECTION) == (UNSPECIFIED_SECTION, UNSPECIFIED_SECTION)
+
+    # Sumário com títulos em sequência não deve fixar 17.8 nem Anexo I antes do corpo
+    sumario_e_inicio = (
+        "SUMÁRIO\n"
+        "17.1 Objetivo\n"
+        "17.2 Campo de Aplicação\n"
+        "17.8 Condições de conforto no ambiente de trabalho\n"
+        "Anexo I - Trabalho dos Operadores de Checkout\n"
+        "17.1 Objetivo\n"
+        "17.1.1 Esta Norma estabelece diretrizes."
+    )
+    sec_chunk, sec = atualizar_secao(sumario_e_inicio, UNSPECIFIED_SECTION)
+    assert (sec_chunk, sec) == ("17.1 Objetivo", "17.1 Objetivo")
+
+    # Corpo geral atualiza normalmente
+    sec_chunk, sec = atualizar_secao("17.8 Condições de conforto no ambiente de trabalho\n17.8.1 Iluminação.", sec)
+    assert (sec_chunk, sec) == (
+        "17.8 Condições de conforto no ambiente de trabalho",
+        "17.8 Condições de conforto no ambiente de trabalho",
+    )
+
+    # Transição para Anexo I (inclusive quando clean_text junta título + Sumário)
+    sec_chunk, sec = atualizar_secao("ANEXO I da NR 17 TRABALHO DOS OPERADORES DE CHECKOUT Sumário\n1. Objetivo", sec)
+    assert (sec_chunk, sec) == (
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo I - Trabalho dos Operadores de Checkout",
+    )
+
+    # Itens internos do Anexo não sobrescrevem o rótulo do Anexo
+    sec_chunk, sec = atualizar_secao("2.1 O posto de trabalho deve permitir alternância de postura.", sec)
+    assert (sec_chunk, sec) == (
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo I - Trabalho dos Operadores de Checkout",
+    )
+
+    # Transição para Anexo II (com corpo após o cabeçalho)
+    sec_chunk, sec = atualizar_secao("ANEXO II da NR 17 TRABALHO EM TELEATENDIMENTO/TELEMARKETING\nSumário", sec)
+    assert (sec_chunk, sec) == (
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing",
+    )
+
+
+def test_cabecalho_solto_no_fim_do_chunk_nao_sobrescreve_chunk_atual():
+    # Caso real da NR-17 pág. 1: chunk de 17.1 terminando com o título solto "17.2 Campo de Aplicação"
+    c1 = (
+        "17.1 Objetivo\n"
+        "17.1.1 Esta Norma visa estabelecer diretrizes de ergonomia.\n"
+        "17.2 Campo de Aplicação"
+    )
+    sec_c1, prox = atualizar_secao(c1, UNSPECIFIED_SECTION)
+    assert sec_c1 == "17.1 Objetivo"
+    assert prox == "17.2 Campo de Aplicação"
+
+    # Chunk seguinte começa no corpo de 17.2 e termina com o título solto de 17.3
+    c2 = (
+        "17.2 Campo de Aplicação\n"
+        "17.2.1 Esta Norma se aplica a todas as situações de trabalho.\n"
+        "17.3 Avaliação das situações de trabalho"
+    )
+    sec_c2, prox = atualizar_secao(c2, prox)
+    assert sec_c2 == "17.2 Campo de Aplicação"
+    assert prox == "17.3 Avaliação das situações de trabalho"
+
+    # Chunk seguinte sem novo título herda 17.3 propagado
+    sec_c3, prox = atualizar_secao("17.3.1 A organização deve realizar avaliação ergonômica.", prox)
+    assert sec_c3 == "17.3 Avaliação das situações de trabalho"
+    assert prox == "17.3 Avaliação das situações de trabalho"
+
+    # Mesmo comportamento para cabeçalho de ANEXO solto na última linha sem corpo depois
+    c_anexo_fim = "17.8.4.2 Controle de temperatura.\nANEXO I da NR 17 TRABALHO DOS OPERADORES DE CHECKOUT"
+    sec_ch, prox_anexo = atualizar_secao(c_anexo_fim, "17.8 Condições de conforto no ambiente de trabalho")
+    assert sec_ch == "17.8 Condições de conforto no ambiente de trabalho"
+    assert prox_anexo == "Anexo I - Trabalho dos Operadores de Checkout"
+
+
+def test_atualizar_secao_fallback_unspecified():
+    assert atualizar_secao(
+        "Regular physical activity has health benefits.", UNSPECIFIED_SECTION
+    ) == ("unspecified", "unspecified")
+
+
 def test_ingest_ponta_a_ponta_e_idempotente(tmp_path):
     pytest.importorskip("chromadb")
     from pipeline.ingest import main
@@ -44,16 +135,40 @@ def test_ingest_ponta_a_ponta_e_idempotente(tmp_path):
     raw.mkdir()
     (raw / "doc.txt").write_text("Item um sobre monitor.\nItem dois sobre cadeira.\n" * 5, encoding="utf-8")
     (tmp_path / "s.yaml").write_text(
-        "fontes:\n  - id: doc\n    titulo: Doc\n    arquivo_local: doc.txt\n    versao: v1\n    licenca: teste\n",
-        encoding="utf-8")
+        "fontes:\n"
+        "  - id: doc\n"
+        "    titulo: Doc\n"
+        "    source: Orgao Teste\n"
+        "    document_type: official\n"
+        "    url_oficial: https://example.org/doc\n"
+        "    arquivo_local: doc.txt\n"
+        "    versao: v1\n"
+        "    licenca: teste\n",
+        encoding="utf-8",
+    )
     args = ["--sources", str(tmp_path / "s.yaml"), "--raw-dir", str(raw),
             "--index-dir", str(tmp_path / "idx"), "--manifest", str(tmp_path / "m.json"),
             "--embedder", "hash", "--max-chars", "120", "--overlap-chars", "20"]
+
+    # Simula chunk legado com fonte_id para garantir limpeza sem duplicação na migração
+    import chromadb
+    col = chromadb.PersistentClient(path=str(tmp_path / "idx")).get_or_create_collection("ergonomia")
+    col.add(ids=["legacy-1"], documents=["antigo"], metadatas=[{"fonte_id": "doc"}], embeddings=[[0.0] * 64])
+
     assert main(args) == 0
     m1 = json.loads((tmp_path / "m.json").read_text())
     assert m1["fontes"]["doc"]["chunks"] >= 1
     assert main(args) == 0  # segunda execução: sem mudanças
-    import chromadb
+
     col = chromadb.PersistentClient(path=str(tmp_path / "idx")).get_collection("ergonomia")
-    assert col.count() == m1["fontes"]["doc"]["chunks"]  # não duplicou
+    assert col.count() == m1["fontes"]["doc"]["chunks"]  # não duplicou e removeu legado
+    sample_meta = col.get(limit=1)["metadatas"][0]
+    for campo in ("document_id", "title", "source", "section", "page", "url", "document_type",
+                  "version", "license", "chunk"):
+        assert campo in sample_meta
+    assert sample_meta["document_id"] == "doc"
+    assert sample_meta["source"] == "Orgao Teste"
+    assert sample_meta["document_type"] == "official"
+    assert sample_meta["url"] == "https://example.org/doc"
+    assert sample_meta["section"] == "unspecified"
     assert main(args + ["--strict"]) == 0

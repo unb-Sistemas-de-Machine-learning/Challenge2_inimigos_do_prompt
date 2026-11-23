@@ -12,6 +12,8 @@ Este documento é uma proposta do papel de Dados: o grupo (e, se possível, o pr
 
 ## 2. O que é gravado
 - Uma gravação por cenário, em arquivo `.jsonl` (um quadro por linha: `t_ms` e `pose`).
+- Nota de compatibilidade: `schema/coleta.ts` nomeia a confiança do ponto como `visibilidade`, enquanto `prototipo/js/posture-engine.js` lê `visibility`; o adaptador de avaliação (`eval/run_posture_engine.mjs`) aceita ambos.
+- Para o cálculo de métricas (Precision, Recall, F1 e FPR) e o baseline sintético de regressão, ver [protocolo-avaliacao-rnf07.md](./protocolo-avaliacao-rnf07.md).
 - Cabeçalho com versão do modelo de visão, FPS médio, iluminação e posição da câmera.
 - Registrar sempre a mesma configuração de câmera nos testes principais (frontal) e anotar quando for diferente.
 

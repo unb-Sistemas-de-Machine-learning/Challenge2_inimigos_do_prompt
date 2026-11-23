@@ -18,6 +18,7 @@ pip install -r requirements.txt
 python -m pipeline.ingest                 # indexa só o que mudou (usa hash do arquivo)
 python -m pipeline.ingest --force         # reindexa tudo
 python -m pipeline.query "altura do monitor" -k 3   # confere o índice
+python -m pipeline.eval_metrics --parte tudo -k 3  # avaliacao RNF07 (postura + RAG)
 pytest                                    # testes (usam o embedder "hash", sem baixar modelo)
 ```
 

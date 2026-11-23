@@ -1,69 +1,160 @@
 /**
- * Esquema dos dados da sessão (armazenados localmente no navegador; nunca imagens).
- * Nomes dos campos seguem o combinado pelo grupo (snake_case). Datas em ISO 8601 (string).
- * Proposta: o grupo valida. Mudanças de formato devem incrementar SCHEMA_VERSION.
+ * Contratos de dados da sessão e da API do ErgoAI (alinhados ao SPEC.md §9 e §11).
+ *
+ * - Dados locais (IndexedDB / LocalStorage): nomes em inglês e camelCase (SPEC.md §11.2).
+ * - Contratos JSON de API/eventos: nomes em inglês e snake_case (SPEC.md §9).
+ * - Datas em ISO 8601 (string). NUNCA armazenar imagens da webcam (RNF02).
+ * - Mudanças de formato devem incrementar SCHEMA_VERSION e DB_VERSION.
  */
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export const DB_NAME = "ergoai";
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 export const STORES = {
-  sessoes: "sessoes",
-  eventos: "eventos",
+  sessions: "sessions",
+  events: "events",
   feedbacks: "feedbacks",
-  parametros: "parametros_usuario",
+  userParameters: "userParameters",
 } as const;
 
-/** A lista oficial de tipos fica em cards/_tipos_desvio.yaml (os cartões partem dela). */
-export type TipoDesvio = string;
+export type CameraMode = "frontal" | "lateral";
 
-export type Classificacao = "util" | "falso_alerta";
+/** A lista oficial de códigos de desvio fica em cards/_tipos_desvio.yaml. */
+export type DeviationType = string;
+
+/** @deprecated Use DeviationType. Mantido para compatibilidade com schema/coleta.ts. */
+export type TipoDesvio = DeviationType;
+
+export type FeedbackType = "helpful" | "false_alert";
+
+// ============================================================================
+// Armazenamento local — SPEC.md §11.2 (camelCase)
+// ============================================================================
+
+export interface UserSettings {
+  cameraMode: CameraMode;
+  notificationEnabled: boolean;
+  breakIntervalMinutes: number;
+  postureSensitivity: number;
+}
 
 /** Valores de referência da calibração: apenas números (ângulos/razões), sem imagens. */
-export interface Calibracao {
-  criada_em: string;
-  referencia: Record<string, number>;
-  versao_modelo_visao: string;
+export interface Calibration {
+  createdAt: string;
+  referenceFeatures: Record<string, number>;
+  cameraMode: CameraMode;
+  visionModelVersion?: string;
 }
 
 /**
- * Cada ajuste de tolerância vira uma NOVA versão (nunca sobrescreve a anterior),
+ * Cada ajuste de tolerância cria uma NOVA versão (nunca sobrescreve a anterior),
  * para os resultados serem reproduzíveis. Ajustes de feedback (RF11) só afetam estas
  * tolerâncias locais; a bateria de avaliação (RNF07) usa parâmetros congelados à parte.
  */
-export interface ParametrosUsuario {
-  id: string; // é o "versao_parametros" referenciado em Sessao
-  criado_em: string;
-  origem: "padrao" | "ajuste_feedback" | "manual";
-  tolerancias: Record<string, number>;
+export interface UserParameters {
+  id: string; // referenciado por Session.parametersVersion
+  createdAt: string;
+  origin: "default" | "feedback_adjustment" | "manual";
+  tolerances: Record<string, number>;
 }
 
-export interface Sessao {
+export interface Session {
   id: string;
-  inicio: string;
-  fim: string | null;
-  versao_parametros: string; // id de ParametrosUsuario
-  calibracao: Calibracao;
-  versao_app: string;
+  startedAt: string;
+  endedAt?: string;
+  durationSeconds: number;
+  alertsCount: number;
+  postureMetrics: Record<string, number>;
+  parametersVersion?: string; // id de UserParameters
+  calibration?: Calibration;
+  appVersion?: string;
 }
 
-export interface Evento {
+export interface SessionEvent {
   id: string;
-  sessao_id: string;
+  sessionId: string;
   timestamp: string;
-  tipo: TipoDesvio;
-  duracao_ms: number;
-  confianca: number; // 0 a 1 (RN04/RN05)
-  virou_alerta: boolean;
+  type: DeviationType;
+  durationMs: number;
+  confidence: number; // 0 a 1 (RN04/RN05)
+  triggeredAlert: boolean;
   /** Rastreabilidade: qual cartão e qual versão da base geraram a orientação mostrada. */
-  cartao_id: string | null;
-  versao_cartao: string | null;
-  versao_base: string | null;
+  cardId: string | null;
+  cardVersion: string | null;
+  knowledgeBaseVersion: string | null;
 }
 
 /** Opinião do usuário. NÃO é rótulo verdadeiro: serve ao ajuste de tolerância, não à métrica (RNF07). */
-export interface Feedback {
-  evento_id: string;
-  classificacao: Classificacao;
+export interface UserFeedback {
+  id: string;
+  eventId: string;
+  type: FeedbackType;
+  createdAt: string;
+}
+
+// ============================================================================
+// Contratos JSON de API e eventos — SPEC.md §9 (snake_case)
+// Espelho dos modelos Pydantic do backend; manter snake_case exatamente como no SPEC.
+// ============================================================================
+
+export interface PostureFeatures {
+  head_forward_offset: number;
+  trunk_inclination: number;
+  shoulder_asymmetry: number;
+  apparent_face_scale: number;
+}
+
+export interface PostureClassification {
+  label: string;
+  confidence: number;
+}
+
+/** SPEC.md §9.1 */
+export interface PostureEvent {
+  event_id: string;
   timestamp: string;
+  camera_mode: CameraMode;
+  landmarks_confidence: number;
+  features: PostureFeatures;
+  classification: PostureClassification;
+}
+
+export interface SetupObservation {
+  category: string;
+  description: string;
+  confidence: number;
+  requires_confirmation: boolean;
+}
+
+/** SPEC.md §9.2 */
+export interface SetupAnalysis {
+  analysis_id: string;
+  observations: SetupObservation[];
+  limitations: string[];
+}
+
+export interface RecommendationEvidence {
+  document_id: string;
+  source: string;
+  section: string;
+  page: number;
+  exact_quote: string;
+}
+
+/** SPEC.md §9.3 */
+export interface GroundedRecommendation {
+  recommendation_id: string;
+  recommendation: string;
+  category: string;
+  confidence: number;
+  evidence: RecommendationEvidence[];
+}
+
+/** SPEC.md §9.4 */
+export interface SafetyDecision {
+  approved: boolean;
+  scope: string;
+  evidence_verified: boolean;
+  requires_professional: boolean;
+  reason: string;
 }

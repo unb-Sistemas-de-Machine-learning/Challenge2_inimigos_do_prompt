@@ -24,7 +24,11 @@ def main(argv=None):
     emb = get_embedder(params["embedder"]).encode([a.pergunta])
     res = col.query(query_embeddings=emb, n_results=a.k)
     for doc, meta, dist in zip(res["documents"][0], res["metadatas"][0], res["distances"][0]):
-        print(f"--- {meta['fonte_id']} (v: {meta['versao']}) pág. {meta['pagina']}  dist={dist:.3f}")
+        doc_id = meta.get("document_id", meta.get("fonte_id", "?"))
+        version = meta.get("version", meta.get("versao", ""))
+        page = meta.get("page", meta.get("pagina", "?"))
+        section = meta.get("section", "unspecified")
+        print(f"--- {doc_id} (v: {version}) [{section}] pág. {page}  dist={dist:.3f}")
         print(doc[:400], "\n")
 
 

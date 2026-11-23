@@ -25,7 +25,7 @@ Sugestão para o MLOps: rodar `pytest` e `python -m pipeline.cards` no CI (nos P
 Tipos TypeScript em `schema/sessao.ts` (sessão, evento, feedback, parâmetros versionados e nomes dos stores do IndexedDB) e em `schema/coleta.ts` (gravações de landmarks e rótulos do conjunto de avaliação).
 - O feedback do usuário (útil / falso alerta) **não** é rótulo verdadeiro.
 - Cada ajuste de tolerância cria uma nova versão de parâmetros.
-- O evento guarda `cartao_id`, `versao_cartao` e `versao_base` para rastrear de onde veio cada orientação.
+- O evento (`SessionEvent`) guarda `cardId`, `cardVersion` e `knowledgeBaseVersion` para rastrear de onde veio cada orientação (alinhado ao `SPEC.md` §11.2 em `camelCase`; os contratos JSON da API do §9 permanecem em `snake_case` no mesmo arquivo).
 - Nada de imagens; o histórico local precisa de um botão para limpar tudo (RNF09).
 
 ## Protocolo de coleta

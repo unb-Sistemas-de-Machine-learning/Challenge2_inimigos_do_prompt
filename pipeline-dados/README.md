@@ -26,7 +26,7 @@ Teste rápido sem baixar modelo: `python -m pipeline.ingest --embedder hash` (o 
 ## Contrato do índice (para Engenheiro de IA, Cientista e MLOps)
 
 - Vector store: ChromaDB persistente em `data/index`, coleção `ergonomia`.
-- Metadados de cada chunk: `fonte_id`, `titulo`, `versao`, `licenca`, `pagina`, `chunk`.
+- Metadados de cada chunk (alinhados ao `SPEC.md` §6.5 + rastreabilidade): `document_id`, `title`, `source`, `section`, `page`, `url`, `document_type`, `version`, `license`, `chunk`. Ver `docs/adr/0002-contrato-metadados-indice-e-secoes.md`.
 - `data/manifest.json` registra: sha256 de cada fonte, versão, licença, nº de páginas e chunks, e os parâmetros (embedder, tamanho do chunk, sobreposição).
 - **A consulta deve usar o mesmo embedder do manifest** (`python -m pipeline.query` faz isso). Trocar o embedder exige reindexar (`--force`).
 

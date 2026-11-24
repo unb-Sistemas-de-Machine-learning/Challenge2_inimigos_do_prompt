@@ -1,0 +1,309 @@
+{
+  "experiment_id": "EXP-13-POSTURE-HEURISTICS-AND-PROFILES",
+  "engine_version": "1.1.0-post-mvp",
+  "total_scenarios": 12,
+  "scenario_accuracy": 1.0,
+  "macro_metrics": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "fpr": 0.0
+  },
+  "latency_rnf01": {
+    "total_frames_evaluated": 290,
+    "target_max_ms": 500.0,
+    "mean_ms": 0.0076,
+    "p95_ms": 0.0136,
+    "p99_ms": 0.0165,
+    "max_ms": 0.0215,
+    "meets_rnf01": true
+  },
+  "too_close_weight_ablation": [
+    {
+      "config_name": "100% Olhos / 0% Ombros",
+      "eye_weight": 1.0,
+      "shoulder_weight": 0.0,
+      "tp": 2,
+      "fp": 1,
+      "fn": 1,
+      "tn": 1,
+      "precision": 0.6667,
+      "recall": 0.6667,
+      "f1": 0.6667,
+      "fpr": 0.5
+    },
+    {
+      "config_name": "0% Olhos / 100% Ombros",
+      "eye_weight": 0.0,
+      "shoulder_weight": 1.0,
+      "tp": 2,
+      "fp": 1,
+      "fn": 1,
+      "tn": 1,
+      "precision": 0.6667,
+      "recall": 0.6667,
+      "f1": 0.6667,
+      "fpr": 0.5
+    },
+    {
+      "config_name": "50% Olhos / 50% Ombros",
+      "eye_weight": 0.5,
+      "shoulder_weight": 0.5,
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "tn": 2,
+      "precision": 1.0,
+      "recall": 0.6667,
+      "f1": 0.8,
+      "fpr": 0.0
+    },
+    {
+      "config_name": "60% Olhos / 40% Ombros (ErgoAI)",
+      "eye_weight": 0.6,
+      "shoulder_weight": 0.4,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 2,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0
+    }
+  ],
+  "per_class_metrics": {
+    "FORWARD_HEAD": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 11,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0
+    },
+    "TOO_CLOSE": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 11,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0
+    },
+    "SHOULDER_TILT": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 11,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0
+    },
+    "HEAD_TILT": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 11,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0
+    },
+    "ELEVATED_SHOULDERS": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 11,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0
+    },
+    "TRUNK_ROTATION": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 11,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0
+    },
+    "PROLONGED_ABSENCE": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 11,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0
+    }
+  },
+  "calibration_profiles": {
+    "notebook": {
+      "id": "notebook",
+      "label": "Notebook (Webcam Integrada)",
+      "thresholdMultipliers": {
+        "FORWARD_HEAD": 1.05,
+        "TOO_CLOSE": 1.0,
+        "SHOULDER_TILT": 1.0,
+        "HEAD_TILT": 1.0,
+        "ELEVATED_SHOULDERS": 1.0,
+        "TRUNK_ROTATION": 1.05
+      }
+    },
+    "external_monitor": {
+      "id": "external_monitor",
+      "label": "Monitor Externo (Webcam de Topo)",
+      "thresholdMultipliers": {
+        "FORWARD_HEAD": 0.95,
+        "TOO_CLOSE": 0.95,
+        "SHOULDER_TILT": 0.95,
+        "HEAD_TILT": 0.95,
+        "ELEVATED_SHOULDERS": 0.95,
+        "TRUNK_ROTATION": 0.92
+      }
+    }
+  },
+  "scenarios": [
+    {
+      "id": "sc-01-adequate-notebook",
+      "title": "Postura neutra alinhada em perfil Notebook",
+      "profile_id": "notebook",
+      "expected_label": "ADEQUATE",
+      "predicted_alerts": [],
+      "predicted_primary": "ADEQUATE",
+      "final_status": "ADEQUATE",
+      "correct": true
+    },
+    {
+      "id": "sc-02-adequate-external-monitor",
+      "title": "Postura neutra alinhada em perfil Monitor Externo",
+      "profile_id": "external_monitor",
+      "expected_label": "ADEQUATE",
+      "predicted_alerts": [],
+      "predicted_primary": "ADEQUATE",
+      "final_status": "ADEQUATE",
+      "correct": true
+    },
+    {
+      "id": "sc-03-forward-head-persistent",
+      "title": "Anteriorização da cabeça persistente (> 4s): queda cervical + avanço Z",
+      "profile_id": "notebook",
+      "expected_label": "FORWARD_HEAD",
+      "predicted_alerts": [
+        "FORWARD_HEAD"
+      ],
+      "predicted_primary": "FORWARD_HEAD",
+      "final_status": "ALERT_PERSISTENT",
+      "correct": true
+    },
+    {
+      "id": "sc-04-too-close-persistent",
+      "title": "Aproximação excessiva da tela (> 4s): expansão proporcional olhos (60%) e ombros (40%)",
+      "profile_id": "notebook",
+      "expected_label": "TOO_CLOSE",
+      "predicted_alerts": [
+        "TOO_CLOSE"
+      ],
+      "predicted_primary": "TOO_CLOSE",
+      "final_status": "ALERT_PERSISTENT",
+      "correct": true
+    },
+    {
+      "id": "sc-05-shoulder-tilt-persistent",
+      "title": "Inclinação lateral assimétrica dos ombros (> 4s)",
+      "profile_id": "notebook",
+      "expected_label": "SHOULDER_TILT",
+      "predicted_alerts": [
+        "SHOULDER_TILT"
+      ],
+      "predicted_primary": "SHOULDER_TILT",
+      "final_status": "ALERT_PERSISTENT",
+      "correct": true
+    },
+    {
+      "id": "sc-06-head-tilt-persistent",
+      "title": "Inclinação lateral da cabeça (> 4s)",
+      "profile_id": "notebook",
+      "expected_label": "HEAD_TILT",
+      "predicted_alerts": [
+        "HEAD_TILT"
+      ],
+      "predicted_primary": "HEAD_TILT",
+      "final_status": "ALERT_PERSISTENT",
+      "correct": true
+    },
+    {
+      "id": "sc-07-elevated-shoulders-persistent",
+      "title": "Ombros elevados / tensão de trapézio (> 4s) com cabeça estável",
+      "profile_id": "notebook",
+      "expected_label": "ELEVATED_SHOULDERS",
+      "predicted_alerts": [
+        "ELEVATED_SHOULDERS"
+      ],
+      "predicted_primary": "ELEVATED_SHOULDERS",
+      "final_status": "ALERT_PERSISTENT",
+      "correct": true
+    },
+    {
+      "id": "sc-08-trunk-rotation-persistent",
+      "title": "Rotação axial de tronco (> 4s): assimetria de profundidade Z + estreitamento 2D",
+      "profile_id": "external_monitor",
+      "expected_label": "TRUNK_ROTATION",
+      "predicted_alerts": [
+        "TRUNK_ROTATION"
+      ],
+      "predicted_primary": "TRUNK_ROTATION",
+      "final_status": "ALERT_PERSISTENT",
+      "correct": true
+    },
+    {
+      "id": "sc-09-prolonged-absence",
+      "title": "Ausência prolongada do posto (>= 60s sem landmarks) contabilizando pausa",
+      "profile_id": "notebook",
+      "expected_label": "PROLONGED_ABSENCE",
+      "predicted_alerts": [
+        "PROLONGED_ABSENCE"
+      ],
+      "predicted_primary": "PROLONGED_ABSENCE",
+      "final_status": "PROLONGED_ABSENCE",
+      "correct": true
+    },
+    {
+      "id": "sc-10-transient-movement-no-alert",
+      "title": "Desvio momentâneo (< 4s, apenas 2.5s) seguido de retorno postural (RN03)",
+      "profile_id": "notebook",
+      "expected_label": "ADEQUATE",
+      "predicted_alerts": [],
+      "predicted_primary": "ADEQUATE",
+      "final_status": "ADEQUATE",
+      "correct": true
+    },
+    {
+      "id": "sc-11-low-confidence-no-alert",
+      "title": "Quadro de baixa confiança (visibilidade 0.30 < 0.40) não emite alerta falso (RN04/RN05)",
+      "profile_id": "notebook",
+      "expected_label": "ADEQUATE",
+      "predicted_alerts": [],
+      "predicted_primary": "ADEQUATE",
+      "final_status": "LOW_CONFIDENCE",
+      "correct": true
+    },
+    {
+      "id": "sc-12-arm-reach-noise-no-too-close",
+      "title": "Abdução de braços ao digitar (+22% ombros, 0% olhos) não dispara falso TOO_CLOSE com pesos 60/40",
+      "profile_id": "notebook",
+      "expected_label": "ADEQUATE",
+      "predicted_alerts": [],
+      "predicted_primary": "ADEQUATE",
+      "final_status": "ADEQUATE",
+      "correct": true
+    }
+  ]
+}

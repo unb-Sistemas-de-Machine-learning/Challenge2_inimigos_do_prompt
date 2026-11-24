@@ -1,0 +1,865 @@
+{
+  "experiment_id": "EXP-04-VISION-CHECKLIST-CONCORDANCE",
+  "version": "1.0.0",
+  "total_photos": 12,
+  "categories_per_photo": 6,
+  "total_evaluated_items": 72,
+  "global_metrics": {
+    "total": 72,
+    "tp": 23,
+    "fp": 0,
+    "fn": 2,
+    "tn": 47,
+    "agreement_rate": 0.9722,
+    "cohens_kappa": 0.9376,
+    "precision": 1.0,
+    "recall": 0.92,
+    "f1": 0.9583,
+    "fpr": 0.0,
+    "kappa_interpretation": "quase_perfeita"
+  },
+  "macro_averages": {
+    "macro_agreement_rate": 0.9722,
+    "macro_cohens_kappa": 0.9333,
+    "macro_f1": 0.9524
+  },
+  "confidence_calibration": {
+    "mean_confidence_concordant": 0.8911,
+    "mean_confidence_discordant": 0.615,
+    "discordant_flagged_requires_confirmation_rate": 1.0
+  },
+  "per_category_metrics": {
+    "monitor_height": {
+      "total": 12,
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "tn": 7,
+      "agreement_rate": 1.0,
+      "cohens_kappa": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "kappa_interpretation": "quase_perfeita"
+    },
+    "monitor_distance": {
+      "total": 12,
+      "tp": 3,
+      "fp": 0,
+      "fn": 1,
+      "tn": 8,
+      "agreement_rate": 0.9167,
+      "cohens_kappa": 0.8,
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1": 0.8571,
+      "fpr": 0.0,
+      "kappa_interpretation": "substancial"
+    },
+    "keyboard_mouse_support": {
+      "total": 12,
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "tn": 7,
+      "agreement_rate": 1.0,
+      "cohens_kappa": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "kappa_interpretation": "quase_perfeita"
+    },
+    "chair_lumbar_support": {
+      "total": 12,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 9,
+      "agreement_rate": 1.0,
+      "cohens_kappa": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "kappa_interpretation": "quase_perfeita"
+    },
+    "lighting_glare": {
+      "total": 12,
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "tn": 8,
+      "agreement_rate": 1.0,
+      "cohens_kappa": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "kappa_interpretation": "quase_perfeita"
+    },
+    "legroom_foot_support": {
+      "total": 12,
+      "tp": 3,
+      "fp": 0,
+      "fn": 1,
+      "tn": 8,
+      "agreement_rate": 0.9167,
+      "cohens_kappa": 0.8,
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1": 0.8571,
+      "fpr": 0.0,
+      "kappa_interpretation": "substancial"
+    }
+  },
+  "disagreements": [
+    {
+      "photo_id": "setup-photo-08",
+      "photo_title": "Setup com dois monitores (secundário rotacionado lateralmente a 60 graus) e sombra sob a mesa",
+      "camera_angle": "frontal_oblíquo",
+      "lighting_condition": "sombra_parcial_inferior",
+      "category": "legroom_foot_support",
+      "manual_label": "inadequado",
+      "agent_label": "adequado",
+      "agent_confidence": 0.62,
+      "requires_confirmation": true,
+      "agent_description": "Vão sob a mesa aparenta livre, embora em sombra parcial."
+    },
+    {
+      "photo_id": "setup-photo-11",
+      "photo_title": "Cadeira gamer com almofada lombar desalinhada e monitor ultrawide baixo (ângulo frontal ambíguo)",
+      "camera_angle": "frontal_direto",
+      "lighting_condition": "artificial_led",
+      "category": "monitor_distance",
+      "manual_label": "inadequado",
+      "agent_label": "adequado",
+      "agent_confidence": 0.61,
+      "requires_confirmation": true,
+      "agent_description": "Em foto frontal direta, a profundidade aparenta adequada, porém requer confirmação lateral."
+    }
+  ],
+  "photos": [
+    {
+      "photo_id": "setup-photo-01",
+      "title": "Notebook direto na mesa sem periféricos externos",
+      "environment_type": "home_office_notebook",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "natural_adequada",
+      "matched_items": 6,
+      "total_items": 6,
+      "agreement_rate": 1.0,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.94,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.86,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.95,
+          "requires_confirmation": false
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.89,
+          "requires_confirmation": true
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.88,
+          "requires_confirmation": true
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.81,
+          "requires_confirmation": true
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-02",
+      "title": "Estação desktop completa ergonomicamente ajustada",
+      "environment_type": "escritorio_padrao",
+      "camera_angle": "perfil_lateral",
+      "lighting_condition": "artificial_homogenea",
+      "matched_items": 6,
+      "total_items": 6,
+      "agreement_rate": 1.0,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.93,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.87,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.92,
+          "requires_confirmation": false
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.91,
+          "requires_confirmation": true
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.9,
+          "requires_confirmation": true
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.88,
+          "requires_confirmation": true
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-03",
+      "title": "Notebook em suporte elevado porém sem teclado/mouse externos",
+      "environment_type": "home_office_notebook",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "natural_adequada",
+      "matched_items": 6,
+      "total_items": 6,
+      "agreement_rate": 1.0,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.92,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.84,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.96,
+          "requires_confirmation": false
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.89,
+          "requires_confirmation": true
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.87,
+          "requires_confirmation": true
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.82,
+          "requires_confirmation": true
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-04",
+      "title": "Monitor em frente a janela sem cortina (contraluz e reflexo intenso)",
+      "environment_type": "home_office_desktop",
+      "camera_angle": "frontal_oblíquo",
+      "lighting_condition": "contraluz_ofuscamento",
+      "matched_items": 6,
+      "total_items": 6,
+      "agreement_rate": 1.0,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.88,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.83,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.91,
+          "requires_confirmation": false
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.86,
+          "requires_confirmation": true
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.95,
+          "requires_confirmation": false
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.8,
+          "requires_confirmation": true
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-05",
+      "title": "Improviso em mesa de jantar com cadeira rígida sem apoio lombar e pés pendentes",
+      "environment_type": "improvisado_mesa_jantar",
+      "camera_angle": "perfil_lateral",
+      "lighting_condition": "artificial_homogenea",
+      "matched_items": 6,
+      "total_items": 6,
+      "agreement_rate": 1.0,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.93,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.79,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.89,
+          "requires_confirmation": true
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.96,
+          "requires_confirmation": false
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.85,
+          "requires_confirmation": true
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.84,
+          "requires_confirmation": true
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-06",
+      "title": "Bancada estreita com monitor muito próximo (< 40 cm) e caixas sob a mesa",
+      "environment_type": "quarto_estudo_compacto",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "natural_adequada",
+      "matched_items": 6,
+      "total_items": 6,
+      "agreement_rate": 1.0,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.88,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.91,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.9,
+          "requires_confirmation": true
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.87,
+          "requires_confirmation": true
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.86,
+          "requires_confirmation": true
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.93,
+          "requires_confirmation": false
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-07",
+      "title": "Monitor elevado excessivamente sobre pilha de livros + reflexo de luminária",
+      "environment_type": "home_office_desktop",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "reflexo_direto_tela",
+      "matched_items": 6,
+      "total_items": 6,
+      "agreement_rate": 1.0,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.91,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.85,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.92,
+          "requires_confirmation": false
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.89,
+          "requires_confirmation": true
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.94,
+          "requires_confirmation": false
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.83,
+          "requires_confirmation": true
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-08",
+      "title": "Setup com dois monitores (secundário rotacionado lateralmente a 60 graus) e sombra sob a mesa",
+      "environment_type": "escritorio_dual_monitor",
+      "camera_angle": "frontal_oblíquo",
+      "lighting_condition": "sombra_parcial_inferior",
+      "matched_items": 5,
+      "total_items": 6,
+      "agreement_rate": 0.8333,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.9,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.86,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.92,
+          "requires_confirmation": false
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.89,
+          "requires_confirmation": true
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.93,
+          "requires_confirmation": true
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "inadequado",
+          "agent_label": "adequado",
+          "concordant": false,
+          "confidence": 0.62,
+          "requires_confirmation": true
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-09",
+      "title": "Estação com notebook + suporte + teclado/mouse externos + apoio para os pés",
+      "environment_type": "home_office_notebook",
+      "camera_angle": "perfil_lateral",
+      "lighting_condition": "natural_adequada",
+      "matched_items": 6,
+      "total_items": 6,
+      "agreement_rate": 1.0,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.95,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.91,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.96,
+          "requires_confirmation": false
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.92,
+          "requires_confirmation": true
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.9,
+          "requires_confirmation": true
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.94,
+          "requires_confirmation": false
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-10",
+      "title": "Trabalho noturno no escuro apenas com brilho alto do monitor e banqueta sem encosto",
+      "environment_type": "quarto_noturno",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "ambiente_escuro_alto_contraste",
+      "matched_items": 6,
+      "total_items": 6,
+      "agreement_rate": 1.0,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.89,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.85,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.93,
+          "requires_confirmation": false
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.97,
+          "requires_confirmation": false
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.95,
+          "requires_confirmation": false
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.78,
+          "requires_confirmation": true
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-11",
+      "title": "Cadeira gamer com almofada lombar desalinhada e monitor ultrawide baixo (ângulo frontal ambíguo)",
+      "environment_type": "home_office_gamer",
+      "camera_angle": "frontal_direto",
+      "lighting_condition": "artificial_led",
+      "matched_items": 5,
+      "total_items": 6,
+      "agreement_rate": 0.8333,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.82,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "inadequado",
+          "agent_label": "adequado",
+          "concordant": false,
+          "confidence": 0.61,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.93,
+          "requires_confirmation": false
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.88,
+          "requires_confirmation": true
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.87,
+          "requires_confirmation": true
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.8,
+          "requires_confirmation": true
+        }
+      ]
+    },
+    {
+      "photo_id": "setup-photo-12",
+      "title": "Mesa com gaveteiro baixo comprimindo coxas e reflexo lateral de janela na tela",
+      "environment_type": "escritorio_antigo",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "reflexo_lateral_janela",
+      "matched_items": 6,
+      "total_items": 6,
+      "agreement_rate": 1.0,
+      "items": [
+        {
+          "category": "monitor_height",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.9,
+          "requires_confirmation": true
+        },
+        {
+          "category": "monitor_distance",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.86,
+          "requires_confirmation": true
+        },
+        {
+          "category": "keyboard_mouse_support",
+          "manual_label": "adequado",
+          "agent_label": "adequado",
+          "concordant": true,
+          "confidence": 0.91,
+          "requires_confirmation": false
+        },
+        {
+          "category": "chair_lumbar_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.89,
+          "requires_confirmation": true
+        },
+        {
+          "category": "lighting_glare",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.93,
+          "requires_confirmation": false
+        },
+        {
+          "category": "legroom_foot_support",
+          "manual_label": "inadequado",
+          "agent_label": "inadequado",
+          "concordant": true,
+          "confidence": 0.92,
+          "requires_confirmation": false
+        }
+      ]
+    }
+  ]
+}

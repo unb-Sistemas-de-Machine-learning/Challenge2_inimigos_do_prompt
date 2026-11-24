@@ -1,10 +1,68 @@
 /**
- * Motor Postural Determinístico (ErgoAI — TypeScript)
+ * Motor Postural Determinístico (ErgoAI — TypeScript v1.1.0-post-mvp)
+ *
+ * Implementa:
+ * - Validação empírica de limiares geométricos e latência <= 500 ms (RNF01, RNF07, Issue #13)
+ * - Ponderação validada de proximidade TOO_CLOSE: 60% distância interocular + 40% largura dos ombros
+ * - Evolução pós-MVP com 6 padrões geométricos + detecção de ausência prolongada:
+ *   1. FORWARD_HEAD (Anteriorização da Cabeça)
+ *   2. TOO_CLOSE (Aproximação Excessiva da Tela)
+ *   3. SHOULDER_TILT (Inclinação Lateral dos Ombros)
+ *   4. HEAD_TILT (Inclinação Lateral da Cabeça)
+ *   5. ELEVATED_SHOULDERS (Ombros Elevados / Tensão de Trapézio)
+ *   6. TRUNK_ROTATION (Rotação Axial de Tronco)
+ *   + PROLONGED_ABSENCE (Ausência Prolongada do Posto / Pausa Automática)
+ * - Múltiplos perfis de calibração independentes: 'notebook' vs. 'external_monitor'
  */
 
 import type { DeviationType } from '../data/knowledgeCards';
 
-export const PARAMETERS_VERSION = '1.0.0-mvp';
+export const PARAMETERS_VERSION = '1.1.0-post-mvp';
+
+export type CalibrationProfileId = 'notebook' | 'external_monitor';
+
+export interface CalibrationProfileConfig {
+  id: CalibrationProfileId;
+  label: string;
+  description: string;
+  thresholdMultipliers: Record<DeviationType, number>;
+}
+
+/**
+ * Perfis ergonômicos pré-ajustados para a geometria da câmera:
+ * - Notebook: câmera integrada próxima e abaixo da linha horizontal dos olhos (inclinação natural maior).
+ * - Monitor Externo: webcam no topo do monitor ao nível dos olhos e distância visual maior (~60-75 cm).
+ */
+export const CALIBRATION_PROFILES: Record<CalibrationProfileId, CalibrationProfileConfig> = {
+  notebook: {
+    id: 'notebook',
+    label: 'Notebook (Webcam Integrada)',
+    description:
+      'Ajustado para câmera integrada próxima (~45-55 cm) e ângulo de visão ligeiramente descendente.',
+    thresholdMultipliers: {
+      FORWARD_HEAD: 1.05,
+      TOO_CLOSE: 1.0,
+      SHOULDER_TILT: 1.0,
+      HEAD_TILT: 1.0,
+      ELEVATED_SHOULDERS: 1.0,
+      TRUNK_ROTATION: 1.05,
+    },
+  },
+  external_monitor: {
+    id: 'external_monitor',
+    label: 'Monitor Externo (Webcam de Topo)',
+    description:
+      'Ajustado para monitor externo na altura dos olhos (~60-75 cm) com maior rigor em alinhamento cervical e rotação.',
+    thresholdMultipliers: {
+      FORWARD_HEAD: 0.95,
+      TOO_CLOSE: 0.95,
+      SHOULDER_TILT: 0.95,
+      HEAD_TILT: 0.95,
+      ELEVATED_SHOULDERS: 0.95,
+      TRUNK_ROTATION: 0.92,
+    },
+  },
+};
 
 export const POSE_INDEX = {
   NOSE: 0,
@@ -33,6 +91,11 @@ export interface ThresholdConfig {
   hysteresisRatio: number;
 }
 
+export const TOO_CLOSE_WEIGHTS = {
+  eyeWeight: 0.6,
+  shoulderWeight: 0.4,
+} as const;
+
 export const BASE_THRESHOLDS: Record<DeviationType, ThresholdConfig> = {
   FORWARD_HEAD: {
     label: 'Anteriorização / Camarão',
@@ -58,6 +121,18 @@ export const BASE_THRESHOLDS: Record<DeviationType, ThresholdConfig> = {
     thresholdOn: 14.0,
     hysteresisRatio: 0.78,
   },
+  ELEVATED_SHOULDERS: {
+    label: 'Ombros Elevados (Trapézio)',
+    unit: '%',
+    thresholdOn: 14.0,
+    hysteresisRatio: 0.78,
+  },
+  TRUNK_ROTATION: {
+    label: 'Rotação de Tronco',
+    unit: '%',
+    thresholdOn: 22.0,
+    hysteresisRatio: 0.78,
+  },
 };
 
 export const CONFIDENCE_LIMITS = {
@@ -66,6 +141,8 @@ export const CONFIDENCE_LIMITS = {
   minShoulderWidth: 0.06,
   minEyeDist: 0.015,
 };
+
+export const DEFAULT_PROLONGED_ABSENCE_MS = 60_000;
 
 export interface LandmarkPoint {
   x: number;
@@ -82,10 +159,14 @@ export interface PostureMetrics {
   noseDepthDelta: number;
   shoulderAngleDeg: number;
   headAngleDeg: number;
+  midShoulderY: number;
+  noseY: number;
+  shoulderDepthDiff: number;
 }
 
 export interface ExtractedFeatures {
   valid: boolean;
+  userAbsent?: boolean;
   reason?: string;
   avgConfidence: number;
   minConfidence: number;
@@ -94,12 +175,15 @@ export interface ExtractedFeatures {
 }
 
 export interface CalibrationData {
+  profileId?: CalibrationProfileId;
   createdAt: string;
   version: string;
   sampleCount: number;
   metrics: PostureMetrics;
   referenceLandmarks: Record<number, { x: number; y: number; z: number }>;
 }
+
+export type CalibrationProfilesMap = Partial<Record<CalibrationProfileId, CalibrationData>>;
 
 interface DeviationState {
   activeAlert: boolean;
@@ -133,7 +217,8 @@ export function extractFeatures(landmarks?: LandmarkPoint[]): ExtractedFeatures 
   if (!landmarks || landmarks.length < 13) {
     return {
       valid: false,
-      reason: 'Landmarks insuficientes detectados.',
+      userAbsent: true,
+      reason: 'Landmarks insuficientes detectados (usuário ausente do quadro).',
       avgConfidence: 0,
       minConfidence: 0,
     };
@@ -157,6 +242,7 @@ export function extractFeatures(landmarks?: LandmarkPoint[]): ExtractedFeatures 
   ) {
     return {
       valid: false,
+      userAbsent: avgConfidence < 0.2,
       reason: 'Confiança dos pontos abaixo do limite mínimo (RN05).',
       avgConfidence,
       minConfidence,
@@ -178,6 +264,7 @@ export function extractFeatures(landmarks?: LandmarkPoint[]): ExtractedFeatures 
   ) {
     return {
       valid: false,
+      userAbsent: false,
       reason: 'Pessoa muito distante ou enquadramento incompleto.',
       avgConfidence,
       minConfidence,
@@ -189,6 +276,7 @@ export function extractFeatures(landmarks?: LandmarkPoint[]): ExtractedFeatures 
 
   const neckHeightRatio = (midShoulderY - nose.y) / shoulderWidth;
   const noseDepthDelta = midShoulderZ - (nose.z ?? 0);
+  const shoulderDepthDiff = (leftShoulder.z ?? 0) - (rightShoulder.z ?? 0);
 
   const shoulderAngleDeg =
     Math.atan2(leftShoulder.y - rightShoulder.y, Math.abs(leftShoulder.x - rightShoulder.x)) *
@@ -216,6 +304,7 @@ export function extractFeatures(landmarks?: LandmarkPoint[]): ExtractedFeatures 
 
   return {
     valid: true,
+    userAbsent: false,
     avgConfidence,
     minConfidence,
     metrics: {
@@ -225,6 +314,9 @@ export function extractFeatures(landmarks?: LandmarkPoint[]): ExtractedFeatures 
       noseDepthDelta,
       shoulderAngleDeg,
       headAngleDeg,
+      midShoulderY,
+      noseY: nose.y,
+      shoulderDepthDiff,
     },
     snapshotLandmarks,
   };
@@ -236,13 +328,24 @@ export class CalibrationCollector {
   private active = false;
   private startedAt = 0;
   private samples: ExtractedFeatures[] = [];
+  private profileId: CalibrationProfileId = 'notebook';
 
-  constructor(durationMs = 3000, minSamples = 10) {
+  constructor(durationMs = 3000, minSamples = 10, profileId: CalibrationProfileId = 'notebook') {
     this.durationMs = durationMs;
     this.minSamples = minSamples;
+    this.profileId = profileId;
   }
 
-  start(nowMs = performance.now()): void {
+  setProfileId(profileId: CalibrationProfileId): void {
+    this.profileId = profileId;
+  }
+
+  getProfileId(): CalibrationProfileId {
+    return this.profileId;
+  }
+
+  start(nowMs = performance.now(), profileId?: CalibrationProfileId): void {
+    if (profileId) this.profileId = profileId;
     this.active = true;
     this.startedAt = nowMs;
     this.samples = [];
@@ -286,11 +389,14 @@ export class CalibrationCollector {
       'noseDepthDelta',
       'shoulderAngleDeg',
       'headAngleDeg',
+      'midShoulderY',
+      'noseY',
+      'shoulderDepthDiff',
     ];
 
     const referenceMetrics = {} as PostureMetrics;
     for (const key of metricKeys) {
-      referenceMetrics[key] = median(this.samples.map((s) => s.metrics![key]));
+      referenceMetrics[key] = median(this.samples.map((s) => s.metrics![key] ?? 0));
     }
 
     const referenceLandmarks: CalibrationData['referenceLandmarks'] = {};
@@ -314,6 +420,7 @@ export class CalibrationCollector {
     return {
       ok: true,
       calibration: {
+        profileId: this.profileId,
         createdAt: new Date().toISOString(),
         version: PARAMETERS_VERSION,
         sampleCount: this.samples.length,
@@ -329,20 +436,28 @@ export class PostureComparator {
   private persistenceMs: number;
   private recoveryMs: number;
   private toleranceFactor: number;
+  private prolongedAbsenceMs: number;
+  private profileId: CalibrationProfileId;
   private calibration: CalibrationData | null = null;
   private smoothedMetrics: PostureMetrics | null = null;
   private deviationStates: Record<DeviationType, DeviationState>;
+  private absentSinceMs: number | null = null;
+  private prolongedAbsenceDetected = false;
 
   constructor(options?: {
     emaAlpha?: number;
     persistenceMs?: number;
     recoveryMs?: number;
     toleranceFactor?: number;
+    prolongedAbsenceMs?: number;
+    profileId?: CalibrationProfileId;
   }) {
     this.emaAlpha = options?.emaAlpha ?? 0.28;
     this.persistenceMs = options?.persistenceMs ?? 4000;
     this.recoveryMs = options?.recoveryMs ?? 1200;
     this.toleranceFactor = options?.toleranceFactor ?? 1.0;
+    this.prolongedAbsenceMs = options?.prolongedAbsenceMs ?? DEFAULT_PROLONGED_ABSENCE_MS;
+    this.profileId = options?.profileId ?? 'notebook';
     this.deviationStates = this.createInitialStates();
   }
 
@@ -352,12 +467,27 @@ export class PostureComparator {
       TOO_CLOSE: { activeAlert: false, aboveSinceMs: null, belowSinceMs: null, elapsedAboveMs: 0, lastValue: 0 },
       SHOULDER_TILT: { activeAlert: false, aboveSinceMs: null, belowSinceMs: null, elapsedAboveMs: 0, lastValue: 0 },
       HEAD_TILT: { activeAlert: false, aboveSinceMs: null, belowSinceMs: null, elapsedAboveMs: 0, lastValue: 0 },
+      ELEVATED_SHOULDERS: { activeAlert: false, aboveSinceMs: null, belowSinceMs: null, elapsedAboveMs: 0, lastValue: 0 },
+      TRUNK_ROTATION: { activeAlert: false, aboveSinceMs: null, belowSinceMs: null, elapsedAboveMs: 0, lastValue: 0 },
     };
+  }
+
+  setProfileId(profileId: CalibrationProfileId): void {
+    this.profileId = profileId;
+  }
+
+  getProfileId(): CalibrationProfileId {
+    return this.profileId;
   }
 
   setCalibration(calibration: CalibrationData | null): void {
     this.calibration = calibration;
+    if (calibration?.profileId) {
+      this.profileId = calibration.profileId;
+    }
     this.smoothedMetrics = null;
+    this.absentSinceMs = null;
+    this.prolongedAbsenceDetected = false;
     this.deviationStates = this.createInitialStates();
   }
 
@@ -375,50 +505,133 @@ export class PostureComparator {
   }
 
   evaluate(features: ExtractedFeatures, nowMs = performance.now()) {
+    const evalStartMs = performance.now();
+
     if (!this.calibration) {
-      return { status: 'UNCALIBRATED', valid: false, activeAlerts: [] as DeviationType[] };
-    }
-    if (!features.valid || !features.metrics) {
       return {
-        status: 'LOW_CONFIDENCE',
+        status: 'UNCALIBRATED' as const,
+        valid: false,
+        activeAlerts: [] as DeviationType[],
+        prolongedAbsence: false,
+        absenceDurationMs: 0,
+        profileId: this.profileId,
+        evaluationLatencyMs: Number((performance.now() - evalStartMs).toFixed(4)),
+      };
+    }
+
+    if (!features.valid || !features.metrics) {
+      if (features.userAbsent) {
+        if (this.absentSinceMs === null) {
+          this.absentSinceMs = nowMs;
+        }
+        const absenceDurationMs = Math.max(0, nowMs - this.absentSinceMs);
+        if (absenceDurationMs >= this.prolongedAbsenceMs) {
+          this.prolongedAbsenceDetected = true;
+          // Ao detectar ausência prolongada (pausa física fora da cadeira), limpa alertas ativos
+          this.deviationStates = this.createInitialStates();
+        }
+        return {
+          status: this.prolongedAbsenceDetected
+            ? ('PROLONGED_ABSENCE' as const)
+            : ('LOW_CONFIDENCE' as const),
+          valid: false,
+          activeAlerts: [] as DeviationType[],
+          prolongedAbsence: this.prolongedAbsenceDetected,
+          absenceDurationMs,
+          profileId: this.profileId,
+          evaluationLatencyMs: Number((performance.now() - evalStartMs).toFixed(4)),
+        };
+      }
+
+      return {
+        status: 'LOW_CONFIDENCE' as const,
         valid: false,
         activeAlerts: (Object.keys(this.deviationStates) as DeviationType[]).filter(
           (k) => this.deviationStates[k].activeAlert
         ),
+        prolongedAbsence: false,
+        absenceDurationMs: 0,
+        profileId: this.profileId,
+        evaluationLatencyMs: Number((performance.now() - evalStartMs).toFixed(4)),
       };
     }
+
+    // Usuário presente com confiança válida -> zera cronômetro de ausência
+    this.absentSinceMs = null;
+    this.prolongedAbsenceDetected = false;
 
     const raw = features.metrics;
     if (!this.smoothedMetrics) {
       this.smoothedMetrics = { ...raw };
     } else {
       for (const key of Object.keys(raw) as (keyof PostureMetrics)[]) {
+        const curVal = raw[key] ?? 0;
+        const prevVal = this.smoothedMetrics[key] ?? curVal;
         this.smoothedMetrics[key] =
-          this.emaAlpha * raw[key] + (1 - this.emaAlpha) * this.smoothedMetrics[key];
+          this.emaAlpha * curVal + (1 - this.emaAlpha) * prevVal;
       }
     }
 
     const ref = this.calibration.metrics;
     const cur = this.smoothedMetrics;
+    const refShoulderWidth = Math.max(ref.shoulderWidth, 0.06);
 
+    // 1. Anteriorização da cabeça (queda da altura cervical + avanço Z do nariz)
     const neckBase = Math.max(ref.neckHeightRatio, 0.15);
     const neckDropPct = ((ref.neckHeightRatio - cur.neckHeightRatio) / neckBase) * 100;
     const depthCuePct = Math.max(0, (cur.noseDepthDelta - ref.noseDepthDelta) * 25);
-    const forwardHeadValue = Math.max(0, neckDropPct + depthCuePct);
 
+    // 2. Ombros elevados (trapézio contraído): linha média dos ombros sobe (Y diminui)
+    // enquanto a cabeça permanece estável (sem queda significativa do nariz)
+    const refMidShoulderY = ref.midShoulderY ?? 0.6;
+    const curMidShoulderY = cur.midShoulderY ?? refMidShoulderY;
+    const refNoseY = ref.noseY ?? 0.4;
+    const curNoseY = cur.noseY ?? refNoseY;
+
+    const shoulderRiseNorm = ((refMidShoulderY - curMidShoulderY) / refShoulderWidth) * 100;
+    const noseDropNorm = Math.max(0, ((curNoseY - refNoseY) / refShoulderWidth) * 100);
+    const elevatedShouldersValue = Math.max(0, shoulderRiseNorm - 0.85 * noseDropNorm);
+
+    // Quando o encurtamento cervical decorre da elevação isolada dos ombros (sem avanço Z nem queda da cabeça),
+    // desconta a subida dos ombros para evitar falso positivo cruzado em FORWARD_HEAD
+    const forwardHeadAdjustedDrop =
+      elevatedShouldersValue > 8 && depthCuePct < 2.5 && noseDropNorm < 3.0
+        ? Math.max(0, neckDropPct - shoulderRiseNorm * 0.9)
+        : neckDropPct;
+    const forwardHeadValue = Math.max(0, forwardHeadAdjustedDrop + depthCuePct);
+
+    // 3. Aproximação excessiva da tela (60% distância interocular + 40% largura dos ombros)
     const eyeScale = cur.eyeDist / Math.max(ref.eyeDist, 0.015);
-    const shoulderScale = cur.shoulderWidth / Math.max(ref.shoulderWidth, 0.06);
-    const tooCloseValue = Math.max(0, (0.6 * eyeScale + 0.4 * shoulderScale - 1) * 100);
+    const shoulderScale = cur.shoulderWidth / refShoulderWidth;
+    const combinedProximityScale =
+      TOO_CLOSE_WEIGHTS.eyeWeight * eyeScale +
+      TOO_CLOSE_WEIGHTS.shoulderWeight * shoulderScale;
+    const tooCloseValue = Math.max(0, (combinedProximityScale - 1) * 100);
 
+    // 4. Inclinação lateral dos ombros e da cabeça
     const shoulderAngleDeltaRad =
       (Math.abs(cur.shoulderAngleDeg - ref.shoulderAngleDeg) * Math.PI) / 180;
     const shoulderTiltPct = Math.abs(Math.tan(shoulderAngleDeltaRad)) * 100;
+    const headTiltValue = Math.abs(cur.headAngleDeg - ref.headAngleDeg);
+
+    // 5. Rotação axial de tronco: assimetria de profundidade Z entre ombros + estreitamento projetivo 2D
+    const refDepthDiff = ref.shoulderDepthDiff ?? 0;
+    const curDepthDiff = cur.shoulderDepthDiff ?? 0;
+    const depthRotationPct =
+      (Math.abs(curDepthDiff - refDepthDiff) / refShoulderWidth) * 100;
+    const widthForeshorteningPct = Math.max(0, (1 - shoulderScale) * 100);
+    const trunkRotationValue = Math.max(
+      0,
+      0.7 * depthRotationPct + 0.3 * widthForeshorteningPct
+    );
 
     const measuredValues: Record<DeviationType, number> = {
       FORWARD_HEAD: forwardHeadValue,
       TOO_CLOSE: tooCloseValue,
       SHOULDER_TILT: shoulderTiltPct,
-      HEAD_TILT: Math.abs(cur.headAngleDeg - ref.headAngleDeg),
+      HEAD_TILT: headTiltValue,
+      ELEVATED_SHOULDERS: elevatedShouldersValue,
+      TRUNK_ROTATION: trunkRotationValue,
     };
 
     const ratios: Record<DeviationType, number> = {
@@ -426,13 +639,20 @@ export class PostureComparator {
       TOO_CLOSE: 0,
       SHOULDER_TILT: 0,
       HEAD_TILT: 0,
+      ELEVATED_SHOULDERS: 0,
+      TRUNK_ROTATION: 0,
     };
+
+    const profileMultipliers =
+      CALIBRATION_PROFILES[this.profileId]?.thresholdMultipliers ??
+      CALIBRATION_PROFILES.notebook.thresholdMultipliers;
 
     const activeAlerts: DeviationType[] = [];
     for (const type of Object.keys(BASE_THRESHOLDS) as DeviationType[]) {
       const cfg = BASE_THRESHOLDS[type];
       const value = measuredValues[type];
-      const thresholdOn = cfg.thresholdOn * this.toleranceFactor;
+      const profileMult = profileMultipliers[type] ?? 1.0;
+      const thresholdOn = cfg.thresholdOn * this.toleranceFactor * profileMult;
       const thresholdOff = thresholdOn * cfg.hysteresisRatio;
       ratios[type] = value / thresholdOn;
       const state = this.deviationStates[type];
@@ -471,13 +691,17 @@ export class PostureComparator {
     activeAlerts.sort((a, b) => ratios[b] - ratios[a]);
 
     return {
-      status: activeAlerts.length > 0 ? 'ALERT_PERSISTENT' : 'ADEQUATE',
+      status: activeAlerts.length > 0 ? ('ALERT_PERSISTENT' as const) : ('ADEQUATE' as const),
       valid: true,
       avgConfidence: features.avgConfidence,
       activeAlerts,
       measuredValues,
       ratios,
       toleranceFactor: this.toleranceFactor,
+      profileId: this.profileId,
+      prolongedAbsence: false,
+      absenceDurationMs: 0,
+      evaluationLatencyMs: Number((performance.now() - evalStartMs).toFixed(4)),
     };
   }
 }

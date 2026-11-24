@@ -9,11 +9,14 @@ import typeShoulderTilt from '../../assets/img/types/type-5.jpg';
 import typeForwardHead from '../../assets/img/types/type-7.jpg';
 import { KNOWLEDGE_CARDS, type DeviationType } from '../data/knowledgeCards';
 import {
+  CALIBRATION_PROFILES,
   CalibrationCollector,
   POSE_INDEX,
   PostureComparator,
   extractFeatures,
   type CalibrationData,
+  type CalibrationProfileId,
+  type CalibrationProfilesMap,
   type LandmarkPoint,
 } from '../posture-engine/postureEngine';
 
@@ -28,6 +31,7 @@ const MEDIAPIPE_WASM_URL =
 const POSE_MODEL_URL =
   'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
 const CALIBRATION_STORAGE_KEY = 'ergoai_calibration_v1';
+const CALIBRATION_PROFILES_STORAGE_KEY = 'ergoai_calibration_profiles_v1';
 
 const DEVIATION_MEME_IMAGES: Record<
   DeviationType,
@@ -48,6 +52,14 @@ const DEVIATION_MEME_IMAGES: Record<
   HEAD_TILT: {
     src: typeHeadTilt,
     caption: 'Cabeça tombada? Centralize o olhar no monitor.',
+  },
+  ELEVATED_SHOULDERS: {
+    src: typeShoulderTilt,
+    caption: 'Ombros tensos e elevados? Solte o ar e relaxe o trapézio.',
+  },
+  TRUNK_ROTATION: {
+    src: typeHeadTilt,
+    caption: 'Tronco rotacionado? Alinhe a cadeira de frente para a tela principal.',
   },
 };
 
@@ -188,8 +200,30 @@ export function MonitorView({ onBack }: MonitorViewProps) {
   const [isCalibrating, setIsCalibrating] = useState(false);
   const [calibProgress, setCalibProgress] = useState(0);
   const [calibMessage, setCalibMessage] = useState<string | null>(null);
+  const [activeProfile, setActiveProfile] = useState<CalibrationProfileId>('notebook');
+  const [calibrationProfiles, setCalibrationProfiles] = useState<CalibrationProfilesMap>(() => {
+    try {
+      const savedProfiles = localStorage.getItem(CALIBRATION_PROFILES_STORAGE_KEY);
+      if (savedProfiles) {
+        return JSON.parse(savedProfiles) as CalibrationProfilesMap;
+      }
+      const legacy = localStorage.getItem(CALIBRATION_STORAGE_KEY);
+      if (legacy) {
+        const parsed = JSON.parse(legacy) as CalibrationData;
+        return { notebook: { ...parsed, profileId: 'notebook' } };
+      }
+      return {};
+    } catch {
+      return {};
+    }
+  });
   const [calibration, setCalibration] = useState<CalibrationData | null>(() => {
     try {
+      const savedProfiles = localStorage.getItem(CALIBRATION_PROFILES_STORAGE_KEY);
+      if (savedProfiles) {
+        const map = JSON.parse(savedProfiles) as CalibrationProfilesMap;
+        return map.notebook ?? null;
+      }
       const saved = localStorage.getItem(CALIBRATION_STORAGE_KEY);
       return saved ? (JSON.parse(saved) as CalibrationData) : null;
     } catch {
@@ -198,12 +232,20 @@ export function MonitorView({ onBack }: MonitorViewProps) {
   });
   const [liveStatus, setLiveStatus] = useState<string>('Aguardando webcam');
   const [activeAlerts, setActiveAlerts] = useState<DeviationType[]>([]);
+  const [prolongedAbsence, setProlongedAbsence] = useState(false);
   const [measured, setMeasured] = useState<Record<DeviationType, number> | null>(null);
   const [ratios, setRatios] = useState<Record<DeviationType, number> | null>(null);
 
   useEffect(() => {
     showOverlayRef.current = showOverlay;
   }, [showOverlay]);
+
+  useEffect(() => {
+    const profileCalib = calibrationProfiles[activeProfile] ?? null;
+    setCalibration(profileCalib);
+    collectorRef.current.setProfileId(activeProfile);
+    comparatorRef.current.setProfileId(activeProfile);
+  }, [activeProfile, calibrationProfiles]);
 
   useEffect(() => {
     calibrationRef.current = calibration;
@@ -338,7 +380,7 @@ export function MonitorView({ onBack }: MonitorViewProps) {
     }
     setCalibMessage(null);
     setCalibProgress(0);
-    collectorRef.current.start();
+    collectorRef.current.start(performance.now(), activeProfile);
     calibratingRef.current = true;
     setIsCalibrating(true);
     setActiveTab('calibrar');
@@ -420,12 +462,26 @@ export function MonitorView({ onBack }: MonitorViewProps) {
           setIsCalibrating(false);
           const finalized = collectorRef.current.finalize();
           if (finalized.ok) {
+            const profileKey = finalized.calibration.profileId ?? activeProfile;
+            setCalibrationProfiles((prev) => {
+              const updated: CalibrationProfilesMap = {
+                ...prev,
+                [profileKey]: finalized.calibration,
+              };
+              localStorage.setItem(
+                CALIBRATION_PROFILES_STORAGE_KEY,
+                JSON.stringify(updated),
+              );
+              return updated;
+            });
             localStorage.setItem(
               CALIBRATION_STORAGE_KEY,
               JSON.stringify(finalized.calibration),
             );
             setCalibration(finalized.calibration);
-            setCalibMessage('Calibração concluída! Iniciando monitoramento.');
+            setCalibMessage(
+              `Calibração concluída para ${CALIBRATION_PROFILES[profileKey].label}! Iniciando monitoramento.`,
+            );
             setActiveTab('monitor');
           } else {
             setCalibMessage(finalized.reason);
@@ -435,13 +491,16 @@ export function MonitorView({ onBack }: MonitorViewProps) {
 
       const evaluation = comparatorRef.current.evaluate(features);
       setActiveAlerts(evaluation.activeAlerts);
+      setProlongedAbsence(Boolean(evaluation.prolongedAbsence));
       if ('measuredValues' in evaluation && evaluation.measuredValues) {
         setMeasured(evaluation.measuredValues);
       }
       if ('ratios' in evaluation && evaluation.ratios) {
         setRatios(evaluation.ratios);
       }
-      if (!features.valid) {
+      if (evaluation.prolongedAbsence) {
+        setLiveStatus('Ausência prolongada — Pausa contabilizada');
+      } else if (!features.valid) {
         setLiveStatus('Confiança baixa — centralize rosto e ombros');
       } else if (!calibrationRef.current) {
         setLiveStatus('Landmarks detectados · Calibragem pendente');
@@ -533,7 +592,11 @@ export function MonitorView({ onBack }: MonitorViewProps) {
     );
   }
 
-  const primaryCard = activeAlerts[0] ? KNOWLEDGE_CARDS[activeAlerts[0]] : null;
+  const primaryCard = prolongedAbsence
+    ? KNOWLEDGE_CARDS.PROLONGED_ABSENCE
+    : activeAlerts[0]
+      ? KNOWLEDGE_CARDS[activeAlerts[0]]
+      : null;
 
   return (
     <div className="monitor-workspace">
@@ -623,6 +686,50 @@ export function MonitorView({ onBack }: MonitorViewProps) {
                   {measured ? `${measured.HEAD_TILT.toFixed(1)} °` : '-- °'}
                 </strong>
               </div>
+              <div
+                className={`monitor-metric-item level-${getMetricLevel(ratios?.ELEVATED_SHOULDERS)}`}
+              >
+                <span>Ombros Elevados (Trapézio)</span>
+                <strong>
+                  {measured ? `${measured.ELEVATED_SHOULDERS.toFixed(1)} %` : '-- %'}
+                </strong>
+              </div>
+              <div
+                className={`monitor-metric-item level-${getMetricLevel(ratios?.TRUNK_ROTATION)}`}
+              >
+                <span>Rotação de Tronco</span>
+                <strong>
+                  {measured ? `${measured.TRUNK_ROTATION.toFixed(1)} %` : '-- %'}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="sidebar-block">
+            <h3>Perfil de Calibração</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+              {(Object.keys(CALIBRATION_PROFILES) as CalibrationProfileId[]).map(
+                (profId) => {
+                  const prof = CALIBRATION_PROFILES[profId];
+                  const isCalibrated = Boolean(calibrationProfiles[profId]);
+                  return (
+                    <button
+                      key={profId}
+                      type="button"
+                      className={`btn-ink ${activeProfile === profId ? 'btn-primary' : 'btn-white'}`}
+                      style={{
+                        width: '100%',
+                        fontSize: '0.78rem',
+                        padding: '0.45rem 0.65rem',
+                        textAlign: 'left',
+                      }}
+                      onClick={() => setActiveProfile(profId)}
+                    >
+                      {prof.label} {isCalibrated ? '✓' : '· Pendente'}
+                    </button>
+                  );
+                },
+              )}
             </div>
           </div>
 
@@ -630,7 +737,7 @@ export function MonitorView({ onBack }: MonitorViewProps) {
             <h3>Status do Motor</h3>
             <div className="sidebar-chips">
               <span>{modelReady ? 'MediaPipe OK' : 'Carregando IA'}</span>
-              <span>{calibration ? 'Calibrado' : 'Sem referência'}</span>
+              <span>{calibration ? `Calibrado (${activeProfile === 'notebook' ? 'Notebook' : 'Monitor Ext.'})` : 'Sem referência'}</span>
               <span>100% Local</span>
             </div>
           </div>

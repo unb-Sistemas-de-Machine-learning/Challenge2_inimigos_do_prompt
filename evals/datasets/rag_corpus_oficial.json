@@ -1,0 +1,128 @@
+{
+  "version": "1.0.0",
+  "title": "Corpus Oficial Curado para Recuperação RAG (NR-17 e OMS 2020)",
+  "description": "Excertos técnicos verificáveis das normas e diretrizes oficiais utilizados como base de conhecimento indexável e verificação determinística de citações (exact_quote).",
+  "chunks": [
+    {
+      "chunk_id": "nr17_17_3_aep_01",
+      "document_id": "nr17",
+      "title": "Norma Regulamentadora nº 17 (NR-17) — Ergonomia",
+      "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+      "section": "17.3 Avaliação das situações de trabalho",
+      "page": 2,
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17",
+      "document_type": "official",
+      "text": "17.3.1 A organização deve realizar a avaliação ergonômica preliminar das situações de trabalho que, em decorrência da natureza e conteúdo das atividades requeridas, demandam adaptação às características psicofisiológicas dos trabalhadores, a fim de subsidiar a implementação das medidas de prevenção e adequações necessárias previstas nesta NR. 17.3.2 A organização deve realizar Análise Ergonômica do Trabalho - AET da situação de trabalho quando observada a necessidade de uma avaliação mais aprofundada da situação ou identificadas inadequações ou insuficiência das ações adotadas."
+    },
+    {
+      "chunk_id": "nr17_17_4_org_pausas_01",
+      "document_id": "nr17",
+      "title": "Norma Regulamentadora nº 17 (NR-17) — Ergonomia",
+      "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+      "section": "17.4 Organização do trabalho",
+      "page": 4,
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17",
+      "document_type": "official",
+      "text": "17.4.1 A organização do trabalho, para efeito desta NR, deve levar em consideração: a) as normas de produção; b) o modo operatório, quando aplicável; c) a exigência de tempo; d) o ritmo de trabalho; e) o conteúdo das tarefas e os instrumentos e meios técnicos disponíveis; e f) os aspectos cognitivos que possam comprometer a segurança e a saúde do trabalhador. 17.4.2 Nas atividades que exijam sobrecarga muscular estática ou dinâmica do tronco, do pescoço, da cabeça, dos membros superiores e dos membros inferiores, devem ser adotadas medidas técnicas de engenharia, organizacionais e/ou administrativas, com o objetivo de eliminar ou reduzir essas sobrecargas, a partir da avaliação ergonômica preliminar ou da AET."
+    },
+    {
+      "chunk_id": "nr17_17_4_pausas_psicofisiologicas_02",
+      "document_id": "nr17",
+      "title": "Norma Regulamentadora nº 17 (NR-17) — Ergonomia",
+      "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+      "section": "17.4 Organização do trabalho",
+      "page": 5,
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17",
+      "document_type": "official",
+      "text": "17.4.3 Devem ser implementadas medidas de prevenção, a partir da avaliação ergonômica preliminar ou da AET, que evitem que os trabalhadores, ao realizar suas atividades, sejam obrigados a efetuar de forma contínua e repetitiva: a) posturas extremas ou nocivas do tronco, do pescoço, da cabeça, dos membros superiores e/ou dos membros inferiores; b) movimentos bruscos de impacto dos membros superiores; c) uso excessivo de força muscular; d) frequência de movimentos dos membros superiores ou inferiores que possam comprometer a segurança e a saúde do trabalhador; e) exposição a vibrações; ou f) exigência cognitiva que possa comprometer a segurança e saúde do trabalhador. 17.4.3.1 As medidas de prevenção devem incluir duas ou mais das seguintes alternativas: a) pausas para propiciar a recuperação psicofisiológica dos trabalhadores, que devem ser computadas como tempo de trabalho efetivo; b) alternância de atividades com outras tarefas que permitam variar as posturas, os grupos musculares utilizados ou o ritmo de trabalho."
+    },
+    {
+      "chunk_id": "nr17_17_6_mobiliario_assento_01",
+      "document_id": "nr17",
+      "title": "Norma Regulamentadora nº 17 (NR-17) — Ergonomia",
+      "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+      "section": "17.6 Mobiliário dos postos de trabalho",
+      "page": 8,
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17",
+      "document_type": "official",
+      "text": "17.6.1 O conjunto do mobiliário do posto de trabalho deve apresentar regulagens em um ou mais de seus elementos que permitam adaptá-lo às características antropométricas que atendam ao conjunto dos trabalhadores envolvidos e à natureza do trabalho a ser desenvolvido. 17.6.2 Sempre que o trabalho puder ser executado alternando a posição de pé com a posição sentada, o posto de trabalho deve ser planejado ou adaptado para favorecer a alternância das posições. 17.6.3 Para trabalho manual sentado ou que tenha de ser feito em pé, as bancadas, mesas, escrivaninhas e os painéis devem proporcionar ao trabalhador condições de boa postura, visualização e operação e devem atender, no mínimo, aos seguintes requisitos: a) características dimensionais que possibilitem posicionamento e movimentação dos segmentos corporais de forma a não comprometer a saúde e não ocasionar amplitudes articulares excessivas ou posturas nocivas de trabalho; b) altura e características da superfície de trabalho compatíveis com o tipo de atividade, com a distância requerida dos olhos ao campo de trabalho e com a altura do assento; c) área de trabalho de fácil alcance e visualização pelo trabalhador; d) características dimensionais que possibilitem o espaço suficiente para movimentação livre dos segmentos corporais."
+    },
+    {
+      "chunk_id": "nr17_17_6_cadeira_apoio_pes_02",
+      "document_id": "nr17",
+      "title": "Norma Regulamentadora nº 17 (NR-17) — Ergonomia",
+      "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+      "section": "17.6 Mobiliário dos postos de trabalho",
+      "page": 9,
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17",
+      "document_type": "official",
+      "text": "17.6.6 Os assentos utilizados nos postos de trabalho devem atender aos seguintes requisitos mínimos de conforto: a) altura ajustável à estatura do trabalhador e à natureza da função exercida; b) sistemas de ajustes e manuseio acessíveis; c) características de pouca ou nenhuma conformação na base do assento; d) borda frontal arredondada; e e) encosto com forma adaptada ao corpo para proteção da região lombar. 17.6.4 Para adaptação do mobiliário às dimensões antropométricas do trabalhador, pode ser utilizado apoio para os pés sempre que o trabalhador não puder manter a planta dos pés completamente apoiada no piso."
+    },
+    {
+      "chunk_id": "nr17_17_7_equipamentos_telas_notebook_01",
+      "document_id": "nr17",
+      "title": "Norma Regulamentadora nº 17 (NR-17) — Ergonomia",
+      "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+      "section": "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais",
+      "page": 10,
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17",
+      "document_type": "official",
+      "text": "17.7.3 Os equipamentos utilizados no processamento eletrônico de dados com terminais de vídeo devem permitir ao trabalhador ajustá-los de acordo com as tarefas a serem executadas. 17.7.3.1 Os equipamentos devem ter condições de mobilidade suficiente para permitir o ajuste da tela do equipamento à iluminação do ambiente, protegendo-a contra reflexos, e proporcionar corretos ângulos de visibilidade ao trabalhador. 17.7.3.2 Nas atividades com uso de computador portátil de forma não eventual em posto de trabalho, devem ser previstas formas de adaptação do teclado, do mouse ou da tela a fim de permitir o ajuste às características antropométricas do trabalhador e à natureza das tarefas a serem executadas."
+    },
+    {
+      "chunk_id": "nr17_17_8_conforto_iluminacao_01",
+      "document_id": "nr17",
+      "title": "Norma Regulamentadora nº 17 (NR-17) — Ergonomia",
+      "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+      "section": "17.8 Condições de conforto no ambiente de trabalho",
+      "page": 11,
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17",
+      "document_type": "official",
+      "text": "17.8.1 Em todos os locais e situações de trabalho deve haver iluminação, natural ou artificial, geral ou suplementar, apropriada à natureza da atividade. 17.8.2 A iluminação deve ser projetada e instalada de forma a evitar ofuscamento, reflexos incômodos, sombras e contrastes excessivos. 17.8.4 Nos locais de trabalho em ambientes internos onde são executadas atividades que exijam manutenção da solicitação intelectual e atenção constantes, devem ser adotadas medidas de conforto acústico e de conforto térmico."
+    },
+    {
+      "chunk_id": "nr17_anexo1_checkout_01",
+      "document_id": "nr17",
+      "title": "Norma Regulamentadora nº 17 (NR-17) — Anexo I",
+      "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+      "section": "Anexo I - Trabalho dos Operadores de Checkout",
+      "page": 14,
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17",
+      "document_type": "official",
+      "text": "Anexo I - Trabalho dos Operadores de Checkout. 2.1 Em relação ao posto de trabalho do operador de checkout, deve-se instalar cadeira de trabalho com assento e encosto para apoio lombar, com estofamento de densidade adequada, ajustáveis à estatura do trabalhador e à natureza da tarefa, e colocar apoio para os pés, independente da cadeira. A balança de pesagem de mercadorias no caixa deve estar nivelada com a superfície do checkout e localizada próxima ao operador."
+    },
+    {
+      "chunk_id": "nr17_anexo2_teleatendimento_01",
+      "document_id": "nr17",
+      "title": "Norma Regulamentadora nº 17 (NR-17) — Anexo II",
+      "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+      "section": "Anexo II - Trabalho em Teleatendimento/Telemarketing",
+      "page": 19,
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17",
+      "document_type": "official",
+      "text": "Anexo II - Trabalho em Teleatendimento/Telemarketing. 2.1 O mobiliário do posto de trabalho em teleatendimento/telemarketing deve dispor de monitor de vídeo e teclado apoiados em superfícies com mecanismos de regulagem independentes. 5.4.1 As pausas para recuperação em teleatendimento devem ser concedidas fora do posto de trabalho, em dois períodos de 10 minutos contínuos para jornada de até 6 horas, além do intervalo para repouso e alimentação."
+    },
+    {
+      "chunk_id": "oms2020_sedentario_pausas_01",
+      "document_id": "oms2020",
+      "title": "Diretrizes da OMS para Atividade Física e Comportamento Sedentário",
+      "source": "Organização Mundial da Saúde (WHO Guidelines 2020)",
+      "section": "Recomendações para Adultos (18–64 anos) — Comportamento Sedentário",
+      "page": 32,
+      "url": "https://www.who.int/publications/i/item/9789240015128",
+      "document_type": "official",
+      "text": "Adultos devem limitar a quantidade de tempo gasto em comportamento sedentário. Substituir o tempo sedentário por atividade física de qualquer intensidade (incluindo intensidade leve) proporciona benefícios para a saúde. Para ajudar a reduzir os efeitos prejudiciais de altos níveis de comportamento sedentário na saúde, todos os adultos e idosos devem procurar realizar mais do que os níveis recomendados de atividade física moderada a vigorosa e interromper períodos prolongados na posição sentada com pausas ativas."
+    },
+    {
+      "chunk_id": "oms2020_volume_semanal_02",
+      "document_id": "oms2020",
+      "title": "Diretrizes da OMS para Atividade Física e Comportamento Sedentário",
+      "source": "Organização Mundial da Saúde (WHO Guidelines 2020)",
+      "section": "Recomendações para Adultos (18–64 anos) — Atividade Física Aeróbica",
+      "page": 28,
+      "url": "https://www.who.int/publications/i/item/9789240015128",
+      "document_type": "official",
+      "text": "Todos os adultos devem realizar atividade física regular. Adultos devem fazer pelo menos 150 a 300 minutos de atividade física aeróbica de moderada intensidade, ou pelo menos 75 a 150 minutos de atividade física aeróbica de vigorosa intensidade ao longo da semana, para benefícios substanciais à saúde. Fazer alguma atividade física é melhor do que nenhuma, e todo movimento conta."
+    }
+  ]
+}

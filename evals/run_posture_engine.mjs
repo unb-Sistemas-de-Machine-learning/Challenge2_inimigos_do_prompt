@@ -1,8 +1,9 @@
 /**
- * Adaptador fino em Node.js (ESM) para executar o motor postural real do protótipo
- * (prototipo/js/posture-engine.js) sobre datasets numéricos de landmarks sem duplicar regras.
+ * Adaptador fino em Node.js (ESM + type-stripping nativo no Node v24+) para executar
+ * o motor postural real (frontend/src/posture-engine/postureEngine.ts) sobre datasets
+ * numéricos de landmarks sem duplicar regras em Python.
  *
- * Uso: node eval/run_posture_engine.mjs <caminho_dataset.json>
+ * Uso: node evals/run_posture_engine.mjs <caminho_dataset.json>
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,16 +15,17 @@ import {
   PARAMETERS_VERSION,
   PostureComparator,
   extractFeatures,
-} from '../../prototipo/js/posture-engine.js';
+} from '../frontend/src/posture-engine/postureEngine.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const REPO_ROOT = path.resolve(__dirname, '..');
 
 function normalizarPose(pose) {
   if (!Array.isArray(pose)) return [];
   return pose.map((pt) => {
     if (!pt || typeof pt !== 'object') return pt;
-    // Compatibilidade entre schema/coleta.ts ("visibilidade") e MediaPipe/posture-engine.js ("visibility")
+    // Compatibilidade entre frontend/src/types/coleta.ts ("visibilidade") e MediaPipe/postureEngine.ts ("visibility")
     const visibility =
       typeof pt.visibility === 'number'
         ? pt.visibility
@@ -80,17 +82,17 @@ function executarCenario(cenario, parametrosPadrao = {}) {
       lowConfidenceFrames += 1;
       continue;
     }
-    if (res.deviations) {
-      for (const [tipo, info] of Object.entries(res.deviations)) {
-        if (info.value > maxValues[tipo]) {
-          maxValues[tipo] = Number(info.value.toFixed(3));
+    if (res.measuredValues) {
+      for (const [tipo, value] of Object.entries(res.measuredValues)) {
+        if (value > maxValues[tipo]) {
+          maxValues[tipo] = Number(value.toFixed(3));
         }
       }
     }
-    for (const trig of res.newlyTriggered || []) {
-      if (!triggeredSet.has(trig.type)) {
-        triggeredSet.add(trig.type);
-        triggeredOrder.push(trig.type);
+    for (const tipo of res.activeAlerts || []) {
+      if (!triggeredSet.has(tipo)) {
+        triggeredSet.add(tipo);
+        triggeredOrder.push(tipo);
       }
     }
   }
@@ -113,7 +115,7 @@ function executarCenario(cenario, parametrosPadrao = {}) {
 function main() {
   const datasetArg = process.argv[2];
   if (!datasetArg) {
-    console.error('Uso: node eval/run_posture_engine.mjs <caminho_dataset.json>');
+    console.error('Uso: node evals/run_posture_engine.mjs <caminho_dataset.json>');
     process.exit(2);
   }
 
@@ -123,9 +125,10 @@ function main() {
     executarCenario(c, dados.parametros_padrao || {})
   );
 
+  const engineAbsPath = path.resolve(REPO_ROOT, 'frontend/src/posture-engine/postureEngine.ts');
   const saida = {
     engine_version: PARAMETERS_VERSION,
-    engine_path: path.relative(path.resolve(__dirname, '../..'), path.resolve(__dirname, '../../prototipo/js/posture-engine.js')),
+    engine_path: path.relative(REPO_ROOT, engineAbsPath),
     dataset_tipo: dados.tipo_dataset || 'desconhecido',
     dataset_versao: dados.versao || '1',
     classes_avaliadas: Object.keys(BASE_THRESHOLDS),

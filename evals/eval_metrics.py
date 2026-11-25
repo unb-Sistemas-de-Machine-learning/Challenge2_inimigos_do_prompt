@@ -1,15 +1,15 @@
 """Avaliação quantitativa (RNF07 / SPEC.md §13.1 e §13.2).
 
 Executa duas frentes de avaliação sem depender de mídia pessoal nem de LLM:
-- Parte A (postura): executa o motor JS real (prototipo/js/posture-engine.js) via Node.js
-  sobre um conjunto rotulado de landmarks numéricos e calcula Precision, Recall, F1 e FPR.
+- Parte A (postura): executa o motor TS real (frontend/src/posture-engine/postureEngine.ts)
+  via Node.js sobre um conjunto rotulado de landmarks numéricos e calcula Precision, Recall, F1 e FPR.
 - Parte B (rag): consulta o índice ChromaDB com perguntas rotuladas (incluindo detecção
-  de vazamento dos Anexos I e II da NR-17) e valida cobertura de cartões em cards/*.yaml.
+  de vazamento dos Anexos I e II da NR-17) e valida cobertura de cartões em knowledge_base/cards/*.yaml.
 
-Uso:
-  python -m pipeline.eval_metrics --parte postura
-  python -m pipeline.eval_metrics --parte rag -k 3
-  python -m pipeline.eval_metrics --parte tudo -k 3 [--out relatorio.json]
+Uso (a partir da raiz do repositório):
+  uv run --project backend python -m evals.eval_metrics --parte postura
+  uv run --project backend --extra rag python -m evals.eval_metrics --parte rag -k 3
+  uv run --project backend --extra rag python -m evals.eval_metrics --parte tudo -k 3 [--out relatorio.json]
 """
 import argparse
 import json
@@ -19,9 +19,14 @@ from pathlib import Path
 
 import yaml
 
-from .cards import carregar_cartoes
-from .embed import get_embedder
-from .ingest import COLECAO
+from knowledge_base.cards import DEFAULT_CARDS_DIR, carregar_cartoes
+from knowledge_base.embed import get_embedder
+from knowledge_base.ingest import COLECAO, DEFAULT_INDEX_DIR, DEFAULT_MANIFEST
+
+EVALS_DIR = Path(__file__).resolve().parent
+DEFAULT_POSTURA_DATASET = EVALS_DIR / "datasets" / "postura_cenarios.json"
+DEFAULT_RAG_DATASET = EVALS_DIR / "datasets" / "rag_perguntas.yaml"
+DEFAULT_RUNNER = EVALS_DIR / "run_posture_engine.mjs"
 
 CLASSES_POSTURA = ("FORWARD_HEAD", "TOO_CLOSE", "SHOULDER_TILT", "HEAD_TILT")
 
@@ -75,7 +80,6 @@ def agregar_metricas_postura(resultados, classes=CLASSES_POSTURA):
     }
     micro = calcular_metricas_binarias(tot_tp, tot_fp, tot_fn, tot_tn)
 
-    # Avaliação binária global: cenário possui algum desvio geométrico vs. cenário negativo
     bin_tp = bin_fp = bin_fn = bin_tn = 0
     falsos_positivos_detalhes = []
     falsos_negativos_detalhes = []
@@ -110,11 +114,9 @@ def agregar_metricas_postura(resultados, classes=CLASSES_POSTURA):
     }
 
 
-def avaliar_postura(dataset_path, runner_path=None):
-    """Executa o detector JS real via Node.js e retorna relatório estruturado."""
+def avaliar_postura(dataset_path=DEFAULT_POSTURA_DATASET, runner_path=DEFAULT_RUNNER):
+    """Executa o detector TS real via Node.js e retorna relatório estruturado."""
     dataset_path = Path(dataset_path).resolve()
-    if runner_path is None:
-        runner_path = Path(__file__).resolve().parent.parent / "eval" / "run_posture_engine.mjs"
     runner_path = Path(runner_path).resolve()
 
     proc = subprocess.run(
@@ -217,7 +219,7 @@ def avaliar_resultados_rag(perguntas, recuperados_por_id, k, cartoes_por_tipo=No
 
     n_perg = len(perguntas)
     precision_at_k = soma_prec / n_perg if n_perg else 0.0
-    hit_rate_at_k = soma_hit / n_perg if n_perg else 0.0  # Recall@k por consulta
+    hit_rate_at_k = soma_hit / n_perg if n_perg else 0.0
     f1_at_k = (
         2 * precision_at_k * hit_rate_at_k / (precision_at_k + hit_rate_at_k)
         if (precision_at_k + hit_rate_at_k) > 0
@@ -271,7 +273,14 @@ def avaliar_resultados_rag(perguntas, recuperados_por_id, k, cartoes_por_tipo=No
     }
 
 
-def avaliar_rag(rag_dataset_path, index_dir, manifest_path, cards_dir, k=3, embedder_override=None):
+def avaliar_rag(
+    rag_dataset_path=DEFAULT_RAG_DATASET,
+    index_dir=DEFAULT_INDEX_DIR,
+    manifest_path=DEFAULT_MANIFEST,
+    cards_dir=DEFAULT_CARDS_DIR,
+    k=3,
+    embedder_override=None,
+):
     """Consulta o índice ChromaDB real e calcula métricas da Parte B."""
     import chromadb
 
@@ -384,11 +393,11 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--parte", choices=("postura", "rag", "tudo"), default="tudo")
     ap.add_argument("-k", type=int, default=3)
-    ap.add_argument("--postura-dataset", default="eval/datasets/postura_cenarios.json")
-    ap.add_argument("--rag-dataset", default="eval/datasets/rag_perguntas.yaml")
-    ap.add_argument("--index-dir", default="data/index")
-    ap.add_argument("--manifest", default="data/manifest.json")
-    ap.add_argument("--cards-dir", default="cards")
+    ap.add_argument("--postura-dataset", default=str(DEFAULT_POSTURA_DATASET))
+    ap.add_argument("--rag-dataset", default=str(DEFAULT_RAG_DATASET))
+    ap.add_argument("--index-dir", default=str(DEFAULT_INDEX_DIR))
+    ap.add_argument("--manifest", default=str(DEFAULT_MANIFEST))
+    ap.add_argument("--cards-dir", default=str(DEFAULT_CARDS_DIR))
     ap.add_argument("--embedder", default=None, help="sobrescreve o embedder do manifest (ex.: 'hash' em testes)")
     ap.add_argument("--out", default=None, help="grava o relatorio completo em JSON apenas quando informado")
     a = ap.parse_args(argv)

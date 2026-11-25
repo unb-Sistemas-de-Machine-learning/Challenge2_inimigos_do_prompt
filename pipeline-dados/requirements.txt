@@ -1,6 +1,0 @@
-# Versões sem fixar de propósito: o MLOps deve fixar (pin) depois de testar.
-pypdf
-pyyaml
-chromadb
-sentence-transformers
-pytest

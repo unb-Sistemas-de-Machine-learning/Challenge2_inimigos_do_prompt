@@ -3,13 +3,15 @@ import shutil
 
 import pytest
 
-from pipeline.eval_metrics import (
+from evals.eval_metrics import (
+    DEFAULT_POSTURA_DATASET,
     agregar_metricas_postura,
     avaliar_postura,
     avaliar_resultados_rag,
     calcular_metricas_binarias,
     main,
 )
+from knowledge_base.cards import DEFAULT_CARDS_DIR
 
 
 def test_calcular_metricas_binarias_normal_e_zero():
@@ -43,11 +45,11 @@ def test_agregar_metricas_postura_por_classe_e_binario():
     assert [x["id"] for x in m["falsos_negativos"]] == ["c2"]
 
 
-def test_avaliar_postura_executa_motor_js_real_via_node():
+def test_avaliar_postura_executa_motor_ts_real_via_node():
     if shutil.which("node") is None:
         pytest.skip("Node.js nao disponivel no ambiente")
-    rel = avaliar_postura("eval/datasets/postura_cenarios.json")
-    assert rel["engine_path"].endswith("prototipo/js/posture-engine.js")
+    rel = avaliar_postura(DEFAULT_POSTURA_DATASET)
+    assert rel["engine_path"].endswith("frontend/src/posture-engine/postureEngine.ts")
     assert "BASELINE SINTETICO" in rel["aviso_escopo"]
     m = rel["metricas"]
     assert m["total_cenarios"] == 22
@@ -97,7 +99,6 @@ def test_avaliar_resultados_rag_detecta_vazamento_de_anexo_e_calcula_metricas():
     rel = avaliar_resultados_rag(
         perguntas, recuperados, k=2, cartoes_por_tipo=cartoes, tipos_oficiais=["FORWARD_HEAD", "BREAK_NEEDED"]
     )
-    # q1: P@2 = 0.5, Hit = 1, MRR = 0.5, vazamento = 1 chunk; q2: P@2 = 1.0, Hit = 1, MRR = 1.0, vazamento = 0
     assert rel["precision_at_k"] == 0.75
     assert rel["hit_rate_at_k"] == 1.0
     assert rel["mrr"] == 0.75
@@ -109,7 +110,7 @@ def test_avaliar_resultados_rag_detecta_vazamento_de_anexo_e_calcula_metricas():
 
 def test_cli_eval_metrics_rag_ponta_a_ponta_com_hash_e_out(tmp_path):
     pytest.importorskip("chromadb")
-    from pipeline.ingest import main as ingest_main
+    from knowledge_base.ingest import main as ingest_main
 
     raw = tmp_path / "raw"
     raw.mkdir()
@@ -132,11 +133,13 @@ def test_cli_eval_metrics_rag_ponta_a_ponta_com_hash_e_out(tmp_path):
     )
     idx_dir = tmp_path / "idx"
     manifest = tmp_path / "manifest.json"
+    chunks_out = tmp_path / "chunks.jsonl"
     assert ingest_main([
         "--sources", str(tmp_path / "sources.yaml"),
         "--raw-dir", str(raw),
         "--index-dir", str(idx_dir),
         "--manifest", str(manifest),
+        "--chunks-out", str(chunks_out),
         "--embedder", "hash",
     ]) == 0
 
@@ -160,7 +163,7 @@ def test_cli_eval_metrics_rag_ponta_a_ponta_com_hash_e_out(tmp_path):
         "--rag-dataset", str(rag_yaml),
         "--index-dir", str(idx_dir),
         "--manifest", str(manifest),
-        "--cards-dir", "cards",
+        "--cards-dir", str(DEFAULT_CARDS_DIR),
         "--out", str(out_json),
     ]) == 0
 

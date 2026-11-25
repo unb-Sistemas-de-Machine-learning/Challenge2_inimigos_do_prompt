@@ -1,13 +1,8 @@
 /**
- * Motor Postural Determinístico (ErgoAI — MVP)
- *
- * Responsável por:
- * - Validar confiança dos landmarks (RN04, RN05)
- * - Extrair variáveis geométricas normalizadas (RF05, RF06)
- * - Calibrar referência individual por mediana estatística (RF04, RN02)
- * - Comparar postura atual vs. ideal com EMA + histerese + persistência temporal (RF07, RNF06, RN03)
- * - Ajustar tolerância local por feedback sem depender de LLM (RF11, RN09, RN10)
+ * Motor Postural Determinístico (ErgoAI — TypeScript)
  */
+
+import type { DeviationType } from '../data/knowledgeCards';
 
 export const PARAMETERS_VERSION = '1.0.0-mvp';
 
@@ -19,7 +14,7 @@ export const POSE_INDEX = {
   RIGHT_EAR: 8,
   LEFT_SHOULDER: 11,
   RIGHT_SHOULDER: 12,
-};
+} as const;
 
 export const REFERENCE_LANDMARK_IDS = [
   POSE_INDEX.NOSE,
@@ -29,31 +24,38 @@ export const REFERENCE_LANDMARK_IDS = [
   POSE_INDEX.RIGHT_EAR,
   POSE_INDEX.LEFT_SHOULDER,
   POSE_INDEX.RIGHT_SHOULDER,
-];
+] as const;
 
-export const BASE_THRESHOLDS = {
+export interface ThresholdConfig {
+  label: string;
+  unit: string;
+  thresholdOn: number;
+  hysteresisRatio: number;
+}
+
+export const BASE_THRESHOLDS: Record<DeviationType, ThresholdConfig> = {
   FORWARD_HEAD: {
     label: 'Anteriorização / Camarão',
     unit: '%',
-    thresholdOn: 16.0,
+    thresholdOn: 18.0,
     hysteresisRatio: 0.78,
   },
   TOO_CLOSE: {
     label: 'Aproximação da Tela',
     unit: '%',
-    thresholdOn: 20.0,
+    thresholdOn: 18.0,
     hysteresisRatio: 0.78,
   },
   SHOULDER_TILT: {
     label: 'Inclinação dos Ombros',
-    unit: '°',
-    thresholdOn: 7.5,
+    unit: '%',
+    thresholdOn: 25.0,
     hysteresisRatio: 0.78,
   },
   HEAD_TILT: {
     label: 'Inclinação da Cabeça',
     unit: '°',
-    thresholdOn: 10.0,
+    thresholdOn: 14.0,
     hysteresisRatio: 0.78,
   },
 };
@@ -65,31 +67,69 @@ export const CONFIDENCE_LIMITS = {
   minEyeDist: 0.015,
 };
 
-function distance2D(a, b) {
+export interface LandmarkPoint {
+  x: number;
+  y: number;
+  z?: number;
+  visibility?: number;
+  presence?: number;
+}
+
+export interface PostureMetrics {
+  neckHeightRatio: number;
+  eyeDist: number;
+  shoulderWidth: number;
+  noseDepthDelta: number;
+  shoulderAngleDeg: number;
+  headAngleDeg: number;
+}
+
+export interface ExtractedFeatures {
+  valid: boolean;
+  reason?: string;
+  avgConfidence: number;
+  minConfidence: number;
+  metrics?: PostureMetrics;
+  snapshotLandmarks?: Record<number, { x: number; y: number; z: number; visibility: number }>;
+}
+
+export interface CalibrationData {
+  createdAt: string;
+  version: string;
+  sampleCount: number;
+  metrics: PostureMetrics;
+  referenceLandmarks: Record<number, { x: number; y: number; z: number }>;
+}
+
+interface DeviationState {
+  activeAlert: boolean;
+  aboveSinceMs: number | null;
+  belowSinceMs: number | null;
+  elapsedAboveMs: number;
+  lastValue: number;
+}
+
+function distance2D(a: LandmarkPoint, b: LandmarkPoint): number {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
-function getVisibility(lm) {
+function getVisibility(lm?: LandmarkPoint): number {
   if (!lm) return 0;
   if (typeof lm.visibility === 'number') return lm.visibility;
   if (typeof lm.presence === 'number') return lm.presence;
   return 1;
 }
 
-export function median(values) {
-  if (!values || values.length === 0) return 0;
+export function median(values: number[]): number {
+  if (!values.length) return 0;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  if (sorted.length % 2 === 0) {
-    return (sorted[mid - 1] + sorted[mid]) / 2;
-  }
-  return sorted[mid];
+  return sorted.length % 2 === 0
+    ? (sorted[mid - 1] + sorted[mid]) / 2
+    : sorted[mid];
 }
 
-/**
- * Extrai métricas geométricas normalizadas de um frame de pose MediaPipe.
- */
-export function extractFeatures(landmarks) {
+export function extractFeatures(landmarks?: LandmarkPoint[]): ExtractedFeatures {
   if (!landmarks || landmarks.length < 13) {
     return {
       valid: false,
@@ -147,13 +187,9 @@ export function extractFeatures(landmarks) {
   const midShoulderY = (leftShoulder.y + rightShoulder.y) / 2;
   const midShoulderZ = ((leftShoulder.z ?? 0) + (rightShoulder.z ?? 0)) / 2;
 
-  // Altura relativa cabeça-ombros normalizada pela largura dos ombros
   const neckHeightRatio = (midShoulderY - nose.y) / shoulderWidth;
-
-  // Profundidade relativa nariz-ombros (em MediaPipe, Z negativo fica mais próximo da câmera)
   const noseDepthDelta = midShoulderZ - (nose.z ?? 0);
 
-  // Ângulos laterais em graus (0° = horizontal perfeito)
   const shoulderAngleDeg =
     Math.atan2(leftShoulder.y - rightShoulder.y, Math.abs(leftShoulder.x - rightShoulder.x)) *
     (180 / Math.PI);
@@ -161,7 +197,11 @@ export function extractFeatures(landmarks) {
   const headAngleDeg =
     Math.atan2(leftEye.y - rightEye.y, Math.abs(leftEye.x - rightEye.x)) * (180 / Math.PI);
 
-  const snapshotLandmarks = {};
+  const snapshotLandmarks: Record<
+    number,
+    { x: number; y: number; z: number; visibility: number }
+  > = {};
+
   for (const id of REFERENCE_LANDMARK_IDS) {
     const lm = landmarks[id];
     if (lm) {
@@ -190,62 +230,56 @@ export function extractFeatures(landmarks) {
   };
 }
 
-/**
- * Coletor de amostras para calibração inicial da postura ideal (RF04, RN02).
- */
 export class CalibrationCollector {
+  private durationMs: number;
+  private minSamples: number;
+  private active = false;
+  private startedAt = 0;
+  private samples: ExtractedFeatures[] = [];
+
   constructor(durationMs = 3000, minSamples = 10) {
     this.durationMs = durationMs;
     this.minSamples = minSamples;
-    this.active = false;
-    this.startedAt = 0;
-    this.samples = [];
   }
 
-  start(nowMs = performance.now()) {
+  start(nowMs = performance.now()): void {
     this.active = true;
     this.startedAt = nowMs;
     this.samples = [];
   }
 
-  cancel() {
+  cancel(): void {
     this.active = false;
     this.samples = [];
   }
 
-  addSample(features, nowMs = performance.now()) {
+  addSample(features: ExtractedFeatures, nowMs = performance.now()) {
     if (!this.active) {
       return { active: false, progress: 0, remainingMs: 0, done: false, sampleCount: 0 };
     }
-
-    if (features && features.valid) {
+    if (features.valid) {
       this.samples.push(features);
     }
-
     const elapsed = Math.max(0, nowMs - this.startedAt);
-    const progress = Math.min(1, elapsed / this.durationMs);
-    const remainingMs = Math.max(0, this.durationMs - elapsed);
-    const done = elapsed >= this.durationMs;
-
     return {
       active: true,
-      progress,
-      remainingMs,
-      done,
+      progress: Math.min(1, elapsed / this.durationMs),
+      remainingMs: Math.max(0, this.durationMs - elapsed),
+      done: elapsed >= this.durationMs,
       sampleCount: this.samples.length,
     };
   }
 
-  finalize() {
+  finalize(): { ok: true; calibration: CalibrationData } | { ok: false; reason: string } {
     this.active = false;
     if (this.samples.length < this.minSamples) {
       return {
         ok: false,
-        reason: `Poucos quadros válidos capturados (${this.samples.length}/${this.minSamples}). Mantenha rosto e ombros visíveis.`,
+        reason: `Poucos quadros válidos capturados (${this.samples.length}/${this.minSamples}).`,
       };
     }
 
-    const metricKeys = [
+    const metricKeys: (keyof PostureMetrics)[] = [
       'neckHeightRatio',
       'eyeDist',
       'shoulderWidth',
@@ -254,18 +288,18 @@ export class CalibrationCollector {
       'headAngleDeg',
     ];
 
-    const referenceMetrics = {};
+    const referenceMetrics = {} as PostureMetrics;
     for (const key of metricKeys) {
-      referenceMetrics[key] = median(this.samples.map((s) => s.metrics[key]));
+      referenceMetrics[key] = median(this.samples.map((s) => s.metrics![key]));
     }
 
-    const referenceLandmarks = {};
+    const referenceLandmarks: CalibrationData['referenceLandmarks'] = {};
     for (const id of REFERENCE_LANDMARK_IDS) {
-      const xs = [];
-      const ys = [];
-      const zs = [];
+      const xs: number[] = [];
+      const ys: number[] = [];
+      const zs: number[] = [];
       for (const sample of this.samples) {
-        const lm = sample.snapshotLandmarks[id];
+        const lm = sample.snapshotLandmarks?.[id];
         if (lm) {
           xs.push(lm.x);
           ys.push(lm.y);
@@ -273,11 +307,7 @@ export class CalibrationCollector {
         }
       }
       if (xs.length > 0) {
-        referenceLandmarks[id] = {
-          x: median(xs),
-          y: median(ys),
-          z: median(zs),
-        };
+        referenceLandmarks[id] = { x: median(xs), y: median(ys), z: median(zs) };
       }
     }
 
@@ -294,102 +324,75 @@ export class CalibrationCollector {
   }
 }
 
-/**
- * Comparador em tempo real da postura atual vs. ideal calibrada.
- */
 export class PostureComparator {
-  constructor(options = {}) {
-    this.emaAlpha = options.emaAlpha ?? 0.28;
-    this.persistenceMs = options.persistenceMs ?? 4000;
-    this.recoveryMs = options.recoveryMs ?? 1200;
-    this.toleranceFactor = options.toleranceFactor ?? 1.0;
-    this.calibration = null;
-    this.smoothedMetrics = null;
-    this.deviationStates = this.#createInitialStates();
+  private emaAlpha: number;
+  private persistenceMs: number;
+  private recoveryMs: number;
+  private toleranceFactor: number;
+  private calibration: CalibrationData | null = null;
+  private smoothedMetrics: PostureMetrics | null = null;
+  private deviationStates: Record<DeviationType, DeviationState>;
+
+  constructor(options?: {
+    emaAlpha?: number;
+    persistenceMs?: number;
+    recoveryMs?: number;
+    toleranceFactor?: number;
+  }) {
+    this.emaAlpha = options?.emaAlpha ?? 0.28;
+    this.persistenceMs = options?.persistenceMs ?? 4000;
+    this.recoveryMs = options?.recoveryMs ?? 1200;
+    this.toleranceFactor = options?.toleranceFactor ?? 1.0;
+    this.deviationStates = this.createInitialStates();
   }
 
-  #createInitialStates() {
-    const states = {};
-    for (const key of Object.keys(BASE_THRESHOLDS)) {
-      states[key] = {
-        activeAlert: false,
-        aboveSinceMs: null,
-        belowSinceMs: null,
-        elapsedAboveMs: 0,
-        lastValue: 0,
-      };
-    }
-    return states;
+  private createInitialStates(): Record<DeviationType, DeviationState> {
+    return {
+      FORWARD_HEAD: { activeAlert: false, aboveSinceMs: null, belowSinceMs: null, elapsedAboveMs: 0, lastValue: 0 },
+      TOO_CLOSE: { activeAlert: false, aboveSinceMs: null, belowSinceMs: null, elapsedAboveMs: 0, lastValue: 0 },
+      SHOULDER_TILT: { activeAlert: false, aboveSinceMs: null, belowSinceMs: null, elapsedAboveMs: 0, lastValue: 0 },
+      HEAD_TILT: { activeAlert: false, aboveSinceMs: null, belowSinceMs: null, elapsedAboveMs: 0, lastValue: 0 },
+    };
   }
 
-  setCalibration(calibration) {
+  setCalibration(calibration: CalibrationData | null): void {
     this.calibration = calibration;
     this.smoothedMetrics = null;
-    this.deviationStates = this.#createInitialStates();
+    this.deviationStates = this.createInitialStates();
   }
 
-  setPersistenceMs(ms) {
-    this.persistenceMs = Math.max(1500, Math.min(15000, ms));
-  }
-
-  setToleranceFactor(factor) {
-    // Limite seguro (RN09): permite tolerância entre 0.75x e 1.60x
+  setToleranceFactor(factor: number): void {
     this.toleranceFactor = Math.max(0.75, Math.min(1.6, Number(factor.toFixed(2))));
   }
 
-  applyFeedback(classification) {
+  applyFeedback(classification: 'falso_alerta' | 'util'): number {
     if (classification === 'falso_alerta') {
       this.setToleranceFactor(this.toleranceFactor + 0.1);
-    } else if (classification === 'util') {
+    } else {
       this.setToleranceFactor(this.toleranceFactor - 0.03);
     }
     return this.toleranceFactor;
   }
 
-  resetStates() {
-    this.smoothedMetrics = null;
-    this.deviationStates = this.#createInitialStates();
-  }
-
-  evaluate(features, nowMs = performance.now()) {
+  evaluate(features: ExtractedFeatures, nowMs = performance.now()) {
     if (!this.calibration) {
-      return {
-        status: 'UNCALIBRATED',
-        valid: false,
-        reason: 'Calibração inicial pendente.',
-        deviations: {},
-        activeAlerts: [],
-        newlyTriggered: [],
-        newlyResolved: [],
-        persistenceProgress: 0,
-        toleranceFactor: this.toleranceFactor,
-      };
+      return { status: 'UNCALIBRATED', valid: false, activeAlerts: [] as DeviationType[] };
     }
-
-    if (!features || !features.valid) {
+    if (!features.valid || !features.metrics) {
       return {
         status: 'LOW_CONFIDENCE',
         valid: false,
-        reason: features?.reason || 'Confiança insuficiente.',
-        avgConfidence: features?.avgConfidence ?? 0,
-        minConfidence: features?.minConfidence ?? 0,
-        deviations: {},
-        activeAlerts: Object.keys(this.deviationStates).filter(
+        activeAlerts: (Object.keys(this.deviationStates) as DeviationType[]).filter(
           (k) => this.deviationStates[k].activeAlert
         ),
-        newlyTriggered: [],
-        newlyResolved: [],
-        persistenceProgress: 0,
-        toleranceFactor: this.toleranceFactor,
       };
     }
 
-    // 1. Suavização EMA nos sinais geométricos
     const raw = features.metrics;
     if (!this.smoothedMetrics) {
       this.smoothedMetrics = { ...raw };
     } else {
-      for (const key of Object.keys(raw)) {
+      for (const key of Object.keys(raw) as (keyof PostureMetrics)[]) {
         this.smoothedMetrics[key] =
           this.emaAlpha * raw[key] + (1 - this.emaAlpha) * this.smoothedMetrics[key];
       }
@@ -398,7 +401,6 @@ export class PostureComparator {
     const ref = this.calibration.metrics;
     const cur = this.smoothedMetrics;
 
-    // 2. Cálculo dos desvios relativos à referência calibrada
     const neckBase = Math.max(ref.neckHeightRatio, 0.15);
     const neckDropPct = ((ref.neckHeightRatio - cur.neckHeightRatio) / neckBase) * 100;
     const depthCuePct = Math.max(0, (cur.noseDepthDelta - ref.noseDepthDelta) * 25);
@@ -406,132 +408,75 @@ export class PostureComparator {
 
     const eyeScale = cur.eyeDist / Math.max(ref.eyeDist, 0.015);
     const shoulderScale = cur.shoulderWidth / Math.max(ref.shoulderWidth, 0.06);
-    const combinedProximityScale = 0.6 * eyeScale + 0.4 * shoulderScale;
-    const tooCloseValue = Math.max(0, (combinedProximityScale - 1) * 100);
+    const tooCloseValue = Math.max(0, (0.6 * eyeScale + 0.4 * shoulderScale - 1) * 100);
 
-    const shoulderTiltValue = Math.abs(cur.shoulderAngleDeg - ref.shoulderAngleDeg);
-    const headTiltValue = Math.abs(cur.headAngleDeg - ref.headAngleDeg);
+    const shoulderAngleDeltaRad =
+      (Math.abs(cur.shoulderAngleDeg - ref.shoulderAngleDeg) * Math.PI) / 180;
+    const shoulderTiltPct = Math.abs(Math.tan(shoulderAngleDeltaRad)) * 100;
 
-    const measuredValues = {
+    const measuredValues: Record<DeviationType, number> = {
       FORWARD_HEAD: forwardHeadValue,
       TOO_CLOSE: tooCloseValue,
-      SHOULDER_TILT: shoulderTiltValue,
-      HEAD_TILT: headTiltValue,
+      SHOULDER_TILT: shoulderTiltPct,
+      HEAD_TILT: Math.abs(cur.headAngleDeg - ref.headAngleDeg),
     };
 
-    // 3. Máquina de estados com histerese e persistência temporal (RF07, RN03)
-    const deviations = {};
-    const activeAlerts = [];
-    const newlyTriggered = [];
-    const newlyResolved = [];
-    let maxPersistenceProgress = 0;
-    let primaryWarning = null;
+    const ratios: Record<DeviationType, number> = {
+      FORWARD_HEAD: 0,
+      TOO_CLOSE: 0,
+      SHOULDER_TILT: 0,
+      HEAD_TILT: 0,
+    };
 
-    for (const [type, cfg] of Object.entries(BASE_THRESHOLDS)) {
+    const activeAlerts: DeviationType[] = [];
+    for (const type of Object.keys(BASE_THRESHOLDS) as DeviationType[]) {
+      const cfg = BASE_THRESHOLDS[type];
       const value = measuredValues[type];
       const thresholdOn = cfg.thresholdOn * this.toleranceFactor;
       const thresholdOff = thresholdOn * cfg.hysteresisRatio;
+      ratios[type] = value / thresholdOn;
       const state = this.deviationStates[type];
       state.lastValue = value;
 
       if (!state.activeAlert) {
         if (value >= thresholdOn) {
-          if (state.aboveSinceMs === null) {
-            state.aboveSinceMs = nowMs;
-          }
+          if (state.aboveSinceMs === null) state.aboveSinceMs = nowMs;
           state.elapsedAboveMs = nowMs - state.aboveSinceMs;
-          const progress = Math.min(1, state.elapsedAboveMs / this.persistenceMs);
-          if (progress > maxPersistenceProgress) {
-            maxPersistenceProgress = progress;
-            primaryWarning = type;
-          }
-
           if (state.elapsedAboveMs >= this.persistenceMs) {
             state.activeAlert = true;
             state.belowSinceMs = null;
-            newlyTriggered.push({
-              type,
-              value,
-              thresholdOn,
-              confidence: features.avgConfidence,
-            });
           }
         } else if (value < thresholdOff) {
-          // Abaixo da banda de histerese -> zera o acumulador
           state.aboveSinceMs = null;
           state.elapsedAboveMs = 0;
-        } else if (state.aboveSinceMs !== null) {
-          // Dentro da banda de histerese (entre thresholdOff e thresholdOn): mantém progresso
-          state.elapsedAboveMs = nowMs - state.aboveSinceMs;
-          const progress = Math.min(1, state.elapsedAboveMs / this.persistenceMs);
-          if (progress > maxPersistenceProgress) {
-            maxPersistenceProgress = progress;
-            primaryWarning = type;
-          }
         }
       } else {
-        // Alerta já ativo: exige retorno abaixo de thresholdOff por recoveryMs para encerrar
         if (value <= thresholdOff) {
-          if (state.belowSinceMs === null) {
-            state.belowSinceMs = nowMs;
-          }
+          if (state.belowSinceMs === null) state.belowSinceMs = nowMs;
           if (nowMs - state.belowSinceMs >= this.recoveryMs) {
             state.activeAlert = false;
             state.aboveSinceMs = null;
             state.belowSinceMs = null;
             state.elapsedAboveMs = 0;
-            newlyResolved.push({ type });
           }
         } else {
           state.belowSinceMs = null;
         }
       }
 
-      if (state.activeAlert) {
-        activeAlerts.push(type);
-      }
-
-      deviations[type] = {
-        type,
-        label: cfg.label,
-        unit: cfg.unit,
-        value,
-        thresholdOn,
-        thresholdOff,
-        ratioToThreshold: value / thresholdOn,
-        activeAlert: state.activeAlert,
-        elapsedAboveMs: state.elapsedAboveMs,
-        inWarningBand: !state.activeAlert && state.aboveSinceMs !== null,
-      };
+      if (state.activeAlert) activeAlerts.push(type);
     }
 
-    // Ordena alertas ativos pelo maior desvio relativo
-    activeAlerts.sort(
-      (a, b) => deviations[b].ratioToThreshold - deviations[a].ratioToThreshold
-    );
-
-    let status = 'ADEQUATE';
-    if (activeAlerts.length > 0) {
-      status = 'ALERT_PERSISTENT';
-      maxPersistenceProgress = 1;
-    } else if (maxPersistenceProgress > 0) {
-      status = 'WARNING_TRANSIENT';
-    }
+    // Prioriza o desvio com maior proporção acima do limite
+    activeAlerts.sort((a, b) => ratios[b] - ratios[a]);
 
     return {
-      status,
+      status: activeAlerts.length > 0 ? 'ALERT_PERSISTENT' : 'ADEQUATE',
       valid: true,
       avgConfidence: features.avgConfidence,
-      minConfidence: features.minConfidence,
-      smoothedMetrics: { ...cur },
-      referenceMetrics: { ...ref },
-      deviations,
       activeAlerts,
-      primaryDeviation: activeAlerts[0] || primaryWarning || null,
-      newlyTriggered,
-      newlyResolved,
-      persistenceProgress: maxPersistenceProgress,
-      persistenceMs: this.persistenceMs,
+      measuredValues,
+      ratios,
       toleranceFactor: this.toleranceFactor,
     };
   }

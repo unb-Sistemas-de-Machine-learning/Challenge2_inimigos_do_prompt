@@ -1,0 +1,41 @@
+site_name: ErgoAI — Documentação
+site_description: Assistente de IA para Ergonomia e Pausas Ativas (Challenge 2 — Inimigos do Prompt)
+repo_name: Challenge2_inimigos_do_prompt
+
+theme:
+  name: material
+  language: pt-BR
+  palette:
+    - scheme: slate
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Alternar para modo claro
+    - scheme: default
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Alternar para modo escuro
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Início: index.md
+  - Especificação de Requisitos: especificacao-requisitos.md
+  - Roteiro do Protótipo: roteiro-prototipo.md
+  - Privacidade na Foto do Setup: privacidade-foto-setup.md

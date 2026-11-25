@@ -1,0 +1,138 @@
+# Conjunto rotulado de perguntas para avaliacao de recuperacao RAG e cartoes (RNF07 / SPEC.md §13.2).
+# Perguntas de escritorio geral marcam Anexo I e Anexo II da NR-17 em secoes_proibidas para
+# medir objetivamente falsos positivos por vazamento de anexo no baseline atual.
+versao: "1"
+perguntas:
+  # --- Escritorio geral (NR-17 corpo principal; Anexos I e II proibidos) ---
+  - id: rag-01
+    pergunta: "altura do monitor e angulo de visao na tela do computador"
+    tipo_desvio: FORWARD_HEAD
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "17.6 Mobiliário dos postos de trabalho"
+      - "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais"
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+    cartao_esperado: card-forward-head-v1
+
+  - id: rag-02
+    pergunta: "distancia dos olhos para a superficie de trabalho e altura do assento"
+    tipo_desvio: TOO_CLOSE
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "17.6 Mobiliário dos postos de trabalho"
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+    cartao_esperado: card-too-close-v1
+
+  - id: rag-03
+    pergunta: "como evitar sobrecarga muscular estatica no pescoco cabeca e ombros no trabalho"
+    tipo_desvio: SHOULDER_TILT
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "17.4 Organização do trabalho"
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+    cartao_esperado: card-shoulder-tilt-v1
+
+  - id: rag-04
+    pergunta: "medidas de prevencao contra posturas extremas ou nocivas de cabeca e tronco"
+    tipo_desvio: HEAD_TILT
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "17.4 Organização do trabalho"
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+    cartao_esperado: card-head-tilt-v1
+
+  - id: rag-05
+    pergunta: "requisitos de mobiliario cadeira e espaco para movimentacao no posto de trabalho sentado"
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "17.6 Mobiliário dos postos de trabalho"
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+
+  - id: rag-06
+    pergunta: "conforto termico iluminacao e ruido no ambiente interno de trabalho"
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "17.8 Condições de conforto no ambiente de trabalho"
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+
+  - id: rag-07
+    pergunta: "quando a organizacao deve realizar avaliacao ergonomica preliminar e AET"
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "17.3 Avaliação das situações de trabalho"
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+
+  - id: rag-08
+    pergunta: "pausas para recuperacao psicofisiologica na organizacao do trabalho"
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "17.4 Organização do trabalho"
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+
+  # --- Pausas ativas e comportamento sedentario (OMS 2020) ---
+  - id: rag-09
+    pergunta: "adultos devem limitar o tempo em comportamento sedentario e fazer pausas ativas"
+    tipo_desvio: BREAK_NEEDED
+    document_id_esperado: oms2020
+    secoes_esperadas: []
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+    cartao_esperado: card-break-needed-v1
+
+  - id: rag-10
+    pergunta: "recommended weekly minutes of moderate physical activity for adults"
+    document_id_esperado: oms2020
+    secoes_esperadas: []
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+
+  - id: rag-11
+    pergunta: "replacing sedentary time with light intensity physical activity health benefits"
+    document_id_esperado: oms2020
+    secoes_esperadas: []
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+
+  # --- Perguntas especificas de Anexo I e Anexo II da NR-17 ---
+  - id: rag-12
+    pergunta: "requisitos ergonomicos para operador de checkout e balanca no caixa"
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+    secoes_proibidas:
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+
+  - id: rag-13
+    pergunta: "regras de pausas e conjunto de microfone e fone de ouvido em teleatendimento e telemarketing"
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+    secoes_proibidas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+
+  - id: rag-14
+    pergunta: "saidas do posto de trabalho para necessidades fisiologicas de operadores de checkout"
+    document_id_esperado: nr17
+    secoes_esperadas:
+      - "Anexo I - Trabalho dos Operadores de Checkout"
+    secoes_proibidas:
+      - "Anexo II - Trabalho em Teleatendimento/Telemarketing"

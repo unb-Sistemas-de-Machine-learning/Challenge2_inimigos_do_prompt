@@ -110,12 +110,12 @@ export const KNOWLEDGE_CARDS: Record<KnowledgeCardType, KnowledgeCard> = {
   PROLONGED_ABSENCE: {
     id: 'CARD_PROLONGED_ABSENCE',
     tipo: 'PROLONGED_ABSENCE',
-    titulo: 'Ausência Prolongada Detectada (Pausa Contabilizada)',
+    titulo: 'Ausência Prolongada Detectada (Pausa de Recuperação)',
     severidadeLabel: 'Recuperação / Ausência do Posto',
     orientacaoCurta:
       'Você permaneceu fora do enquadramento da estação pelo tempo mínimo de pausa de recuperação.',
     acaoRecomendada:
-      'Excelente! O afastamento do posto interrompe o comportamento sedentário contínuo; o cronômetro de atividade sentada foi reiniciado.',
+      'Excelente! O afastamento físico do posto interrompe o comportamento sedentário contínuo e limpa os alertas posturais acumulados.',
     fonte:
       'OMS (2020) — Diretrizes sobre Comportamento Sedentário & NR-17 Item 17.4.3.1',
     trechoEvidencia:

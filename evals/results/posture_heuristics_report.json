@@ -12,10 +12,10 @@
   "latency_rnf01": {
     "total_frames_evaluated": 290,
     "target_max_ms": 500.0,
-    "mean_ms": 0.0076,
-    "p95_ms": 0.0136,
-    "p99_ms": 0.0165,
-    "max_ms": 0.0215,
+    "mean_ms": 0.007,
+    "p95_ms": 0.0089,
+    "p99_ms": 0.0115,
+    "max_ms": 0.0233,
     "meets_rnf01": true
   },
   "too_close_weight_ablation": [

@@ -32,6 +32,7 @@ const POSE_MODEL_URL =
   'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
 const CALIBRATION_STORAGE_KEY = 'ergoai_calibration_v1';
 const CALIBRATION_PROFILES_STORAGE_KEY = 'ergoai_calibration_profiles_v1';
+const ACTIVE_PROFILE_STORAGE_KEY = 'ergoai_active_profile_v1';
 
 const DEVIATION_MEME_IMAGES: Record<
   DeviationType,
@@ -200,7 +201,17 @@ export function MonitorView({ onBack }: MonitorViewProps) {
   const [isCalibrating, setIsCalibrating] = useState(false);
   const [calibProgress, setCalibProgress] = useState(0);
   const [calibMessage, setCalibMessage] = useState<string | null>(null);
-  const [activeProfile, setActiveProfile] = useState<CalibrationProfileId>('notebook');
+  const [activeProfile, setActiveProfile] = useState<CalibrationProfileId>(() => {
+    try {
+      const saved = localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY);
+      if (saved === 'notebook' || saved === 'external_monitor') {
+        return saved;
+      }
+      return 'notebook';
+    } catch {
+      return 'notebook';
+    }
+  });
   const [calibrationProfiles, setCalibrationProfiles] = useState<CalibrationProfilesMap>(() => {
     try {
       const savedProfiles = localStorage.getItem(CALIBRATION_PROFILES_STORAGE_KEY);
@@ -219,13 +230,19 @@ export function MonitorView({ onBack }: MonitorViewProps) {
   });
   const [calibration, setCalibration] = useState<CalibrationData | null>(() => {
     try {
+      const savedActive = localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY);
+      const initialProfile: CalibrationProfileId =
+        savedActive === 'external_monitor' ? 'external_monitor' : 'notebook';
       const savedProfiles = localStorage.getItem(CALIBRATION_PROFILES_STORAGE_KEY);
       if (savedProfiles) {
         const map = JSON.parse(savedProfiles) as CalibrationProfilesMap;
-        return map.notebook ?? null;
+        return map[initialProfile] ?? null;
       }
-      const saved = localStorage.getItem(CALIBRATION_STORAGE_KEY);
-      return saved ? (JSON.parse(saved) as CalibrationData) : null;
+      if (initialProfile === 'notebook') {
+        const saved = localStorage.getItem(CALIBRATION_STORAGE_KEY);
+        return saved ? (JSON.parse(saved) as CalibrationData) : null;
+      }
+      return null;
     } catch {
       return null;
     }
@@ -241,6 +258,11 @@ export function MonitorView({ onBack }: MonitorViewProps) {
   }, [showOverlay]);
 
   useEffect(() => {
+    try {
+      localStorage.setItem(ACTIVE_PROFILE_STORAGE_KEY, activeProfile);
+    } catch {
+      // Ignora indisponibilidade de storage
+    }
     const profileCalib = calibrationProfiles[activeProfile] ?? null;
     setCalibration(profileCalib);
     collectorRef.current.setProfileId(activeProfile);
@@ -474,10 +496,12 @@ export function MonitorView({ onBack }: MonitorViewProps) {
               );
               return updated;
             });
-            localStorage.setItem(
-              CALIBRATION_STORAGE_KEY,
-              JSON.stringify(finalized.calibration),
-            );
+            if (profileKey === 'notebook') {
+              localStorage.setItem(
+                CALIBRATION_STORAGE_KEY,
+                JSON.stringify(finalized.calibration),
+              );
+            }
             setCalibration(finalized.calibration);
             setCalibMessage(
               `Calibração concluída para ${CALIBRATION_PROFILES[profileKey].label}! Iniciando monitoramento.`,

@@ -615,11 +615,18 @@ export class PostureComparator {
     const headTiltValue = Math.abs(cur.headAngleDeg - ref.headAngleDeg);
 
     // 5. Rotação axial de tronco: assimetria de profundidade Z entre ombros + estreitamento projetivo 2D
+    // O estreitamento 2D (shoulderWidth / eyeDist) é normalizado pela escala interocular (eyeScale)
+    // para evitar falso positivo quando o usuário apenas se afasta da câmera em linha reta.
     const refDepthDiff = ref.shoulderDepthDiff ?? 0;
     const curDepthDiff = cur.shoulderDepthDiff ?? 0;
     const depthRotationPct =
       (Math.abs(curDepthDiff - refDepthDiff) / refShoulderWidth) * 100;
-    const widthForeshorteningPct = Math.max(0, (1 - shoulderScale) * 100);
+    const distanceCompensatedShoulderRatio =
+      shoulderScale / Math.max(eyeScale, 0.25);
+    const widthForeshorteningPct =
+      depthRotationPct >= 3.0
+        ? Math.max(0, (1 - distanceCompensatedShoulderRatio) * 100)
+        : 0;
     const trunkRotationValue = Math.max(
       0,
       0.7 * depthRotationPct + 0.3 * widthForeshorteningPct

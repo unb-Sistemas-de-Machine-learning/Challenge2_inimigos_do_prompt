@@ -24,10 +24,11 @@ build/
 # MkDocs build output
 site/
 
-# Local Vector DB / Knowledge artifacts
+# Local Vector DB / Knowledge & Generated Eval artifacts
 backend/data/
 knowledge_base/processed/*
 !knowledge_base/processed/.gitkeep
+evals/datasets/posture_heuristics_scenarios.json
 *.db
 *.sqlite3
 

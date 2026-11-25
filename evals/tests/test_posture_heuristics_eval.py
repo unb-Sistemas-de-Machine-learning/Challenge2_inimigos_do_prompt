@@ -51,18 +51,33 @@ class TestPostureHeuristicsAndEvolution(unittest.TestCase):
         self.assertGreater(ergoai_60_40["f1"], equal_50_50["f1"])
 
     def test_all_posture_scenarios_and_rnf01_latency_budget(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            ds_path = Path(tmpdir) / "scenarios.json"
-            report = run_posture_heuristics_evaluation(dataset_path=ds_path)
+        report = run_posture_heuristics_evaluation(dataset_path=None)
 
-            self.assertEqual(report["scenario_accuracy"], 1.0)
-            self.assertEqual(report["macro_metrics"]["f1"], 1.0)
-            self.assertEqual(report["macro_metrics"]["fpr"], 0.0)
+        self.assertEqual(report["scenario_accuracy"], 1.0)
+        self.assertEqual(report["macro_metrics"]["f1"], 1.0)
+        self.assertEqual(report["macro_metrics"]["fpr"], 0.0)
 
-            lat = report["latency_rnf01"]
-            self.assertTrue(lat["meets_rnf01"])
-            self.assertLess(lat["p99_ms"], 50.0)
-            self.assertLess(lat["max_ms"], 500.0)
+        lat = report["latency_rnf01"]
+        self.assertTrue(lat["meets_rnf01"])
+        self.assertLess(lat["p99_ms"], 50.0)
+        self.assertLess(lat["max_ms"], 500.0)
+
+    def test_farther_from_camera_does_not_trigger_false_trunk_rotation(self) -> None:
+        calib_frames = [{"t_ms": i * 250, "pose": make_pose_frame()} for i in range(12)]
+        cal_ext = calibrate_from_frames(calib_frames, profile_id="external_monitor")["calibration"]
+        sim_ext = PostureEngineSimulator(cal_ext, profile_id="external_monitor")
+
+        # Usuário recua em linha reta (olhos e ombros diminuem 18% na mesma proporção, sem delta Z)
+        far_pose = make_pose_frame(
+            left_eye=(0.5205, 0.33, -0.02),
+            right_eye=(0.4795, 0.33, -0.02),
+            left_shoulder=(0.5984, 0.60, 0.00),
+            right_shoulder=(0.4016, 0.60, 0.00),
+        )
+        for step in range(25):
+            res = sim_ext.evaluate(extract_features(far_pose), 4000.0 + step * 250.0)
+        self.assertNotIn("TRUNK_ROTATION", res["activeAlerts"])
+        self.assertEqual(res["measuredValues"]["TRUNK_ROTATION"], 0.0)
 
     def test_calibration_profiles_sensitivity_difference(self) -> None:
         calib_frames = [{"t_ms": i * 250, "pose": make_pose_frame()} for i in range(12)]

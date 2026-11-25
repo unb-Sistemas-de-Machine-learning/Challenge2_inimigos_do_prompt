@@ -355,7 +355,12 @@ class PostureEngineSimulator:
         head_tilt_val = abs(cur["headAngleDeg"] - ref["headAngleDeg"])
 
         depth_rot_pct = (abs(cur["shoulderDepthDiff"] - ref["shoulderDepthDiff"]) / ref_sw) * 100.0
-        width_foreshortening_pct = max(0.0, (1.0 - shoulder_scale) * 100.0)
+        distance_compensated_shoulder_ratio = shoulder_scale / max(eye_scale, 0.25)
+        width_foreshortening_pct = (
+            max(0.0, (1.0 - distance_compensated_shoulder_ratio) * 100.0)
+            if depth_rot_pct >= 3.0
+            else 0.0
+        )
         trunk_rotation_val = max(0.0, 0.7 * depth_rot_pct + 0.3 * width_foreshortening_pct)
 
         measured = {
@@ -725,15 +730,23 @@ def evaluate_too_close_weight_ablation() -> list[dict[str, Any]]:
 
 
 def run_posture_heuristics_evaluation(
-    dataset_path: Path = DEFAULT_DATASET_PATH,
+    dataset_path: Path | None = None,
 ) -> dict[str, Any]:
-    """Executa a bateria completa de validação empírica dos limiares, novos padrões e latência."""
-    if not dataset_path.exists():
-        dataset = build_validation_dataset()
-        dataset_path.parent.mkdir(parents=True, exist_ok=True)
-        dataset_path.write_text(json.dumps(dataset, indent=2, ensure_ascii=False), encoding="utf-8")
-    else:
+    """Executa a bateria completa de validação dos limiares, novos padrões e latência do motor.
+
+    Por padrão, constrói o dataset sintético determinístico em memória via `build_validation_dataset()`
+    sem gravar arquivos gigantes no repositório Git. Caso `dataset_path` seja fornecido e exista,
+    carrega os cenários do arquivo informado.
+    """
+    if dataset_path is not None and dataset_path.exists():
         dataset = json.loads(dataset_path.read_text(encoding="utf-8"))
+    else:
+        dataset = build_validation_dataset()
+        if dataset_path is not None:
+            dataset_path.parent.mkdir(parents=True, exist_ok=True)
+            dataset_path.write_text(
+                json.dumps(dataset, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
 
     scenarios = dataset["scenarios"]
     frame_latencies_ms: list[float] = []
@@ -913,7 +926,12 @@ def print_posture_heuristics_summary(report: dict[str, Any]) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET_PATH)
+    parser.add_argument(
+        "--dataset",
+        type=Path,
+        default=None,
+        help="Caminho opcional de dataset JSON (se omitido, gera os cenários sintéticos em memória)",
+    )
     parser.add_argument("--out", type=Path, default=None, help="Caminho opcional para salvar JSON")
     args = parser.parse_args(argv)
 

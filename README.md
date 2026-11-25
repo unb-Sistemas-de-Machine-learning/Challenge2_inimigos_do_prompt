@@ -67,6 +67,7 @@ O usuário envia uma foto do posto de trabalho (mesa, cadeira, monitor, notebook
 
 - [Especificação de Requisitos (ErgoAI v1.0)](./docs/especificacao-requisitos.md)
 - [Roteiro de Implementação do Protótipo](./docs/roteiro-prototipo.md)
+- [Política de Privacidade e Proteção na Foto do Setup](./docs/privacidade-foto-setup.md)
 
 ---
 

@@ -1,7 +1,0 @@
-__pycache__/
-.pytest_cache/
-data/raw/*
-!data/raw/.gitkeep
-data/index/
-data/manifest.json
-.venv/

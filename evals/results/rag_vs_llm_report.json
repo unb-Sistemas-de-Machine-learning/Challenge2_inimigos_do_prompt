@@ -1,6 +1,8 @@
 {
   "experiment_id": "EXP-01-LLM-VS-RAG",
   "version": "1.0.0",
+  "execution_mode": "deterministic_offline_benchmark",
+  "scope_notice": "Harness determinístico offline para CI e validação de métricas (Hit Rate, MRR, Faithfulness, Hallucination Rate e exact_quote). As respostas do LLM Puro vêm do baseline estático `pure_llm_baseline` em rag_ground_truth.json e o RAG utiliza síntese extrativa determinística sobre o corpus curado (rag_corpus_oficial.json), sem chamadas em tempo real à API google-genai.",
   "k": 3,
   "total_questions": 12,
   "corpus_chunks_count": 11,

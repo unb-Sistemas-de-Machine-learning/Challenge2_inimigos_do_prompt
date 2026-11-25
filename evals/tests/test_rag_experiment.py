@@ -43,6 +43,8 @@ class TestRagVsLlmExperiment(unittest.TestCase):
 
     def test_hybrid_retriever_hit_rate_and_mrr(self) -> None:
         report = run_comparative_experiment(k=3)
+        self.assertEqual(report["execution_mode"], "deterministic_offline_benchmark")
+        self.assertIn("Harness determinístico offline", report["scope_notice"])
         ret = report["retrieval_metrics"]
         self.assertGreaterEqual(ret["hit_rate_at_k"], 0.90)
         self.assertGreaterEqual(ret["mrr_at_k"], 0.85)
@@ -105,6 +107,11 @@ class TestRagVsLlmExperiment(unittest.TestCase):
         self.assertEqual(resp["citations"], [])
         self.assertEqual(resp["claims"], [])
         self.assertIn("Não há evidências suficientes", resp["answer"])
+
+    def test_report_exposes_offline_deterministic_harness_metadata(self) -> None:
+        report = run_comparative_experiment(k=3)
+        self.assertEqual(report["execution_mode"], "deterministic_offline_benchmark")
+        self.assertIn("Harness determinístico offline", report["scope_notice"])
 
     def test_cli_writes_json_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

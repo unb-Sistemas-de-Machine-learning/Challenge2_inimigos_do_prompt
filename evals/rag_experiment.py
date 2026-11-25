@@ -1,4 +1,14 @@
-"""Pipeline de avaliação comparativa: LLM Puro vs. RAG (Issue #2 / SPEC.md §13.2 e §13.3).
+"""Harness determinístico de avaliação comparativa: LLM Puro (Baseline Estático) vs. RAG (Issue #2 / SPEC.md §13.2, §13.3 e §19.5).
+
+AVISO DE ESCOPO E TRANSPARÊNCIA (SPEC.md §19.5 / AGENT.md §5.4 e §5.7):
+Este módulo opera em modo `offline_deterministic_harness` para CI e regressão de métricas:
+- As respostas de "LLM Puro" avaliadas provêm de fixtures estáticas representativas (`pure_llm_baseline`
+  em `evals/datasets/rag_ground_truth.json`), não de chamadas em tempo real à API `google-genai`.
+- As respostas "RAG" utilizam o `HybridErgonomicsRetriever` sobre os 11 chunks oficiais curados em
+  `evals/datasets/rag_corpus_oficial.json` combinado a um sintetizador extrativo determinístico
+  (`synthesize_grounded_rag_response`) que garante `exact_quote` literal.
+Os números gerados validam o protocolo matemático de métricas e o retriever híbrido offline, não devendo
+ser apresentados como telemetria de chamadas reais a um LLM em produção.
 
 Responsabilidades:
 1. Indexar e recuperar trechos oficiais da base de conhecimento (NR-17 e OMS 2020) via retriever
@@ -9,7 +19,7 @@ Responsabilidades:
    - F1@k
    - MRR@k (Mean Reciprocal Rank)
    - Taxa de vazamento de seções proibidas (ex.: Anexo I / Anexo II em consultas de escritório geral)
-3. Comparar geração entre LLM Puro (sem recuperação) e RAG (fundamentado nas fontes):
+3. Comparar geração entre o baseline estático de LLM Puro e o sintetizador RAG extrativo:
    - Fidelidade às fontes (Faithfulness: proporção de afirmações suportadas pelos trechos oficiais)
    - Taxa de alucinação (Hallucination Rate: proporção de afirmações fabricadas ou citações inexistentes)
    - Verificação estrita de `exact_quote` (garante que toda citação é substring literal do corpus oficial)
@@ -532,6 +542,14 @@ def run_comparative_experiment(
     return {
         "experiment_id": gt_raw.get("experiment_id", "EXP-01-LLM-VS-RAG"),
         "version": gt_raw.get("version", "1.0.0"),
+        "execution_mode": "deterministic_offline_benchmark",
+        "scope_notice": (
+            "Harness determinístico offline para CI e validação de métricas (Hit Rate, MRR, "
+            "Faithfulness, Hallucination Rate e exact_quote). As respostas do LLM Puro vêm do "
+            "baseline estático `pure_llm_baseline` em rag_ground_truth.json e o RAG utiliza "
+            "síntese extrativa determinística sobre o corpus curado (rag_corpus_oficial.json), "
+            "sem chamadas em tempo real à API google-genai."
+        ),
         "k": k,
         "total_questions": len(questions),
         "corpus_chunks_count": len(corpus_chunks),
@@ -590,6 +608,7 @@ def print_experiment_summary(report: dict[str, Any]) -> None:
     deltas = comp["deltas_rag_minus_llm"]
 
     print(f"=== EXPERIMENTO COMPARATIVO: LLM PURO vs. RAG (k={k}) ===")
+    print(f"Modo: {report.get('execution_mode', 'deterministic_offline_benchmark')} (sem chamadas a LLM externo)")
     print(
         f"Perguntas avaliadas: {report['total_questions']} | "
         f"Chunks no corpus oficial: {report['corpus_chunks_count']}"

@@ -1,19 +1,19 @@
 # Experimento Comparativo: LLM Puro vs. RAG (Hit Rate, MRR e Alucinação)
 
 **Escopo:** Issue #2 — Frente 1 (Base de Conhecimento + RAG + Avaliação — Roadmap Semanas 2/3)  
-**Requisitos relacionados:** RF12, RF13, RF14, RNF07, RNF08 e [SPEC.md](../SPEC.md) (§6.5, §9.3, §13.2 e §13.3 — Experimento 1)
+**Requisitos relacionados:** RF12, RF13, RF14, RNF07, RNF08 e [SPEC.md](../SPEC.md) (§6.5, §9.3, §13.2, §13.3 — Experimento 1 e §19.5)
 
 ---
 
-## 1. Objetivo do Experimento
+## 1. Escopo e Transparência Metodológica (`SPEC.md` §19.5)
 
-Avaliar quantitativamente o pipeline de **Retrieval-Augmented Generation (RAG)** do **ErgoAI** em comparação com respostas geradas por um **LLM Puro (sem recuperação de documentos)** sobre normas e diretrizes oficiais de ergonomia e comportamento sedentário (**NR-17 — Portaria MTP nº 4.219/2022** e **Diretrizes da OMS 2020**).
+> **Aviso de Transparência — Harness Determinístico Offline (`evaluation_mode: "offline_deterministic_harness"`):**
+> Em estrita conformidade com o `SPEC.md` §19.5 (*Proibição de Implementação Fictícia*), este experimento é rotulado explicitamente como um **benchmark determinístico offline para CI e validação de métricas**, e **não** como resultado de chamadas em tempo real a um LLM em produção (`google-genai`):
+> 1. **Corpus Curado Offline (`11 chunks`):** O índice avaliado por [`evals/rag_experiment.py`](../evals/rag_experiment.py) opera sobre os 11 excertos normativos curados em [`evals/datasets/rag_corpus_oficial.json`](../evals/datasets/rag_corpus_oficial.json) via `HybridErgonomicsRetriever` (BM25 + similaridade de n-gramas), de forma independente da ingestão completa de PDFs em `knowledge_base/`.
+> 2. **Baseline Estático de LLM Puro (`pure_llm_baseline`):** As respostas avaliadas na coluna "LLM Puro" são **fixtures estáticas representativas** armazenadas em [`evals/datasets/rag_ground_truth.json`](../evals/datasets/rag_ground_truth.json), projetadas para exercitar o detector de alucinações normativas (números fixos inventados, subitens inexistentes e citações não verificáveis).
+> 3. **Sintetizador RAG Extrativo Determinístico (`synthesize_grounded_rag_response`):** As respostas na coluna "RAG Extrativo" são construídas por seleção determinística das sentenças de maior interseção lexical dentro do chunk top-1 recuperado, preenchendo `exact_quote` literalmente a partir do texto oficial.
 
-O experimento responde a três questões de engenharia:
-
-1. **Qualidade da Recuperação (*Retrieval*):** O retriever híbrido encontra o documento e a seção correta no top-$k$ sem vazar regras de anexos específicos (como *Operadores de Checkout* ou *Teleatendimento*) para consultas gerais de escritório?
-2. **Fidelidade às Fontes (*Faithfulness*):** Qual a proporção de afirmações geradas que possuem lastro direto nos textos normativos oficiais?
-3. **Mitigação de Alucinações (*Hallucination Rate*):** O uso de RAG com verificação estrita de `exact_quote` elimina a fabricação de números, artigos, prazos e citações inexistentes típicos de um LLM puro?
+O objetivo deste harness é garantir que as funções de cálculo de **Hit Rate@$k$**, **MRR@$k$**, **Faithfulness**, **Hallucination Rate** e **verificação estrita de `exact_quote`** estejam matematicamente validadas e executáveis no CI sem depender de chaves de API externas.
 
 ---
 
@@ -29,7 +29,7 @@ O experimento responde a três questões de engenharia:
   - `forbidden_sections`: seções que configuram falso positivo por vazamento de escopo;
   - `reference_answer`: resposta padrão-ouro redigida a partir do texto normativo;
   - `required_concepts`: conceitos-chave obrigatórios na resposta;
-  - `pure_llm_baseline`: resposta representativa de LLM sem acesso ao índice (contendo afirmações plausíveis porém não fundamentadas ou citações fabricadas, como medidas fixas em centímetros/graus ou artigos inexistentes na NR-17).
+  - `pure_llm_baseline`: fixture estática de controle contendo desvios típicos de geração sem recuperação (como medidas fixas em centímetros/graus ou artigos inexistentes na NR-17).
 
 ---
 
@@ -64,9 +64,9 @@ Cada resposta avaliada é decomposta em afirmações atômicas (*claims*) e cita
 
 ---
 
-## 4. Resultados Consolidados do Experimento (`k = 3`)
+## 4. Resultados Consolidados no Harness Determinístico Offline (`k = 3`)
 
-### 4.1. Desempenho da Recuperação Híbrida (BM25 + Similaridade de N-gramas)
+### 4.1. Desempenho do `HybridErgonomicsRetriever` sobre o Corpus Curado (11 chunks)
 
 | Métrica de Recuperação | Resultado (`k = 3`) | Meta / Critério |
 | :--- | :---: | :---: |
@@ -74,13 +74,13 @@ Cada resposta avaliada é decomposta em afirmações atômicas (*claims*) e cita
 | **MRR@3 (Mean Reciprocal Rank)** | **1.0000 (100,0%)** | $\ge 0.80$ |
 | **Precision@3** | **0.4444 (44,4%)** | Top-1 relevante em 12/12 consultas |
 | **F1@3** | **0.6154 (61,5%)** | Harmônica entre Precision@3 e Hit Rate@3 |
-| **Vazamento de Anexo Proibido (Consultas)** | **0.0000 (0,0%)** | $0\%$ no top-1; controle de escopo ativo |
+| **Vazamento de Anexo Proibido (Consultas)** | **0.0000 (0,0%)** | $0\%$ no top-3; controle de escopo ativo |
 
 > **Observação sobre Precision@3:** Como cada seção normativa no corpus curado possui entre 1 e 2 chunks dedicados e sempre avaliamos $k = 3$ chunks retornados por consulta, o limite matemático superior de `Precision@3` quando há apenas 1 chunk relevante para a seção é $1/3 \approx 0.3333$ (ou $2/3 \approx 0.6667$ quando há 2 chunks). O **MRR@3 = 1.0000** confirma que o chunk correto ocupou a **1ª posição (Top-1)** em todas as 12 consultas do benchmark.
 
-### 4.2. Comparação Direta: LLM Puro vs. RAG
+### 4.2. Comparação no Harness: Baseline Estático (LLM Puro) vs. RAG Extrativo Determinístico
 
-| Dimensão / Métrica | LLM Puro (Sem RAG) | Pipeline RAG (ErgoAI) | Ganho / Redução ($\Delta$) |
+| Dimensão / Métrica | Baseline Estático (`pure_llm_baseline`) | RAG Extrativo Determinístico | Diferença Medida pelo Avaliador ($\Delta$) |
 | :--- | :---: | :---: | :---: |
 | **Fidelidade às Fontes (*Faithfulness*)** | `0.2639` (26,4%) | **`1.0000` (100,0%)** | **`+0.7361` (+73,6 p.p.)** |
 | **Taxa Média de Alucinação (por asserção)** | `0.7361` (73,6%) | **`0.0000` (0,0%)** | **`-0.7361` (-73,6 p.p.)** |
@@ -88,20 +88,20 @@ Cada resposta avaliada é decomposta em afirmações atômicas (*claims*) e cita
 | **Citações Literais Verificadas (`exact_quote`)** | `0.0000` (0,0%) | **`1.0000` (100,0%)** | **`+1.0000` (+100,0 p.p.)** |
 | **Cobertura de Conceitos (*Ground Truth*)** | `0.2764` (27,6%) | **`0.8070` (80,7%)** | **`+0.5306` (+53,1 p.p.)** |
 
-### 4.3. Análise Qualitativa das Falhas do LLM Puro Mitigadas pelo RAG
+### 4.3. Modos de Falha Representados no Baseline e Detectados pelo Harness
 
-1. **Fabricação de parâmetros numéricos inexistentes na NR-17:** Em perguntas sobre distância de monitor (`gt-01`), altura de mesa (`gt-03`) e iluminância (`gt-07`), o LLM puro frequentemente mistura regras populares de internet com a NR-17, afirmando que a norma exige valores fixos (como *"72 cm exatos"*, *"mesa fixa de 75 cm"* ou *"750 lux obrigatórios"*), enquanto a NR-17 atual trabalha com compatibilidade antropométrica, prevenção de reflexos e avaliação ergonômica.
-2. **Alucinação de subitens e artigos:** Em `gt-01`, `gt-02` e `gt-08`, o LLM puro cita subitens inexistentes (`17.9.4.2`, `Artigo 45`, `17.3.9`). O pipeline RAG elimina esse erro ao restringir a resposta exclusivamente aos metadados e `exact_quote` extraídos dos chunks recuperados.
-3. **Confusão entre regras gerais de escritório e anexos específicos:** Sem recuperação contextualizada por seção, modelos puros aplicam pausas específicas de *Teleatendimento* (Anexo II — duas pausas de 10 minutos para jornada de 6h) a qualquer trabalhador de escritório (`gt-06`).
+1. **Fabricação de parâmetros numéricos inexistentes na NR-17:** Nas fixtures sobre distância de monitor (`gt-01`), altura de mesa (`gt-03`) e iluminância (`gt-07`), o baseline de controle contém valores fixos inventados (*"72 cm exatos"*, *"mesa fixa de 75 cm"*, *"750 lux obrigatórios"*), confirmando que `is_claim_supported_by_texts` rejeita números ausentes da norma.
+2. **Alucinação de subitens e artigos:** Em `gt-01`, `gt-02` e `gt-08`, as citações fabricadas (`17.9.4.2`, `Artigo 45`, `17.3.9`) são integralmente barradas por `verify_exact_quote_in_corpus`.
+3. **Confusão entre regras gerais de escritório e anexos específicos:** Em `gt-06`, o controle de escopo impede que pausas específicas de *Teleatendimento* (Anexo II) vazem para consultas de escritório geral.
 
 ---
 
-## 5. Como Reproduzir o Experimento
+## 5. Como Reproduzir o Benchmark Offline
 
 A partir da raiz do repositório:
 
 ```bash
-# Executar o experimento comparativo e salvar o relatório completo em JSON
+# Executar o harness comparativo determinístico e salvar o relatório em JSON
 python -m evals.rag_experiment --k 3 --out evals/results/rag_vs_llm_report.json
 
 # Executar a suíte de testes automatizados do experimento

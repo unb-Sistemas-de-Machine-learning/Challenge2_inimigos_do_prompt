@@ -25,6 +25,11 @@ class TestVisionChecklistConcordance(unittest.TestCase):
         self.assertEqual(len(categories), 6)
         self.assertGreaterEqual(len(photos), 10)
 
+        criteria_cats = [c["category"] for c in raw["checklist_criteria"]]
+        self.assertEqual(criteria_cats, categories)
+        for crit in raw["checklist_criteria"]:
+            self.assertNotIn("category_id", crit)
+
         for photo in photos:
             manual = photo["manual_checklist"]
             self.assertEqual(set(manual.keys()), set(categories))
@@ -33,6 +38,16 @@ class TestVisionChecklistConcordance(unittest.TestCase):
             }
             self.assertEqual(obs_cats, set(categories))
             self.assertGreaterEqual(len(photo["vision_agent_analysis"]["limitations"]), 1)
+
+    def test_missing_or_invalid_status_raises_value_error(self) -> None:
+        raw = json.loads(DEFAULT_DATASET_PATH.read_text(encoding="utf-8"))
+        # Remove o campo status de uma observação para garantir que não há fallback silencioso
+        del raw["labeled_photos"][0]["vision_agent_analysis"]["observations"][0]["status"]
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bad_path = Path(tmpdir) / "bad_dataset.json"
+            bad_path.write_text(json.dumps(raw), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                evaluate_vision_checklist_concordance(dataset_path=bad_path)
 
     def test_concordance_metrics_and_cohens_kappa(self) -> None:
         report = evaluate_vision_checklist_concordance()

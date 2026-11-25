@@ -28,6 +28,7 @@ DEFAULT_REPORT_PATH = EVALS_DIR / "results" / "vision_checklist_report.json"
 
 POSITIVE_LABEL = "inadequado"
 NEGATIVE_LABEL = "adequado"
+VALID_LABELS = {POSITIVE_LABEL, NEGATIVE_LABEL}
 
 
 def compute_binary_confusion_and_kappa(
@@ -147,9 +148,28 @@ def evaluate_vision_checklist_concordance(
         photo_items: list[dict[str, Any]] = []
 
         for cat in categories:
+            if cat not in manual_map:
+                raise ValueError(
+                    f"Categoria '{cat}' ausente no checklist manual da foto '{photo_id}'."
+                )
             manual_status = manual_map[cat]
-            obs = obs_by_cat.get(cat, {})
-            agent_status = obs.get("status", NEGATIVE_LABEL)
+            if manual_status not in VALID_LABELS:
+                raise ValueError(
+                    f"Status manual inválido '{manual_status}' na categoria '{cat}' da foto '{photo_id}'. "
+                    f"Valores aceitos: {sorted(VALID_LABELS)}."
+                )
+
+            if cat not in obs_by_cat:
+                raise ValueError(
+                    f"Observação da categoria '{cat}' ausente em vision_agent_analysis da foto '{photo_id}'."
+                )
+            obs = obs_by_cat[cat]
+            if "status" not in obs or obs["status"] not in VALID_LABELS:
+                raise ValueError(
+                    f"Campo 'status' ausente ou inválido ('{obs.get('status')}') na categoria '{cat}' "
+                    f"da foto '{photo_id}'. Valores aceitos: {sorted(VALID_LABELS)}."
+                )
+            agent_status = obs["status"]
             confidence = float(obs.get("confidence", 0.0))
             requires_confirmation = bool(obs.get("requires_confirmation", True))
 

@@ -20,8 +20,7 @@
       "non_compliant_rule": "Monitor muito próximo (< 45 cm) ou excessivamente distante em bancada estreita/profunda sem ajuste."
     },
     {
-      "category": "Input_devices_support",
-      "category_id": "keyboard_mouse_support",
+      "category": "keyboard_mouse_support",
       "title": "Teclado, Mouse e Apoio de Antebraços",
       "nr17_reference": "NR-17 itens 17.6.3 e 17.7.3.2",
       "compliant_rule": "Teclado e mouse independentes/ajustáveis com espaço suficiente para apoio simétrico dos antebraços.",

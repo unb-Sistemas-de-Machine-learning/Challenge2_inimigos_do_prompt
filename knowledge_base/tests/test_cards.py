@@ -1,4 +1,4 @@
-from pipeline.cards import main, normalizar, validar_cartao
+from knowledge_base.cards import main, normalizar, validar_cartao
 
 FONTES = {"oms": {"id": "oms", "versao": "2020", "arquivo_local": "oms.txt"}}
 PAGINAS = {"oms": [normalizar("Primeira página. Reduzir o tempo sedentário é recomendado."),

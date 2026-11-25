@@ -1,21 +1,22 @@
 """Consulta rápida para conferir o índice (usa o mesmo embedder registrado no manifest).
 
-Uso:  python -m pipeline.query "altura do monitor" -k 3
+Uso (a partir da raiz do repositório):
+  uv run --project backend --extra rag python -m knowledge_base.query "altura do monitor" -k 3
 """
 import argparse
 import json
 from pathlib import Path
 
 from .embed import get_embedder
-from .ingest import COLECAO
+from .ingest import COLECAO, DEFAULT_INDEX_DIR, DEFAULT_MANIFEST
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("pergunta")
     ap.add_argument("-k", type=int, default=3)
-    ap.add_argument("--index-dir", default="data/index")
-    ap.add_argument("--manifest", default="data/manifest.json")
+    ap.add_argument("--index-dir", default=str(DEFAULT_INDEX_DIR))
+    ap.add_argument("--manifest", default=str(DEFAULT_MANIFEST))
     a = ap.parse_args(argv)
 
     import chromadb

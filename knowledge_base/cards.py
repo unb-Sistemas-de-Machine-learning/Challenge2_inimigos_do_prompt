@@ -3,8 +3,8 @@
 Um cartão liga um tipo de desvio postural a uma recomendação curta, com fonte e trecho literal.
 A validação confere que o trecho citado existe no documento (na versão registrada em sources.yaml).
 
-Uso:  python -m pipeline.cards
-      python -m pipeline.cards --cards-dir cards --sources sources.yaml --raw-dir data/raw
+Uso (a partir da raiz do repositório):
+  uv run --project backend python -m knowledge_base.cards
 
 Regras:
 - Cartão "aprovado": qualquer problema de conteúdo (trecho ausente, versão diferente, arquivo ausente) é ERRO.
@@ -19,7 +19,9 @@ from pathlib import Path
 import yaml
 
 from .clean import clean_text, remove_repeated_lines
-from .ingest import extrair_paginas
+from .ingest import DEFAULT_RAW_DIR, DEFAULT_SOURCES, KB_DIR, extrair_paginas
+
+DEFAULT_CARDS_DIR = KB_DIR / "cards"
 
 CAMPOS_OBRIGATORIOS = ["id", "tipo_desvio", "texto_curto", "fonte_id", "trecho",
                        "versao_fonte", "versao_cartao", "status"]
@@ -72,7 +74,7 @@ def validar_cartao(card, fontes_por_id, paginas_por_fonte, tipos_validos):
         destino.append("versao_fonte difere do campo 'versao' em sources.yaml")
     paginas = paginas_por_fonte.get(card["fonte_id"])
     if paginas is None:
-        destino.append(f"arquivo da fonte '{card['fonte_id']}' ausente em data/raw (não foi possível conferir o trecho)")
+        destino.append(f"arquivo da fonte '{card['fonte_id']}' ausente em raw (não foi possível conferir o trecho)")
         return erros, avisos
 
     alvo = normalizar(card["trecho"])
@@ -99,9 +101,9 @@ def carregar_cartoes(cards_dir):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--cards-dir", default="cards")
-    ap.add_argument("--sources", default="sources.yaml")
-    ap.add_argument("--raw-dir", default="data/raw")
+    ap.add_argument("--cards-dir", default=str(DEFAULT_CARDS_DIR))
+    ap.add_argument("--sources", default=str(DEFAULT_SOURCES))
+    ap.add_argument("--raw-dir", default=str(DEFAULT_RAW_DIR))
     a = ap.parse_args(argv)
 
     fontes = yaml.safe_load(Path(a.sources).read_text(encoding="utf-8"))["fontes"]

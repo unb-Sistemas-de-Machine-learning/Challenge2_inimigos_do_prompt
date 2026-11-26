@@ -1,0 +1,7 @@
+# Alinhado aos códigos usados no protótipo (prototipo/js/knowledge-cards.js).
+tipos:
+  - FORWARD_HEAD
+  - TOO_CLOSE
+  - SHOULDER_TILT
+  - HEAD_TILT
+  - BREAK_NEEDED

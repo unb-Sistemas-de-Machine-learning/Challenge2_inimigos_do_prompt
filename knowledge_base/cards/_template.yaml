@@ -1,0 +1,12 @@
+# FORMATO DE UM CARTÃO DE CONHECIMENTO (exemplo de formato, NÃO é conteúdo real).
+# Copie para cards/<id>.yaml e preencha. Arquivos que começam com "_" são ignorados pelo validador.
+id: cartao-exemplo-v1            # único entre todos os cartões
+tipo_desvio: anteriorizacao_cabeca   # precisa existir em cards/_tipos_desvio.yaml
+texto_curto: "Texto curto exibido no alerta (até 280 caracteres)."
+fonte_id: oms2020                # id de uma fonte em sources.yaml
+versao_fonte: "2020"             # igual ao campo "versao" da fonte em sources.yaml
+pagina: 1                        # opcional: página onde o trecho está
+trecho: "Trecho literal copiado da fonte (até 400 caracteres, dentro de uma única página)."
+versao_cartao: "1"
+status: rascunho                 # rascunho | aprovado (aprovado só depois da revisão do grupo)
+revisado_por: []                 # nomes de quem revisou

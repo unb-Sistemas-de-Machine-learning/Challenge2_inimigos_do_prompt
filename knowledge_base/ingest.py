@@ -1,10 +1,14 @@
 """Pipeline de ingestão da base de conhecimento:
 fontes -> texto -> limpeza -> chunks com metadados (§6.5) -> embeddings -> ChromaDB + chunks.jsonl (BM25).
 
+Também suporta reconstrução do ChromaDB diretamente a partir de um corpus JSONL versionado
+(--from-chunks), sem exigir PDFs locais em knowledge_base/raw/.
+
 Uso (a partir da raiz do repositório):
   uv run --project backend --extra rag python -m knowledge_base.ingest
   uv run --project backend --extra rag python -m knowledge_base.ingest --force --strict
-  uv run --project backend python -m knowledge_base.ingest --embedder hash  # somente testes
+  uv run --project backend --extra rag python -m knowledge_base.ingest --from-chunks knowledge_base/corpus/chunks.jsonl
+  uv run --project backend python -m knowledge_base.ingest --from-chunks knowledge_base/corpus/chunks.jsonl --embedder hash
 """
 import argparse
 import datetime
@@ -28,6 +32,7 @@ DEFAULT_RAW_DIR = KB_DIR / "raw"
 DEFAULT_INDEX_DIR = REPO_ROOT / "backend" / "data" / "chroma"
 DEFAULT_MANIFEST = KB_DIR / "processed" / "manifest.json"
 DEFAULT_CHUNKS_OUT = KB_DIR / "processed" / "chunks.jsonl"
+DEFAULT_CORPUS_CHUNKS = KB_DIR / "corpus" / "chunks.jsonl"
 
 COLECAO = "ergonomia"
 METADATA_SCHEMA_VERSION = "spec-6.5-v1"
@@ -42,6 +47,15 @@ _RE_ANEXO = re.compile(
 )
 # Seções principais de NR (ex.: "17.4 Organização do trabalho"), sem subitens ("17.4.1").
 _RE_SECAO_NR = re.compile(r"^(\d+\.\d+)\s+([A-ZÁÉÍÓÚÂÊÔÃÕÇ][^\n]{2,90})$")
+
+
+def caminho_relativo(path):
+    """Retorna caminho POSIX relativo à raiz do repositório quando possível (evita vazar paths absolutos locais)."""
+    p = Path(path).resolve()
+    try:
+        return p.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return Path(path).as_posix()
 
 
 def _normalizar_titulo_anexo(subtitulo):
@@ -61,18 +75,7 @@ def _normalizar_titulo_anexo(subtitulo):
 
 
 def atualizar_secao(texto_chunk, secao_atual):
-    """Resolve (secao_chunk, proxima_secao) a partir de cabeçalhos reconhecidos no chunk.
-
-    Regras explícitas e determinísticas:
-    1. Cabeçalhos de ANEXO em caixa alta têm prioridade e fixam o contexto de anexo
-       até outro ANEXO aparecer (itens internos "1.", "2." não sobrescrevem o anexo).
-    2. Fora de anexos, cabeçalhos de seção principal de NR ("17.x Título") atualizam
-       a seção, ignorando blocos de sumário (onde vários "17.x" aparecem em sequência).
-    3. Se um cabeçalho de seção (ou anexo) aparecer no final do chunk sem texto de
-       corpo depois dele, ele NÃO sobrescreve o metadado `section` do chunk atual —
-       apenas atualiza `proxima_secao` propagada para o chunk seguinte.
-    4. Quando nenhuma seção é reconhecida até o momento, retorna "unspecified".
-    """
+    """Resolve (secao_chunk, proxima_secao) a partir de cabeçalhos reconhecidos no chunk."""
     atual = secao_atual or UNSPECIFIED_SECTION
 
     m_anexo = None
@@ -176,6 +179,100 @@ def exportar_chunks_jsonl(col, out_path):
     return len(itens)
 
 
+def carregar_chunks_jsonl(chunks_path):
+    """Carrega registros {'id', 'text', 'metadata'} de um arquivo JSONL."""
+    p = Path(chunks_path)
+    if not p.exists():
+        raise FileNotFoundError(f"Arquivo chunks.jsonl não encontrado: {p}")
+    registros = []
+    for num_linha, linha in enumerate(p.read_text(encoding="utf-8").splitlines(), start=1):
+        s = linha.strip()
+        if not s:
+            continue
+        item = json.loads(s)
+        if not all(k in item for k in ("id", "text", "metadata")):
+            raise ValueError(f"Linha {num_linha} inválida em {p}: esperado id, text e metadata.")
+        registros.append(item)
+    return registros
+
+
+def reconstruir_de_chunks(chunks_path, index_dir, manifest_path, embedder_name=DEFAULT_MODEL, chunks_out=None):
+    """Reconstrói a coleção ChromaDB diretamente a partir de chunks.jsonl (sem precisar de PDFs em raw/)."""
+    import chromadb
+
+    chunks_path = Path(chunks_path)
+    registros = carregar_chunks_jsonl(chunks_path)
+    if not registros:
+        raise ValueError(f"Nenhum chunk encontrado em {chunks_path}")
+
+    Path(index_dir).mkdir(parents=True, exist_ok=True)
+    cliente = chromadb.PersistentClient(path=str(index_dir))
+    # Recria a coleção para evitar conflito de dimensão ao trocar de embedder (ex.: hash 64d <-> MiniLM 384d)
+    try:
+        cliente.delete_collection(COLECAO)
+    except Exception:
+        pass
+    col = cliente.create_collection(COLECAO)
+
+    embedder = get_embedder(embedder_name)
+    for ini in range(0, len(registros), 500):
+        lote = registros[ini:ini + 500]
+        col.add(
+            ids=[r["id"] for r in lote],
+            documents=[r["text"] for r in lote],
+            metadatas=[r["metadata"] for r in lote],
+            embeddings=embedder.encode([r["text"] for r in lote]),
+        )
+
+    # Reaproveita metadados de fontes se existir manifest.json irmão do chunks.jsonl
+    manifest_irmao = chunks_path.parent / "manifest.json"
+    base_manifest = (
+        json.loads(manifest_irmao.read_text(encoding="utf-8"))
+        if manifest_irmao.exists()
+        else {}
+    )
+    fontes_resumo = dict(base_manifest.get("fontes", {}))
+    if not fontes_resumo:
+        por_doc = {}
+        for r in registros:
+            m = r["metadata"]
+            did = str(m.get("document_id", "desconhecido"))
+            info = por_doc.setdefault(did, {"versao": str(m.get("version", "")), "licenca": str(m.get("license", "")), "paginas": set(), "chunks": 0})
+            info["chunks"] += 1
+            if m.get("page") is not None:
+                info["paginas"].add(m["page"])
+        fontes_resumo = {
+            did: {"versao": v["versao"], "licenca": v["licenca"], "paginas": len(v["paginas"]), "chunks": v["chunks"]}
+            for did, v in por_doc.items()
+        }
+
+    if chunks_out and Path(chunks_out).resolve() != chunks_path.resolve():
+        exportar_chunks_jsonl(col, chunks_out)
+        chunks_registrado = caminho_relativo(chunks_out)
+    else:
+        chunks_registrado = caminho_relativo(chunks_path)
+
+    base_params = base_manifest.get("parametros", {})
+    manifest = {
+        "fontes": fontes_resumo,
+        "parametros": {
+            "embedder": embedder_name,
+            "max_chars": base_params.get("max_chars", 1000),
+            "overlap_chars": base_params.get("overlap_chars", 150),
+            "colecao": COLECAO,
+            "metadata_schema": base_params.get("metadata_schema", METADATA_SCHEMA_VERSION),
+            "chunks_jsonl": chunks_registrado,
+            "origem_bootstrap": caminho_relativo(chunks_path),
+        },
+        "gerado_em": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    }
+    mpath = Path(manifest_path)
+    mpath.parent.mkdir(parents=True, exist_ok=True)
+    mpath.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"[BOOTSTRAP] {len(registros)} chunks indexados em {caminho_relativo(index_dir)} (embedder={embedder_name})")
+    return len(registros)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--sources", default=str(DEFAULT_SOURCES))
@@ -183,12 +280,27 @@ def main(argv=None):
     ap.add_argument("--index-dir", default=str(DEFAULT_INDEX_DIR))
     ap.add_argument("--manifest", default=str(DEFAULT_MANIFEST))
     ap.add_argument("--chunks-out", default=str(DEFAULT_CHUNKS_OUT))
+    ap.add_argument(
+        "--from-chunks",
+        default=None,
+        help="reconstrói o ChromaDB diretamente a partir de um chunks.jsonl (dispensa PDFs em raw/)",
+    )
     ap.add_argument("--embedder", default=DEFAULT_MODEL, help="nome do modelo ou 'hash' (só testes)")
     ap.add_argument("--max-chars", type=int, default=1000)
     ap.add_argument("--overlap-chars", type=int, default=150)
     ap.add_argument("--force", action="store_true")
-    ap.add_argument("--strict", action="store_true", help="falha (exit 1) se algum arquivo de fonte estiver ausente")
+    ap.add_argument("--strict", action="store_true", help="falha (exit 1) se algum PDF estiver ausente ou com sha256 divergente")
     a = ap.parse_args(argv)
+
+    if a.from_chunks:
+        reconstruir_de_chunks(
+            chunks_path=a.from_chunks,
+            index_dir=a.index_dir,
+            manifest_path=a.manifest,
+            embedder_name=a.embedder,
+            chunks_out=a.chunks_out,
+        )
+        return 0
 
     import chromadb
 
@@ -199,15 +311,22 @@ def main(argv=None):
     Path(a.index_dir).mkdir(parents=True, exist_ok=True)
     cliente = chromadb.PersistentClient(path=a.index_dir)
     col = cliente.get_or_create_collection(COLECAO)
-    embedder, ausentes = None, 0
+    embedder, problemas = None, 0
 
     for f in fontes:
         caminho = Path(a.raw_dir) / f["arquivo_local"]
         if not caminho.exists():
             print(f"[AVISO] {f['id']}: arquivo ausente em {caminho}")
-            ausentes += 1
+            problemas += 1
             continue
         sha = sha256_arquivo(caminho)
+        sha_esperado = f.get("sha256")
+        if sha_esperado and sha != sha_esperado:
+            print(f"[AVISO] {f['id']}: sha256 divergente do registrado em sources.yaml (obtido={sha}, esperado={sha_esperado})")
+            problemas += 1
+            if a.strict:
+                continue
+
         impressao = f"{sha}|{a.embedder}|{a.max_chars}|{a.overlap_chars}|{METADATA_SCHEMA_VERSION}"
         if not a.force and manifest["fontes"].get(f["id"], {}).get("impressao") == impressao:
             print(f"[OK] {f['id']}: sem mudanças, pulando")
@@ -218,7 +337,6 @@ def main(argv=None):
             print(f"[AVISO] {f['id']}: nenhum texto extraído (PDF escaneado?)")
             continue
         embedder = embedder or get_embedder(a.embedder)
-        # Remove versões anteriores desta fonte (contrato atual e legado v0 com fonte_id)
         col.delete(where={"document_id": f["id"]})
         col.delete(where={"fonte_id": f["id"]})
         for ini in range(0, len(registros), 500):
@@ -237,7 +355,7 @@ def main(argv=None):
         print(f"[INDEXADO] {f['id']}: {n_pag} páginas, {len(registros)} chunks")
 
     n_exportados = exportar_chunks_jsonl(col, a.chunks_out)
-    print(f"[EXPORTADO] {n_exportados} chunks em {a.chunks_out}")
+    print(f"[EXPORTADO] {n_exportados} chunks em {caminho_relativo(a.chunks_out)}")
 
     manifest["parametros"] = {
         "embedder": a.embedder,
@@ -245,12 +363,12 @@ def main(argv=None):
         "overlap_chars": a.overlap_chars,
         "colecao": COLECAO,
         "metadata_schema": METADATA_SCHEMA_VERSION,
-        "chunks_jsonl": str(a.chunks_out),
+        "chunks_jsonl": caminho_relativo(a.chunks_out),
     }
     manifest["gerado_em"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     mpath.parent.mkdir(parents=True, exist_ok=True)
     mpath.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
-    return 1 if (a.strict and ausentes) else 0
+    return 1 if (a.strict and problemas) else 0
 
 
 if __name__ == "__main__":

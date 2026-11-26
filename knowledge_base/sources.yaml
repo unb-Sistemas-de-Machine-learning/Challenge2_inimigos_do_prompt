@@ -5,6 +5,7 @@ fontes:
     document_type: "official"
     url_oficial: "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17"
     arquivo_local: nr17.pdf
+    sha256: "9f17dd07d1fd3906ed1c658a4d1652acbe18156bbdd961566c9c9d2f342d6fdc"
     versao: "Portaria MTP nº 4.219/2022 (20/12/2022)"
     licenca: "Ato normativo oficial de acesso público (gov.br)"
     data_acesso: "2026-11-21"
@@ -14,6 +15,7 @@ fontes:
     document_type: "official"
     url_oficial: "https://www.who.int/publications/i/item/9789240015128"
     arquivo_local: oms2020.pdf
+    sha256: "50b66c44e7083cc3752849f301ae1d60d9360d511e34c0c948b39bdf6e13dc88"
     versao: "2020"
     licenca: "CC BY-NC-SA 3.0 IGO"
     data_acesso: "2026-11-21"

@@ -1,31 +1,45 @@
-site_name: ErgoAI — Documentação
-site_description: Assistente de IA para Ergonomia e Pausas Ativas (Challenge 2 — Inimigos do Prompt)
+site_name: ErgoAI. — Documentação
+site_description: Assistente Web de Monitoramento Postural em Tempo Real e Recomendações Ergonômicas via RAG (Challenge 2 — Inimigos do Prompt)
 repo_name: Challenge2_inimigos_do_prompt
+repo_url: https://github.com/unb-Sistemas-de-Machine-learning/Challenge2_inimigos_do_prompt
 
 theme:
   name: material
   language: pt-BR
+  logo: assets/img/ergo-sem-fundo.png
+  favicon: assets/img/ergo-sem-fundo.png
+  font:
+    text: Plus Jakarta Sans
+    code: JetBrains Mono
   palette:
-    - scheme: slate
-      primary: indigo
-      accent: cyan
-      toggle:
-        icon: material/brightness-7
-        name: Alternar para modo claro
     - scheme: default
-      primary: indigo
-      accent: cyan
+      primary: custom
+      accent: custom
       toggle:
-        icon: material/brightness-4
+        icon: material/weather-night
         name: Alternar para modo escuro
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Alternar para modo claro (ErgoAI Cream)
   features:
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
+    - navigation.top
     - content.code.copy
+
+extra_css:
+  - stylesheets/ergoai.css
 
 markdown_extensions:
   - admonition
+  - attr_list
+  - md_in_html
   - tables
+  - pymdownx.details
   - toc:
       permalink: true
   - pymdownx.superfences:

@@ -1,0 +1,512 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --ergo-bg-page: #faf6f0;
+  --ergo-bg-card: #ffffff;
+  --ergo-ink: #161616;
+  --ergo-text-muted: #52525b;
+  --ergo-coral: #ff6b4a;
+  --ergo-coral-hover: #f05a39;
+  --ergo-amber: #ffd15c;
+  --ergo-emerald: #10b981;
+  --ergo-shadow-sm: 3px 3px 0 #161616;
+  --ergo-shadow-md: 5px 5px 0 #161616;
+  --ergo-shadow-soft: 0 14px 36px rgba(22, 22, 22, 0.08);
+  --md-text-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --md-code-font: 'JetBrains Mono', monospace;
+}
+
+/* ==========================================================================
+   PALETA DO TEMA CLARO (PADRÃO — IDENTIDADE ERGOAI)
+   ========================================================================== */
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: var(--ergo-bg-page);
+  --md-default-fg-color: var(--ergo-ink);
+  --md-default-fg-color--light: var(--ergo-text-muted);
+  --md-primary-fg-color: #ffffff;
+  --md-primary-fg-color--light: var(--ergo-amber);
+  --md-primary-fg-color--dark: var(--ergo-coral);
+  --md-primary-bg-color: var(--ergo-ink);
+  --md-accent-fg-color: var(--ergo-coral);
+  --md-typeset-color: var(--ergo-ink);
+  --md-typeset-a-color: #d94625;
+  --md-code-bg-color: #ffffff;
+  --md-code-fg-color: var(--ergo-ink);
+}
+
+/* ==========================================================================
+   PALETA DO TEMA ESCURO (OPCIONAL — SLATE COM ACENTOS CORAL E ÂMBAR)
+   ========================================================================== */
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #141416;
+  --md-default-fg-color: #faf6f0;
+  --md-default-fg-color--light: #a1a1aa;
+  --md-primary-fg-color: #1c1c1f;
+  --md-primary-bg-color: #faf6f0;
+  --md-accent-fg-color: var(--ergo-amber);
+  --md-typeset-a-color: var(--ergo-amber);
+  --ergo-bg-card: #1f1f23;
+}
+
+/* ==========================================================================
+   CABEÇALHO E NAVEGAÇÃO ESTILO NAVBAR NEO-BRUTALISTA DO ERGOAI
+   ========================================================================== */
+.md-header {
+  background-color: #ffffff !important;
+  color: var(--ergo-ink) !important;
+  box-shadow: none !important;
+  border-bottom: 2px solid var(--ergo-ink);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background-color: #18181b !important;
+  color: #faf6f0 !important;
+  border-bottom: 2px solid var(--ergo-coral);
+}
+
+.md-header__button.md-logo {
+  padding: 0.2rem;
+  margin-right: 0.4rem;
+}
+
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 38px;
+  width: 38px;
+  border-radius: 10px;
+  border: 2px solid var(--ergo-ink);
+  background: var(--ergo-amber);
+  object-fit: contain;
+  box-shadow: 2px 2px 0 var(--ergo-ink);
+}
+
+.md-header__title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: var(--ergo-ink);
+}
+
+[data-md-color-scheme="slate"] .md-header__title {
+  color: #faf6f0;
+}
+
+.md-tabs {
+  background-color: #ffffff !important;
+  color: var(--ergo-ink) !important;
+  border-bottom: 3px solid var(--ergo-ink);
+  padding: 0.25rem 0;
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: #18181b !important;
+  color: #faf6f0 !important;
+  border-bottom: 3px solid var(--ergo-coral);
+}
+
+.md-tabs__list {
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.md-tabs__item {
+  height: auto;
+  padding: 0.35rem 0;
+}
+
+.md-tabs__link {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.84rem;
+  color: var(--ergo-ink) !important;
+  opacity: 0.9;
+  padding: 0.42rem 0.95rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  margin-top: 0;
+  transition: all 0.14s ease;
+}
+
+[data-md-color-scheme="slate"] .md-tabs__link {
+  color: #faf6f0 !important;
+}
+
+.md-tabs__link:hover {
+  background: var(--ergo-bg-page);
+  border-color: var(--ergo-ink);
+  opacity: 1;
+}
+
+[data-md-color-scheme="slate"] .md-tabs__link:hover {
+  background: #27272a;
+  border-color: var(--ergo-amber);
+}
+
+.md-tabs__item--active .md-tabs__link,
+.md-tabs__link--active {
+  background: var(--ergo-amber) !important;
+  color: var(--ergo-ink) !important;
+  border: 2px solid var(--ergo-ink) !important;
+  box-shadow: 2px 2px 0 var(--ergo-ink);
+  opacity: 1;
+}
+
+/* Barra de busca */
+.md-search__form {
+  background-color: var(--ergo-bg-page) !important;
+  border: 2px solid var(--ergo-ink);
+  border-radius: 999px !important;
+  box-shadow: 2px 2px 0 var(--ergo-ink);
+}
+
+.md-search__input {
+  color: var(--ergo-ink) !important;
+  font-weight: 600;
+}
+
+.md-search__input::placeholder,
+.md-search__icon {
+  color: var(--ergo-ink) !important;
+}
+
+/* ==========================================================================
+   TIPOGRAFIA DE CONTEÚDO E CABEÇALHOS
+   ========================================================================== */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--md-default-fg-color);
+}
+
+.md-typeset h1 {
+  font-weight: 900;
+  font-size: 2.2rem;
+  line-height: 1.1;
+}
+
+.md-typeset h2 {
+  font-weight: 800;
+  border-bottom: 3px solid var(--ergo-ink);
+  padding-bottom: 0.35rem;
+  margin-top: 2rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset h2 {
+  border-bottom-color: var(--ergo-coral);
+}
+
+/* ==========================================================================
+   HERO NEO-BRUTALISTA DA PÁGINA INICIAL (CORAL COM BOLINHAS + MASCOTE)
+   ========================================================================== */
+.ergo-doc-hero {
+  position: relative;
+  background-color: var(--ergo-coral);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.24) 1.7px, transparent 1.7px);
+  background-size: 22px 22px;
+  color: #ffffff;
+  border: 3px solid var(--ergo-ink);
+  border-radius: 28px;
+  box-shadow: 6px 6px 0 var(--ergo-ink);
+  padding: 2.4rem 2.2rem;
+  margin: 0.5rem 0 2.2rem;
+  overflow: hidden;
+}
+
+.ergo-doc-hero-grid {
+  display: grid;
+  grid-template-columns: 1.35fr minmax(200px, 270px);
+  gap: 1.75rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .ergo-doc-hero-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.ergo-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(6px);
+  border: 2px solid var(--ergo-ink);
+  border-radius: 999px;
+  padding: 0.25rem 0.85rem 0.25rem 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  box-shadow: 2px 2px 0 var(--ergo-ink);
+}
+
+.ergo-hero-badge-tag {
+  background: var(--ergo-ink);
+  color: var(--ergo-amber);
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ergo-doc-hero h1 {
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 900 !important;
+  font-size: clamp(1.75rem, 3.1vw, 2.45rem) !important;
+  line-height: 1.12 !important;
+  text-transform: uppercase;
+  color: #ffffff !important;
+  margin: 0 0 1rem !important;
+}
+
+.ergo-highlight {
+  display: inline-block;
+  background: var(--ergo-amber);
+  color: var(--ergo-ink) !important;
+  border: 3px solid var(--ergo-ink);
+  border-radius: 14px;
+  padding: 0.04em 0.32em;
+  box-shadow: 4px 4px 0 var(--ergo-ink);
+  transform: rotate(-1.2deg);
+  margin-top: 0.2rem;
+}
+
+.ergo-hero-lead {
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+  margin-bottom: 1.35rem;
+}
+
+.ergo-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.ergo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 0.62rem 1.25rem;
+  border-radius: 999px;
+  border: 2px solid var(--ergo-ink);
+  box-shadow: 3px 3px 0 var(--ergo-ink);
+  text-decoration: none !important;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.ergo-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ergo-ink);
+}
+
+.ergo-btn-amber {
+  background: var(--ergo-amber);
+  color: var(--ergo-ink) !important;
+}
+
+.ergo-btn-ink {
+  background: var(--ergo-ink);
+  color: #ffffff !important;
+}
+
+.ergo-btn-white {
+  background: #ffffff;
+  color: var(--ergo-ink) !important;
+}
+
+.ergo-hero-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.ergo-mascot-card {
+  background: #ffffff;
+  border: 3px solid var(--ergo-ink);
+  border-radius: 24px;
+  box-shadow: 5px 5px 0 var(--ergo-ink);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.ergo-mascot-card img {
+  width: 100%;
+  max-width: 210px;
+  border-radius: 14px;
+  display: block;
+}
+
+.ergo-mascot-caption {
+  margin-top: 0.45rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--ergo-ink);
+  background: var(--ergo-amber);
+  border: 1.5px solid var(--ergo-ink);
+  border-radius: 999px;
+  padding: 0.15rem 0.65rem;
+}
+
+/* ==========================================================================
+   CARDS DE ARQUITETURA E VITRINE VISUAL (SCREENSHOTS + GIFS)
+   ========================================================================== */
+.ergo-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.1rem;
+  margin: 1.25rem 0 2rem;
+}
+
+.ergo-card {
+  background: var(--ergo-bg-card);
+  border: 2px solid var(--ergo-ink);
+  border-radius: 22px;
+  padding: 1.25rem 1.3rem;
+  box-shadow: 4px 4px 0 var(--ergo-ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ergo-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 6px 6px 0 var(--ergo-ink);
+}
+
+.ergo-card h3 {
+  margin-top: 0.35rem !important;
+  margin-bottom: 0.45rem !important;
+  font-size: 1.08rem !important;
+}
+
+.ergo-card p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--md-default-fg-color--light);
+  margin: 0;
+}
+
+.ergo-tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--ergo-ink);
+}
+
+.ergo-tag-coral {
+  background: #ffe8e1;
+  color: #b9381c;
+}
+
+.ergo-tag-amber {
+  background: var(--ergo-amber);
+  color: var(--ergo-ink);
+}
+
+.ergo-tag-emerald {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.ergo-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin: 1.25rem 0 2rem;
+}
+
+.ergo-shot-card {
+  background: var(--ergo-bg-card);
+  border: 2.5px solid var(--ergo-ink);
+  border-radius: 22px;
+  box-shadow: 5px 5px 0 var(--ergo-ink);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ergo-shot-card img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-bottom: 2px solid var(--ergo-ink);
+  display: block;
+}
+
+.ergo-shot-body {
+  padding: 0.95rem 1.15rem;
+}
+
+.ergo-shot-body strong {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.ergo-shot-body span {
+  font-size: 0.82rem;
+  color: var(--md-default-fg-color--light);
+  line-height: 1.45;
+  display: block;
+}
+
+/* ==========================================================================
+   TABELAS, ADMONITIONS E BLOCOS DE CÓDIGO
+   ========================================================================== */
+.md-typeset table:not([class]) {
+  background: var(--ergo-bg-card);
+  border: 2px solid var(--ergo-ink);
+  border-radius: 16px;
+  box-shadow: 4px 4px 0 var(--ergo-ink);
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--ergo-amber) !important;
+  color: var(--ergo-ink) !important;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  border-bottom: 2px solid var(--ergo-ink);
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border: 2px solid var(--ergo-ink) !important;
+  border-radius: 16px !important;
+  box-shadow: 4px 4px 0 var(--ergo-ink) !important;
+  background: var(--ergo-bg-card) !important;
+}
+
+.md-typeset pre > code {
+  border: 2px solid var(--ergo-ink);
+  border-radius: 14px;
+  box-shadow: 3px 3px 0 var(--ergo-ink);
+}

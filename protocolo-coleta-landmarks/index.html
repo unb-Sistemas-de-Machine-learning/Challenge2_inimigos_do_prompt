@@ -1,0 +1,1113 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Assistente Web de Monitoramento Postural em Tempo Real e Recomendações Ergonômicas via RAG (Challenge 2 — Inimigos do Prompt)">
+      
+      
+      
+      
+        <link rel="prev" href="../cartoes-e-esquema/">
+      
+      
+        <link rel="next" href="../protocolo-avaliacao-rnf07/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/img/ergo-sem-fundo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Protocolo de Coleta de Landmarks - ErgoAI. — Documentação</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Plus+Jakarta+Sans:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Plus Jakarta Sans";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/ergoai.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#protocolo-de-coleta-e-rotulagem-de-landmarks-proposta" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="ErgoAI. — Documentação" class="md-header__button md-logo" aria-label="ErgoAI. — Documentação" data-md-component="logo">
+      
+  <img src="../assets/img/ergo-sem-fundo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ErgoAI. — Documentação
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Protocolo de Coleta de Landmarks
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Alternar para modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Alternar para modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Alternar para modo claro (ErgoAI Cream)"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Alternar para modo claro (ErgoAI Cream)" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/unb-Sistemas-de-Machine-learning/Challenge2_inimigos_do_prompt" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Challenge2_inimigos_do_prompt
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Início
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../especificacao-requisitos/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Especificação de Requisitos
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../roteiro-prototipo/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Roteiro do Protótipo
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../privacidade-foto-setup/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Privacidade na Foto do Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../cartoes-e-esquema/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Cartões e Esquema de Dados
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Protocolo de Coleta de Landmarks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../protocolo-avaliacao-rnf07/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Protocolo de Avaliação (RNF07)
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../adr/0001-embeddings-vector-store-e-chunking/" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ErgoAI. — Documentação" class="md-nav__button md-logo" aria-label="ErgoAI. — Documentação" data-md-component="logo">
+      
+  <img src="../assets/img/ergo-sem-fundo.png" alt="logo">
+
+    </a>
+    ErgoAI. — Documentação
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/unb-Sistemas-de-Machine-learning/Challenge2_inimigos_do_prompt" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Challenge2_inimigos_do_prompt
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../especificacao-requisitos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Especificação de Requisitos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roteiro-prototipo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roteiro do Protótipo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../privacidade-foto-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Privacidade na Foto do Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cartoes-e-esquema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cartões e Esquema de Dados
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo de Coleta de Landmarks
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo de Coleta de Landmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-principios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Princípios
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-o-que-e-gravado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. O que é gravado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-roteiro-de-cenarios-cada-voluntario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Roteiro de cenários (cada voluntário)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-rotulagem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Rotulagem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-divisao-dos-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Divisão dos dados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-armazenamento-e-versionamento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Armazenamento e versionamento
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-limitacoes-a-registrar-no-relatorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Limitações a registrar no relatório
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-quem-faz-o-que-sugestao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Quem faz o quê (sugestão)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../protocolo-avaliacao-rnf07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo de Avaliação (RNF07)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/0001-embeddings-vector-store-e-chunking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR 0001 — Embeddings, Vector Store e Chunking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/0002-contrato-metadados-indice-e-secoes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR 0002 — Metadados do Índice e Seções
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-principios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Princípios
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-o-que-e-gravado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. O que é gravado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-roteiro-de-cenarios-cada-voluntario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Roteiro de cenários (cada voluntário)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-rotulagem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Rotulagem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-divisao-dos-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Divisão dos dados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-armazenamento-e-versionamento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Armazenamento e versionamento
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-limitacoes-a-registrar-no-relatorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Limitações a registrar no relatório
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-quem-faz-o-que-sugestao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Quem faz o quê (sugestão)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="protocolo-de-coleta-e-rotulagem-de-landmarks-proposta">Protocolo de coleta e rotulagem de landmarks (PROPOSTA)<a class="headerlink" href="#protocolo-de-coleta-e-rotulagem-de-landmarks-proposta" title="Permanent link">&para;</a></h1>
+<p>Objetivo: montar o conjunto de teste rotulado do RNF07 (precision, recall, F1 e falsos positivos) <strong>sem guardar imagens</strong>.
+Este documento é uma proposta do papel de Dados: o grupo (e, se possível, o professor) precisa validar antes da coleta.</p>
+<h2 id="1-principios">1. Princípios<a class="headerlink" href="#1-principios" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Sem imagens:</strong> o navegador processa o vídeo e grava só coordenadas dos pontos do corpo (ver <code>frontend/src/types/coleta.ts</code>).</li>
+<li><strong>Voluntários adultos, com consentimento:</strong> termo curto e claro (o que é gravado, para quê, quem acessa, como pedir exclusão). Confirmar com o professor se a disciplina exige algum procedimento formal.</li>
+<li><strong>Anonimato:</strong> cada voluntário recebe um código; a tabela que liga código e pessoa não é guardada.</li>
+<li><strong>Minimização:</strong> guardar só os pontos do corpo necessários. Pontos do rosto só se o grupo decidir que são indispensáveis; pontos faciais podem ser dado pessoal sensível (biometria) pela LGPD, então confirmem no texto da lei e registrem a decisão em ADR.</li>
+<li><strong>Exclusão:</strong> o voluntário pode pedir a remoção das suas gravações a qualquer momento antes do congelamento do conjunto de teste.</li>
+</ul>
+<h2 id="2-o-que-e-gravado">2. O que é gravado<a class="headerlink" href="#2-o-que-e-gravado" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Uma gravação por cenário, em arquivo <code>.jsonl</code> (um quadro por linha: <code>t_ms</code> e <code>pose</code>).</li>
+<li>Nota de compatibilidade: <code>frontend/src/types/coleta.ts</code> nomeia a confiança do ponto como <code>visibilidade</code>, enquanto <code>frontend/src/posture-engine/postureEngine.ts</code> lê <code>visibility</code>; o adaptador de avaliação (<code>evals/run_posture_engine.mjs</code>) aceita ambos.</li>
+<li>Para o cálculo de métricas (Precision, Recall, F1 e FPR) e o baseline sintético de regressão, ver <a href="../protocolo-avaliacao-rnf07/">protocolo-avaliacao-rnf07.md</a>.</li>
+<li>Cabeçalho com versão do modelo de visão, FPS médio, iluminação e posição da câmera.</li>
+<li>Registrar sempre a mesma configuração de câmera nos testes principais (frontal) e anotar quando for diferente.</li>
+</ul>
+<h2 id="3-roteiro-de-cenarios-cada-voluntario">3. Roteiro de cenários (cada voluntário)<a class="headerlink" href="#3-roteiro-de-cenarios-cada-voluntario" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Postura adequada, sentado normalmente (referência de calibração).</li>
+<li>Cada tipo de desvio da lista em <code>knowledge_base/cards/_tipos_desvio.yaml</code>, mantido por um tempo definido pelo grupo.</li>
+<li>Mudança momentânea de posição (deve <strong>não</strong> gerar alerta: testa a RN03).</li>
+<li>Pessoa saindo do enquadramento ou com baixa visibilidade (testa RN04 e RN05).</li>
+</ol>
+<p>O tempo de cada cenário e o número de voluntários devem ser definidos com o grupo. Não prometam um tamanho de conjunto antes de saber quanto dá para coletar.</p>
+<h2 id="4-rotulagem">4. Rotulagem<a class="headerlink" href="#4-rotulagem" title="Permanent link">&para;</a></h2>
+<ul>
+<li>O grupo escreve <strong>primeiro</strong> os critérios de cada rótulo (o que conta como "cabeça para frente", "ombros desalinhados" etc.) e se compromete a não mudá-los depois de ver os resultados.</li>
+<li>Cada gravação é rotulada por <strong>duas pessoas</strong>, de forma independente, em segmentos (<code>inicio_ms</code>, <code>fim_ms</code>, <code>rotulo</code>).</li>
+<li>Divergências são resolvidas em conversa e o resultado final é registrado. Se quiserem medir o acordo entre anotadores, o coeficiente kappa de Cohen é uma opção (confirmem o método em uma referência confiável).</li>
+<li>O rótulo vem da equipe, <strong>não</strong> do feedback do usuário (que é opinião e serve ao ajuste de tolerância).</li>
+</ul>
+<h2 id="5-divisao-dos-dados">5. Divisão dos dados<a class="headerlink" href="#5-divisao-dos-dados" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Separar treino/ajuste e teste <strong>por voluntário</strong>, não por quadro. Quadros do mesmo voluntário parecem muito entre si, e misturar infla as métricas.</li>
+<li>Congelar o conjunto de teste (e a versão dos parâmetros) antes de medir. Depois de congelado, não ajustar limiares olhando o teste.</li>
+</ul>
+<h2 id="6-armazenamento-e-versionamento">6. Armazenamento e versionamento<a class="headerlink" href="#6-armazenamento-e-versionamento" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Os arquivos ficam fora do GitHub público até o grupo decidir (por segurança, mesmo sem imagens). O repositório guarda só o esquema, o protocolo e dados sintéticos de exemplo.</li>
+<li>Versionar o conjunto (por exemplo, com DVC ou hashes registrados em um manifesto; confirmem a ferramenta). O manifesto lista arquivos, hash, versão do esquema e versão do modelo.</li>
+<li>Acesso restrito à equipe; definir prazo de retenção e descartar ao fim da disciplina.</li>
+</ul>
+<h2 id="7-limitacoes-a-registrar-no-relatorio">7. Limitações a registrar no relatório<a class="headerlink" href="#7-limitacoes-a-registrar-no-relatorio" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Poucos voluntários e ambientes parecidos limitam a generalização.</li>
+<li>Webcam frontal não avalia todos os desvios.</li>
+<li>Os rótulos são de pessoas leigas em ergonomia, a menos que um profissional revise.</li>
+</ul>
+<h2 id="8-quem-faz-o-que-sugestao">8. Quem faz o quê (sugestão)<a class="headerlink" href="#8-quem-faz-o-que-sugestao" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Dados:</strong> formato, scripts de validação, manifesto e versionamento.</li>
+<li><strong>Cientista:</strong> critérios de rotulagem, divisão e métricas.</li>
+<li><strong>IA/Arquiteto:</strong> modo de gravação no navegador.</li>
+<li><strong>MLOps:</strong> rodar a avaliação automática sobre o conjunto congelado.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

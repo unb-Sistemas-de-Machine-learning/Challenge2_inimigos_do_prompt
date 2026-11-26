@@ -1,0 +1,14 @@
+id: card-break-needed-v1
+tipo_desvio: BREAK_NEEDED
+titulo: "Pausa Ativa Recomendada"
+categoria: "Tempo Prolongado Sentado"
+texto_curto: "Você atingiu o intervalo configurado de tempo contínuo sentado. Interrompa o período sentado com uma pausa leve fora do posto de trabalho."
+acao_recomendada: "Levante-se por alguns instantes, descanse o foco visual olhando para longe e faça uma caminhada leve ou movimentação confortável. O intervalo de alerta é configurável nas preferências."
+fonte_id: oms2020
+versao_fonte: "2020"
+secao: "Adults (aged 18-64 years) - Sedentary behaviour"
+pagina: 12
+trecho: "Adults should limit the amount of time spent being sedentary. Replacing sedentary time with physical activity of any intensity (including light intensity) provides health benefits."
+versao_cartao: "1"
+status: rascunho
+revisado_por: []

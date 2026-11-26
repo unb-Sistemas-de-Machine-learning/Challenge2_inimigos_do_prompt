@@ -1,31 +1,45 @@
-site_name: ErgoAI — Documentação
-site_description: Assistente de IA para Ergonomia e Pausas Ativas (Challenge 2 — Inimigos do Prompt)
+site_name: ErgoAI. — Documentação
+site_description: Assistente Web de Monitoramento Postural em Tempo Real e Recomendações Ergonômicas via RAG (Challenge 2 — Inimigos do Prompt)
 repo_name: Challenge2_inimigos_do_prompt
+repo_url: https://github.com/unb-Sistemas-de-Machine-learning/Challenge2_inimigos_do_prompt
 
 theme:
   name: material
   language: pt-BR
+  logo: assets/img/ergo-sem-fundo.png
+  favicon: assets/img/ergo-sem-fundo.png
+  font:
+    text: Plus Jakarta Sans
+    code: JetBrains Mono
   palette:
-    - scheme: slate
-      primary: indigo
-      accent: cyan
-      toggle:
-        icon: material/brightness-7
-        name: Alternar para modo claro
     - scheme: default
-      primary: indigo
-      accent: cyan
+      primary: custom
+      accent: custom
       toggle:
-        icon: material/brightness-4
+        icon: material/weather-night
         name: Alternar para modo escuro
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Alternar para modo claro (ErgoAI Cream)
   features:
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
+    - navigation.top
     - content.code.copy
+
+extra_css:
+  - stylesheets/ergoai.css
 
 markdown_extensions:
   - admonition
+  - attr_list
+  - md_in_html
   - tables
+  - pymdownx.details
   - toc:
       permalink: true
   - pymdownx.superfences:
@@ -38,4 +52,11 @@ nav:
   - Início: index.md
   - Especificação de Requisitos: especificacao-requisitos.md
   - Roteiro do Protótipo: roteiro-prototipo.md
+  - Privacidade na Foto do Setup: privacidade-foto-setup.md
+  - Cartões e Esquema de Dados: cartoes-e-esquema.md
+  - Protocolo de Coleta de Landmarks: protocolo-coleta-landmarks.md
+  - Protocolo de Avaliação (RNF07): protocolo-avaliacao-rnf07.md
   - Experimento LLM Puro vs. RAG: experimento-llm-vs-rag.md
+  - ADRs:
+    - ADR 0001 — Embeddings, Vector Store e Chunking: adr/0001-embeddings-vector-store-e-chunking.md
+    - ADR 0002 — Metadados do Índice e Seções: adr/0002-contrato-metadados-indice-e-secoes.md

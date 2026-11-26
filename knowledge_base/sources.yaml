@@ -1,0 +1,19 @@
+fontes:
+  - id: nr17
+    titulo: "NR-17 - Ergonomia"
+    source: "Ministério do Trabalho e Emprego"
+    document_type: "official"
+    url_oficial: "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/norma-regulamentadora-no-17-nr-17"
+    arquivo_local: nr17.pdf
+    versao: "Portaria MTP nº 4.219/2022 (20/12/2022)"
+    licenca: "Ato normativo oficial de acesso público (gov.br)"
+    data_acesso: "2026-11-21"
+  - id: oms2020
+    titulo: "WHO guidelines on physical activity and sedentary behaviour"
+    source: "World Health Organization"
+    document_type: "official"
+    url_oficial: "https://www.who.int/publications/i/item/9789240015128"
+    arquivo_local: oms2020.pdf
+    versao: "2020"
+    licenca: "CC BY-NC-SA 3.0 IGO"
+    data_acesso: "2026-11-21"

@@ -26,6 +26,8 @@ site/
 
 # Local Vector DB / Knowledge & Generated Eval artifacts
 backend/data/
+knowledge_base/raw/*
+!knowledge_base/raw/.gitkeep
 knowledge_base/processed/*
 !knowledge_base/processed/.gitkeep
 evals/datasets/posture_heuristics_scenarios.json

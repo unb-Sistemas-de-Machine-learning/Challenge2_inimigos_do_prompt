@@ -1,0 +1,14 @@
+id: card-too-close-v1
+tipo_desvio: TOO_CLOSE
+titulo: "Aproximação Excessiva da Tela"
+categoria: "Distância Visual"
+texto_curto: "Você está mais próximo da tela do que na postura calibrada. Afaste o tronco e, se necessário, aumente o zoom do sistema em vez de inclinar o corpo para a frente."
+acao_recomendada: "Afaste o tronco para uma distância confortável de leitura, confira se há reflexos na tela e aumente o tamanho da fonte ou do zoom se precisar aproximar para enxergar."
+fonte_id: nr17
+versao_fonte: "Portaria MTP nº 4.219/2022 (20/12/2022)"
+secao: "Item 17.6.3, alínea b"
+pagina: 6
+trecho: "b) altura e características da superfície de trabalho compatíveis com o tipo de atividade, com a distância requerida dos olhos ao campo de trabalho e com a altura do assento;"
+versao_cartao: "1"
+status: rascunho
+revisado_por: []

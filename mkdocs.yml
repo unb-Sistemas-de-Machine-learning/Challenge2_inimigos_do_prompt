@@ -57,6 +57,7 @@ nav:
   - Protocolo de Coleta de Landmarks: protocolo-coleta-landmarks.md
   - Protocolo de Avaliação (RNF07): protocolo-avaliacao-rnf07.md
   - Concordância do Agente de Visão: avaliacao-concordancia-visao.md
+  - Experimento LLM Puro vs. RAG: experimento-llm-vs-rag.md
   - ADRs:
     - ADR 0001 — Embeddings, Vector Store e Chunking: adr/0001-embeddings-vector-store-e-chunking.md
     - ADR 0002 — Metadados do Índice e Seções: adr/0002-contrato-metadados-indice-e-secoes.md

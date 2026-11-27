@@ -1,0 +1,390 @@
+{
+  "version": "1.0.0",
+  "experiment_id": "EXP-01-LLM-VS-RAG",
+  "title": "Benchmark Ground Truth — Avaliação Comparativa LLM Puro vs. RAG (Hit Rate, MRR, Fidelidade e Alucinação)",
+  "description": "Conjunto de perguntas rotuladas com resposta de referência (ground truth), documento/seção esperada, seções proibidas (teste de vazamento de anexo NR-17), conceitos obrigatórios e respostas comparativas (LLM puro sem recuperação vs. pipeline RAG fundamentado).",
+  "questions": [
+    {
+      "id": "gt-01",
+      "category": "ergonomia_monitor",
+      "question": "Como a tela do computador deve ser posicionada em relação à iluminação do ambiente e ao ângulo de visão segundo a NR-17?",
+      "deviation_type": "FORWARD_HEAD",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais",
+        "17.6 Mobiliário dos postos de trabalho"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "Segundo o item 17.7.3.1 da NR-17, os equipamentos com terminais de vídeo devem ter mobilidade suficiente para permitir o ajuste da tela à iluminação do ambiente, protegendo-a contra reflexos, e proporcionar corretos ângulos de visibilidade ao trabalhador.",
+      "required_concepts": [
+        "ajuste da tela",
+        "reflexos",
+        "ângulos de visibilidade"
+      ],
+      "pure_llm_baseline": {
+        "answer": "De acordo com a NR-17 item 17.9.4.2, a tela deve ficar obrigatória e exatamente a 72 centímetros dos olhos, inclinada em 22 graus exatos, com filtro polarizador certificado pelo INMETRO.",
+        "claims": [
+          "De acordo com a NR-17 item 17.9.4.2, a tela deve ficar obrigatória e exatamente a 72 centímetros dos olhos",
+          "inclinada em 22 graus exatos, com filtro polarizador certificado pelo INMETRO"
+        ],
+        "citations": [
+          {
+            "document_id": "nr17",
+            "section": "17.9.4.2 Especificações Ópticas de Monitores",
+            "page": 44,
+            "exact_quote": "Todo monitor deve ser posicionado a exatos 72 cm com inclinação fixa de 22 graus."
+          }
+        ]
+      }
+    },
+    {
+      "id": "gt-02",
+      "category": "uso_notebook",
+      "question": "Quais adaptações a NR-17 exige quando o trabalhador utiliza computador portátil (notebook) de forma não eventual no posto de trabalho?",
+      "deviation_type": "FORWARD_HEAD",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "Conforme o item 17.7.3.2 da NR-17, no uso não eventual de computador portátil em posto de trabalho, devem ser previstas formas de adaptação do teclado, do mouse ou da tela para permitir o ajuste às características antropométricas do trabalhador e à natureza das tarefas.",
+      "required_concepts": [
+        "computador portátil",
+        "adaptação do teclado",
+        "mouse",
+        "tela"
+      ],
+      "pure_llm_baseline": {
+        "answer": "Para uso de notebook, é recomendável usar um suporte elevador, teclado externo e mouse para manter a cabeça alinhada, conforme o artigo 45 da NR-17 sobre trabalho remoto.",
+        "claims": [
+          "Para uso de notebook, é recomendável usar um suporte elevador, teclado externo e mouse",
+          "conforme o artigo 45 da NR-17 sobre trabalho remoto"
+        ],
+        "citations": [
+          {
+            "document_id": "nr17",
+            "section": "Artigo 45 - Teletrabalho e Notebooks",
+            "page": 38,
+            "exact_quote": "O empregador fornecerá suporte articulado de alumínio para notebooks acima de 2 horas diárias."
+          }
+        ]
+      }
+    },
+    {
+      "id": "gt-03",
+      "category": "distancia_visual_bancada",
+      "question": "Quais requisitos a altura da bancada ou mesa de trabalho sentado deve atender em relação à distância dos olhos e ao assento na NR-17?",
+      "deviation_type": "TOO_CLOSE",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.6 Mobiliário dos postos de trabalho"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "De acordo com o item 17.6.3 da NR-17, bancadas, mesas e escrivaninhas devem proporcionar boa postura, visualização e operação, apresentando altura e características da superfície de trabalho compatíveis com o tipo de atividade, com a distância requerida dos olhos ao campo de trabalho e com a altura do assento, além de espaço livre para movimentação dos segmentos corporais.",
+      "required_concepts": [
+        "superfície de trabalho",
+        "distância requerida dos olhos",
+        "altura do assento",
+        "movimentação"
+      ],
+      "pure_llm_baseline": {
+        "answer": "A mesa deve ter altura compatível com o assento e com a distância dos olhos ao trabalho, mas a NR-17 determina altura padrão fixa de 75 cm para todas as mesas de escritório no Brasil.",
+        "claims": [
+          "A mesa deve ter altura compatível com o assento e com a distância dos olhos ao trabalho",
+          "a NR-17 determina altura padrão fixa de 75 cm para todas as mesas de escritório no Brasil"
+        ],
+        "citations": []
+      }
+    },
+    {
+      "id": "gt-04",
+      "category": "assento_apoio_pes",
+      "question": "Quais são os requisitos mínimos de conforto para os assentos e quando deve ser utilizado apoio para os pés segundo a NR-17?",
+      "deviation_type": "SHOULDER_TILT",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.6 Mobiliário dos postos de trabalho"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "Segundo o item 17.6.6 da NR-17, os assentos devem ter altura ajustável à estatura do trabalhador, ajustes acessíveis, pouca ou nenhuma conformação na base, borda frontal arredondada e encosto adaptado para proteção da região lombar. Conforme o item 17.6.4, utiliza-se apoio para os pés sempre que o trabalhador não puder apoiar completamente a planta dos pés no piso.",
+      "required_concepts": [
+        "altura ajustável",
+        "borda frontal arredondada",
+        "região lombar",
+        "apoio para os pés"
+      ],
+      "pure_llm_baseline": {
+        "answer": "A cadeira precisa ter altura ajustável, borda frontal arredondada e apoio lombar. Além disso, a NR-17 exige cadeiras com encosto de tela mesh certificada e pistão a gás classe 4.",
+        "claims": [
+          "A cadeira precisa ter altura ajustável, borda frontal arredondada e apoio lombar",
+          "a NR-17 exige cadeiras com encosto de tela mesh certificada e pistão a gás classe 4"
+        ],
+        "citations": [
+          {
+            "document_id": "nr17",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 9,
+            "exact_quote": "Todo assento deve conter encosto em tela mesh respirável e pistão classe 4."
+          }
+        ]
+      }
+    },
+    {
+      "id": "gt-05",
+      "category": "sobrecarga_muscular_estatica",
+      "question": "O que a NR-17 estabelece para atividades que exigem sobrecarga muscular estática ou dinâmica do pescoço, cabeça, tronco e ombros?",
+      "deviation_type": "SHOULDER_TILT",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.4 Organização do trabalho"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "Segundo o item 17.4.2 da NR-17, nas atividades que exijam sobrecarga muscular estática ou dinâmica do tronco, do pescoço, da cabeça, dos membros superiores e inferiores, devem ser adotadas medidas técnicas de engenharia, organizacionais e/ou administrativas para eliminar ou reduzir essas sobrecargas, a partir da avaliação ergonômica preliminar ou da AET.",
+      "required_concepts": [
+        "sobrecarga muscular estática",
+        "pescoço",
+        "medidas técnicas",
+        "avaliação ergonômica"
+      ],
+      "pure_llm_baseline": {
+        "answer": "Para evitar sobrecarga muscular no pescoço e ombros, a NR-17 recomenda sessões obrigatórias de massoterapia quinzenal custeadas pela empresa e uso de colete postural ortopédico.",
+        "claims": [
+          "a NR-17 recomenda sessões obrigatórias de massoterapia quinzenal custeadas pela empresa",
+          "uso de colete postural ortopédico"
+        ],
+        "citations": []
+      }
+    },
+    {
+      "id": "gt-06",
+      "category": "pausas_posturas_nocivas",
+      "question": "Quais alternativas de medidas de prevenção a NR-17 prevê para evitar posturas extremas ou nocivas contínuas do tronco, pescoço e cabeça?",
+      "deviation_type": "HEAD_TILT",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.4 Organização do trabalho"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "Conforme os itens 17.4.3 e 17.4.3.1 da NR-17, as medidas de prevenção para evitar posturas extremas ou nocivas do tronco, pescoço e cabeça devem incluir alternativas como pausas para propiciar a recuperação psicofisiológica dos trabalhadores (computadas como tempo de trabalho efetivo) e alternância de atividades com outras tarefas que permitam variar posturas e grupos musculares.",
+      "required_concepts": [
+        "posturas extremas ou nocivas",
+        "pausas",
+        "recuperação psicofisiológica",
+        "alternância de atividades"
+      ],
+      "pure_llm_baseline": {
+        "answer": "A NR-17 prevê pausas para recuperação psicofisiológica e alternância de tarefas, determinando no item 17.4.3.1 que todo trabalhador de escritório tem direito a 15 minutos de pausa a cada 45 minutos digitados.",
+        "claims": [
+          "A NR-17 prevê pausas para recuperação psicofisiológica e alternância de tarefas",
+          "determinando no item 17.4.3.1 que todo trabalhador de escritório tem direito a 15 minutos de pausa a cada 45 minutos digitados"
+        ],
+        "citations": [
+          {
+            "document_id": "nr17",
+            "section": "17.4 Organização do trabalho",
+            "page": 5,
+            "exact_quote": "Todo trabalhador terá 15 minutos de pausa a cada 45 minutos de digitação contínua."
+          }
+        ]
+      }
+    },
+    {
+      "id": "gt-07",
+      "category": "conforto_ambiental_iluminacao",
+      "question": "Como deve ser projetada a iluminação no ambiente de trabalho e quais medidas de conforto são exigidas para atividades de atenção constante na NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.8 Condições de conforto no ambiente de trabalho"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "Segundo o item 17.8 da NR-17, a iluminação deve ser apropriada à natureza da atividade e projetada de forma a evitar ofuscamento, reflexos incômodos, sombras e contrastes excessivos. Além disso, em ambientes internos com solicitação intelectual e atenção constantes, devem ser adotadas medidas de conforto acústico e térmico.",
+      "required_concepts": [
+        "iluminação",
+        "ofuscamento",
+        "reflexos incômodos",
+        "conforto acústico",
+        "conforto térmico"
+      ],
+      "pure_llm_baseline": {
+        "answer": "A iluminação deve evitar reflexos e ofuscamento, e a NR-17 atual exige exatamente 750 lux medidos na mesa e temperatura fixa em 21 graus Celsius.",
+        "claims": [
+          "A iluminação deve evitar reflexos e ofuscamento",
+          "a NR-17 atual exige exatamente 750 lux medidos na mesa e temperatura fixa em 21 graus Celsius"
+        ],
+        "citations": []
+      }
+    },
+    {
+      "id": "gt-08",
+      "category": "avaliacao_ergonomica_aep_aet",
+      "question": "Qual a diferença entre o momento de realizar a avaliação ergonômica preliminar (AEP) e a Análise Ergonômica do Trabalho (AET) na NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.3 Avaliação das situações de trabalho"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "Conforme o item 17.3 da NR-17, a avaliação ergonômica preliminar (AEP) deve ser realizada pela organização para subsidiar medidas de prevenção e adaptação das situações de trabalho, enquanto a Análise Ergonômica do Trabalho (AET) é exigida quando observada necessidade de avaliação mais aprofundada ou identificadas inadequações ou insuficiência das ações adotadas.",
+      "required_concepts": [
+        "avaliação ergonômica preliminar",
+        "Análise Ergonômica do Trabalho",
+        "avaliação mais aprofundada",
+        "insuficiência das ações"
+      ],
+      "pure_llm_baseline": {
+        "answer": "A AEP é feita apenas por empresas com menos de 50 funcionários, enquanto a AET é obrigatória anualmente para todas as empresas com mais de 50 funcionários segundo o item 17.3.9.",
+        "claims": [
+          "A AEP é feita apenas por empresas com menos de 50 funcionários",
+          "a AET é obrigatória anualmente para todas as empresas com mais de 50 funcionários segundo o item 17.3.9"
+        ],
+        "citations": [
+          {
+            "document_id": "nr17",
+            "section": "17.3 Avaliação das situações de trabalho",
+            "page": 2,
+            "exact_quote": "Empresas acima de 50 empregados renovarão a AET anualmente."
+          }
+        ]
+      }
+    },
+    {
+      "id": "gt-09",
+      "category": "oms_comportamento_sedentario",
+      "question": "Quais são as recomendações da OMS (2020) sobre limitar o tempo em comportamento sedentário e interromper períodos prolongados sentado?",
+      "deviation_type": "BREAK_NEEDED",
+      "expected_document_id": "oms2020",
+      "expected_sections": [
+        "Recomendações para Adultos (18–64 anos) — Comportamento Sedentário"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "As diretrizes da OMS (2020) recomendam que adultos limitem o tempo gasto em comportamento sedentário e substituam o tempo sentado por atividade física de qualquer intensidade (inclusive leve), interrompendo períodos prolongados na posição sentada com pausas ativas.",
+      "required_concepts": [
+        "comportamento sedentário",
+        "qualquer intensidade",
+        "pausas ativas"
+      ],
+      "pure_llm_baseline": {
+        "answer": "A OMS 2020 recomenda limitar o comportamento sedentário e estabelece um limite máximo estrito de 3 horas e 30 minutos sentado por dia para evitar trombose ocupacional.",
+        "claims": [
+          "A OMS 2020 recomenda limitar o comportamento sedentário",
+          "estabelece um limite máximo estrito de 3 horas e 30 minutos sentado por dia para evitar trombose ocupacional"
+        ],
+        "citations": [
+          {
+            "document_id": "oms2020",
+            "section": "Limites Diários de Tempo Sentado",
+            "page": 55,
+            "exact_quote": "Adults must never exceed 3 hours and 30 minutes of sitting per day."
+          }
+        ]
+      }
+    },
+    {
+      "id": "gt-10",
+      "category": "oms_atividade_aerobica_semanal",
+      "question": "Qual o volume semanal de atividade física aeróbica moderada ou vigorosa recomendado pela OMS (2020) para adultos?",
+      "expected_document_id": "oms2020",
+      "expected_sections": [
+        "Recomendações para Adultos (18–64 anos) — Atividade Física Aeróbica"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout",
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "Segundo as diretrizes da OMS (2020), adultos devem realizar pelo menos 150 a 300 minutos semanais de atividade física aeróbica de moderada intensidade, ou pelo menos 75 a 150 minutos semanais de atividade física aeróbica de vigorosa intensidade, destacando que todo movimento conta.",
+      "required_concepts": [
+        "150 a 300 minutos",
+        "moderada intensidade",
+        "75 a 150 minutos",
+        "todo movimento conta"
+      ],
+      "pure_llm_baseline": {
+        "answer": "A OMS recomenda de 150 a 300 minutos de atividade moderada por semana, mas exige que cada sessão dure no mínimo 30 minutos ininterruptos para ter efeito fisiológico.",
+        "claims": [
+          "A OMS recomenda de 150 a 300 minutos de atividade moderada por semana",
+          "exige que cada sessão dure no mínimo 30 minutos ininterruptos para ter efeito fisiológico"
+        ],
+        "citations": []
+      }
+    },
+    {
+      "id": "gt-11",
+      "category": "nr17_anexo_checkout",
+      "question": "Quais são os requisitos ergonômicos para a cadeira, apoio de pés e balança no posto de trabalho do operador de checkout segundo o Anexo I da NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout"
+      ],
+      "forbidden_sections": [
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "reference_answer": "Conforme o Anexo I da NR-17, o posto do operador de checkout deve contar com cadeira de trabalho com assento e encosto para apoio lombar ajustáveis, apoio para os pés independente da cadeira e balança de pesagem nivelada com a superfície do checkout e próxima ao operador.",
+      "required_concepts": [
+        "operador de checkout",
+        "apoio para os pés",
+        "independente da cadeira",
+        "balança"
+      ],
+      "pure_llm_baseline": {
+        "answer": "No checkout, o operador deve ter cadeira ajustável e apoio para os pés acoplado diretamente na base giratória da cadeira, com balança suspensa acima do monitor.",
+        "claims": [
+          "No checkout, o operador deve ter cadeira ajustável",
+          "apoio para os pés acoplado diretamente na base giratória da cadeira, com balança suspensa acima do monitor"
+        ],
+        "citations": []
+      }
+    },
+    {
+      "id": "gt-12",
+      "category": "nr17_anexo_teleatendimento",
+      "question": "Como devem ser concedidas as pausas para recuperação e o ajuste de monitor e teclado no trabalho em teleatendimento/telemarketing segundo o Anexo II da NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "forbidden_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout"
+      ],
+      "reference_answer": "Segundo o Anexo II da NR-17, o mobiliário em teleatendimento deve ter monitor de vídeo e teclado em superfícies com mecanismos de regulagem independentes, e as pausas de recuperação para jornada de até 6 horas devem ser concedidas fora do posto de trabalho em dois períodos de 10 minutos contínuos.",
+      "required_concepts": [
+        "regulagem independentes",
+        "fora do posto de trabalho",
+        "dois períodos de 10 minutos"
+      ],
+      "pure_llm_baseline": {
+        "answer": "No teleatendimento, as pausas são de dois períodos de 10 minutos, podendo ser fracionadas em 4 pausas de 5 minutos dentro do próprio posto de trabalho conforme o Anexo II.",
+        "claims": [
+          "No teleatendimento, as pausas são de dois períodos de 10 minutos",
+          "podendo ser fracionadas em 4 pausas de 5 minutos dentro do próprio posto de trabalho conforme o Anexo II"
+        ],
+        "citations": []
+      }
+    }
+  ]
+}

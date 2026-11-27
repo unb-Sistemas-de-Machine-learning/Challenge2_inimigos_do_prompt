@@ -1,0 +1,1210 @@
+{
+  "experiment_id": "EXP-01-LLM-VS-RAG",
+  "version": "1.0.0",
+  "execution_mode": "deterministic_offline_benchmark",
+  "scope_notice": "Harness determinístico offline para CI e validação de métricas (Hit Rate, MRR, Faithfulness, Hallucination Rate e exact_quote). As respostas do LLM Puro vêm do baseline estático `pure_llm_baseline` em rag_ground_truth.json e o RAG utiliza síntese extrativa determinística sobre o corpus curado (rag_corpus_oficial.json), sem chamadas em tempo real à API google-genai.",
+  "k": 3,
+  "total_questions": 12,
+  "corpus_chunks_count": 11,
+  "retrieval_metrics": {
+    "hit_rate_at_k": 1.0,
+    "precision_at_k": 0.4444,
+    "f1_at_k": 0.6154,
+    "mrr_at_k": 1.0,
+    "forbidden_leakage_rate_queries": 0.0,
+    "forbidden_leakage_rate_chunks": 0.0
+  },
+  "comparison_summary": {
+    "pure_llm": {
+      "mean_faithfulness": 0.2639,
+      "mean_hallucination_rate": 0.7361,
+      "responses_with_hallucination_rate": 1.0,
+      "verified_citation_rate": 0.0,
+      "mean_concept_recall": 0.2764
+    },
+    "rag": {
+      "mean_faithfulness": 1.0,
+      "mean_hallucination_rate": 0.0,
+      "responses_with_hallucination_rate": 0.0,
+      "verified_citation_rate": 1.0,
+      "mean_concept_recall": 0.807
+    },
+    "deltas_rag_minus_llm": {
+      "faithfulness_gain": 0.7361,
+      "hallucination_reduction": 0.7361,
+      "verified_citation_gain": 1.0,
+      "concept_recall_gain": 0.5306
+    }
+  },
+  "questions": [
+    {
+      "id": "gt-01",
+      "category": "ergonomia_monitor",
+      "question": "Como a tela do computador deve ser posicionada em relação à iluminação do ambiente e ao ângulo de visão segundo a NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais",
+        "17.6 Mobiliário dos postos de trabalho"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.3333,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "nr17_17_7_equipamentos_telas_notebook_01",
+            "document_id": "nr17",
+            "section": "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais",
+            "page": 10,
+            "score": 0.846,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "nr17_17_8_conforto_iluminacao_01",
+            "document_id": "nr17",
+            "section": "17.8 Condições de conforto no ambiente de trabalho",
+            "page": 11,
+            "score": 0.585,
+            "relevant": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_3_aep_01",
+            "document_id": "nr17",
+            "section": "17.3 Avaliação das situações de trabalho",
+            "page": 2,
+            "score": 0.2431,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "De acordo com a NR-17 item 17.9.4.2, a tela deve ficar obrigatória e exatamente a 72 centímetros dos olhos, inclinada em 22 graus exatos, com filtro polarizador certificado pelo INMETRO.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 0,
+          "unsupported_claims": 2,
+          "total_citations": 1,
+          "verified_citations": 0,
+          "fabricated_citations": 1,
+          "faithfulness": 0.0,
+          "hallucination_rate": 1.0,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.0,
+          "matched_concepts": [],
+          "unsupported_claim_examples": [
+            "De acordo com a NR-17 item 17.9.4.2, a tela deve ficar obrigatória e exatamente a 72 centímetros dos olhos",
+            "inclinada em 22 graus exatos, com filtro polarizador certificado pelo INMETRO"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Norma Regulamentadora nº 17 (NR-17) — Ergonomia (17.7 Trabalho com máquinas, equipamentos e ferramentas manuais, pág. 10): 17.7.3.1 Os equipamentos devem ter condições de mobilidade suficiente para permitir o ajuste da tela do equipamento à iluminação do ambiente, protegendo-a contra reflexos, e proporcionar corretos ângulos de visibilidade ao trabalhador. 17.7.3.2 Nas atividades com uso de computador portátil de forma não eventual em posto de trabalho, devem ser previstas formas de adaptação do teclado, do mouse ou da tela a fim de permitir o ajuste às características antropométricas do trabalhador e à natureza das tarefas a serem executadas.",
+        "citations": [
+          {
+            "document_id": "nr17",
+            "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+            "section": "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais",
+            "page": 10,
+            "exact_quote": "17.7.3.1 Os equipamentos devem ter condições de mobilidade suficiente para permitir o ajuste da tela do equipamento à iluminação do ambiente, protegendo-a contra reflexos, e proporcionar corretos ângulos de visibilidade ao trabalhador."
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 1.0,
+          "matched_concepts": [
+            "ajuste da tela",
+            "reflexos",
+            "ângulos de visibilidade"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-02",
+      "category": "uso_notebook",
+      "question": "Quais adaptações a NR-17 exige quando o trabalhador utiliza computador portátil (notebook) de forma não eventual no posto de trabalho?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.3333,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "nr17_17_7_equipamentos_telas_notebook_01",
+            "document_id": "nr17",
+            "section": "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais",
+            "page": 10,
+            "score": 0.8535,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "nr17_17_6_mobiliario_assento_01",
+            "document_id": "nr17",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 8,
+            "score": 0.4647,
+            "relevant": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_6_cadeira_apoio_pes_02",
+            "document_id": "nr17",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 9,
+            "score": 0.4052,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "Para uso de notebook, é recomendável usar um suporte elevador, teclado externo e mouse para manter a cabeça alinhada, conforme o artigo 45 da NR-17 sobre trabalho remoto.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 0,
+          "unsupported_claims": 2,
+          "total_citations": 1,
+          "verified_citations": 0,
+          "fabricated_citations": 1,
+          "faithfulness": 0.0,
+          "hallucination_rate": 1.0,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.25,
+          "matched_concepts": [
+            "mouse"
+          ],
+          "unsupported_claim_examples": [
+            "Para uso de notebook, é recomendável usar um suporte elevador, teclado externo e mouse",
+            "conforme o artigo 45 da NR-17 sobre trabalho remoto"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Norma Regulamentadora nº 17 (NR-17) — Ergonomia (17.7 Trabalho com máquinas, equipamentos e ferramentas manuais, pág. 10): 17.7.3.2 Nas atividades com uso de computador portátil de forma não eventual em posto de trabalho, devem ser previstas formas de adaptação do teclado, do mouse ou da tela a fim de permitir o ajuste às características antropométricas do trabalhador e à natureza das tarefas a serem executadas. 17.7.3 Os equipamentos utilizados no processamento eletrônico de dados com terminais de vídeo devem permitir ao trabalhador ajustá-los de acordo com as tarefas a serem executadas.",
+        "citations": [
+          {
+            "document_id": "nr17",
+            "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+            "section": "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais",
+            "page": 10,
+            "exact_quote": "17.7.3.2 Nas atividades com uso de computador portátil de forma não eventual em posto de trabalho, devem ser previstas formas de adaptação do teclado, do mouse ou da tela a fim de permitir o ajuste às características antropométricas do trabalhador e à natureza das tarefas a serem executadas."
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 1.0,
+          "matched_concepts": [
+            "computador portátil",
+            "adaptação do teclado",
+            "mouse",
+            "tela"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-03",
+      "category": "distancia_visual_bancada",
+      "question": "Quais requisitos a altura da bancada ou mesa de trabalho sentado deve atender em relação à distância dos olhos e ao assento na NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.6 Mobiliário dos postos de trabalho"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.6667,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "nr17_17_6_mobiliario_assento_01",
+            "document_id": "nr17",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 8,
+            "score": 0.8834,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "nr17_17_6_cadeira_apoio_pes_02",
+            "document_id": "nr17",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 9,
+            "score": 0.5967,
+            "relevant": true
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_8_conforto_iluminacao_01",
+            "document_id": "nr17",
+            "section": "17.8 Condições de conforto no ambiente de trabalho",
+            "page": 11,
+            "score": 0.2565,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "A mesa deve ter altura compatível com o assento e com a distância dos olhos ao trabalho, mas a NR-17 determina altura padrão fixa de 75 cm para todas as mesas de escritório no Brasil.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 1,
+          "unsupported_claims": 1,
+          "total_citations": 0,
+          "verified_citations": 0,
+          "fabricated_citations": 0,
+          "faithfulness": 0.5,
+          "hallucination_rate": 0.5,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.0,
+          "matched_concepts": [],
+          "unsupported_claim_examples": [
+            "a NR-17 determina altura padrão fixa de 75 cm para todas as mesas de escritório no Brasil"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Norma Regulamentadora nº 17 (NR-17) — Ergonomia (17.6 Mobiliário dos postos de trabalho, pág. 8): 17.6.3 Para trabalho manual sentado ou que tenha de ser feito em pé, as bancadas, mesas, escrivaninhas e os painéis devem proporcionar ao trabalhador condições de boa postura, visualização e operação e devem atender, no mínimo, aos seguintes requisitos: a) características dimensionais que possibilitem posicionamento e movimentação dos segmentos corporais de forma a não comprometer a saúde e não ocasionar amplitudes articulares excessivas ou posturas nocivas de trabalho; b) altura e características da superfície de trabalho compatíveis com o tipo de atividade, com a distância requerida dos olhos ao campo de trabalho e com a altura do assento;",
+        "citations": [
+          {
+            "document_id": "nr17",
+            "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 8,
+            "exact_quote": "17.6.3 Para trabalho manual sentado ou que tenha de ser feito em pé, as bancadas, mesas, escrivaninhas e os painéis devem proporcionar ao trabalhador condições de boa postura, visualização e operação e devem atender, no mínimo, aos seguintes requisitos: a) características dimensionais que possibilitem posicionamento e movimentação dos segmentos corporais de forma a não comprometer a saúde e não ocasionar amplitudes articulares excessivas ou posturas nocivas de trabalho;"
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 1.0,
+          "matched_concepts": [
+            "superfície de trabalho",
+            "distância requerida dos olhos",
+            "altura do assento",
+            "movimentação"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-04",
+      "category": "assento_apoio_pes",
+      "question": "Quais são os requisitos mínimos de conforto para os assentos e quando deve ser utilizado apoio para os pés segundo a NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.6 Mobiliário dos postos de trabalho"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.6667,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "nr17_17_6_cadeira_apoio_pes_02",
+            "document_id": "nr17",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 9,
+            "score": 0.8797,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "nr17_17_8_conforto_iluminacao_01",
+            "document_id": "nr17",
+            "section": "17.8 Condições de conforto no ambiente de trabalho",
+            "page": 11,
+            "score": 0.4373,
+            "relevant": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_6_mobiliario_assento_01",
+            "document_id": "nr17",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 8,
+            "score": 0.2502,
+            "relevant": true
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "A cadeira precisa ter altura ajustável, borda frontal arredondada e apoio lombar. Além disso, a NR-17 exige cadeiras com encosto de tela mesh certificada e pistão a gás classe 4.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 1,
+          "unsupported_claims": 1,
+          "total_citations": 1,
+          "verified_citations": 0,
+          "fabricated_citations": 1,
+          "faithfulness": 0.3333,
+          "hallucination_rate": 0.6667,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.5,
+          "matched_concepts": [
+            "altura ajustável",
+            "borda frontal arredondada"
+          ],
+          "unsupported_claim_examples": [
+            "a NR-17 exige cadeiras com encosto de tela mesh certificada e pistão a gás classe 4"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Norma Regulamentadora nº 17 (NR-17) — Ergonomia (17.6 Mobiliário dos postos de trabalho, pág. 9): 17.6.6 Os assentos utilizados nos postos de trabalho devem atender aos seguintes requisitos mínimos de conforto: a) altura ajustável à estatura do trabalhador e à natureza da função exercida; 17.6.4 Para adaptação do mobiliário às dimensões antropométricas do trabalhador, pode ser utilizado apoio para os pés sempre que o trabalhador não puder manter a planta dos pés completamente apoiada no piso.",
+        "citations": [
+          {
+            "document_id": "nr17",
+            "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 9,
+            "exact_quote": "17.6.6 Os assentos utilizados nos postos de trabalho devem atender aos seguintes requisitos mínimos de conforto: a) altura ajustável à estatura do trabalhador e à natureza da função exercida;"
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 0.5,
+          "matched_concepts": [
+            "altura ajustável",
+            "apoio para os pés"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-05",
+      "category": "sobrecarga_muscular_estatica",
+      "question": "O que a NR-17 estabelece para atividades que exigem sobrecarga muscular estática ou dinâmica do pescoço, cabeça, tronco e ombros?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.4 Organização do trabalho"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.6667,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "nr17_17_4_org_pausas_01",
+            "document_id": "nr17",
+            "section": "17.4 Organização do trabalho",
+            "page": 4,
+            "score": 0.8416,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "nr17_17_4_pausas_psicofisiologicas_02",
+            "document_id": "nr17",
+            "section": "17.4 Organização do trabalho",
+            "page": 5,
+            "score": 0.4488,
+            "relevant": true
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_3_aep_01",
+            "document_id": "nr17",
+            "section": "17.3 Avaliação das situações de trabalho",
+            "page": 2,
+            "score": 0.1426,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "Para evitar sobrecarga muscular no pescoço e ombros, a NR-17 recomenda sessões obrigatórias de massoterapia quinzenal custeadas pela empresa e uso de colete postural ortopédico.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 0,
+          "unsupported_claims": 2,
+          "total_citations": 0,
+          "verified_citations": 0,
+          "fabricated_citations": 0,
+          "faithfulness": 0.0,
+          "hallucination_rate": 1.0,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.25,
+          "matched_concepts": [
+            "pescoço"
+          ],
+          "unsupported_claim_examples": [
+            "a NR-17 recomenda sessões obrigatórias de massoterapia quinzenal custeadas pela empresa",
+            "uso de colete postural ortopédico"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Norma Regulamentadora nº 17 (NR-17) — Ergonomia (17.4 Organização do trabalho, pág. 4): 17.4.2 Nas atividades que exijam sobrecarga muscular estática ou dinâmica do tronco, do pescoço, da cabeça, dos membros superiores e dos membros inferiores, devem ser adotadas medidas técnicas de engenharia, organizacionais e/ou administrativas, com o objetivo de eliminar ou reduzir essas sobrecargas, a partir da avaliação ergonômica preliminar ou da AET. 17.4.1 A organização do trabalho, para efeito desta NR, deve levar em consideração: a) as normas de produção;",
+        "citations": [
+          {
+            "document_id": "nr17",
+            "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+            "section": "17.4 Organização do trabalho",
+            "page": 4,
+            "exact_quote": "17.4.2 Nas atividades que exijam sobrecarga muscular estática ou dinâmica do tronco, do pescoço, da cabeça, dos membros superiores e dos membros inferiores, devem ser adotadas medidas técnicas de engenharia, organizacionais e/ou administrativas, com o objetivo de eliminar ou reduzir essas sobrecargas, a partir da avaliação ergonômica preliminar ou da AET."
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 1.0,
+          "matched_concepts": [
+            "sobrecarga muscular estática",
+            "pescoço",
+            "medidas técnicas",
+            "avaliação ergonômica"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-06",
+      "category": "pausas_posturas_nocivas",
+      "question": "Quais alternativas de medidas de prevenção a NR-17 prevê para evitar posturas extremas ou nocivas contínuas do tronco, pescoço e cabeça?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.4 Organização do trabalho"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.6667,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "nr17_17_4_pausas_psicofisiologicas_02",
+            "document_id": "nr17",
+            "section": "17.4 Organização do trabalho",
+            "page": 5,
+            "score": 0.8658,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "nr17_17_4_org_pausas_01",
+            "document_id": "nr17",
+            "section": "17.4 Organização do trabalho",
+            "page": 4,
+            "score": 0.4422,
+            "relevant": true
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_8_conforto_iluminacao_01",
+            "document_id": "nr17",
+            "section": "17.8 Condições de conforto no ambiente de trabalho",
+            "page": 11,
+            "score": 0.3006,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "A NR-17 prevê pausas para recuperação psicofisiológica e alternância de tarefas, determinando no item 17.4.3.1 que todo trabalhador de escritório tem direito a 15 minutos de pausa a cada 45 minutos digitados.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 1,
+          "unsupported_claims": 1,
+          "total_citations": 1,
+          "verified_citations": 0,
+          "fabricated_citations": 1,
+          "faithfulness": 0.3333,
+          "hallucination_rate": 0.6667,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.5,
+          "matched_concepts": [
+            "pausas",
+            "recuperação psicofisiológica"
+          ],
+          "unsupported_claim_examples": [
+            "determinando no item 17.4.3.1 que todo trabalhador de escritório tem direito a 15 minutos de pausa a cada 45 minutos digitados"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Norma Regulamentadora nº 17 (NR-17) — Ergonomia (17.4 Organização do trabalho, pág. 5): 17.4.3 Devem ser implementadas medidas de prevenção, a partir da avaliação ergonômica preliminar ou da AET, que evitem que os trabalhadores, ao realizar suas atividades, sejam obrigados a efetuar de forma contínua e repetitiva: a) posturas extremas ou nocivas do tronco, do pescoço, da cabeça, dos membros superiores e/ou dos membros inferiores; 17.4.3.1 As medidas de prevenção devem incluir duas ou mais das seguintes alternativas: a) pausas para propiciar a recuperação psicofisiológica dos trabalhadores, que devem ser computadas como tempo de trabalho efetivo;",
+        "citations": [
+          {
+            "document_id": "nr17",
+            "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+            "section": "17.4 Organização do trabalho",
+            "page": 5,
+            "exact_quote": "17.4.3 Devem ser implementadas medidas de prevenção, a partir da avaliação ergonômica preliminar ou da AET, que evitem que os trabalhadores, ao realizar suas atividades, sejam obrigados a efetuar de forma contínua e repetitiva: a) posturas extremas ou nocivas do tronco, do pescoço, da cabeça, dos membros superiores e/ou dos membros inferiores;"
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 0.75,
+          "matched_concepts": [
+            "posturas extremas ou nocivas",
+            "pausas",
+            "recuperação psicofisiológica"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-07",
+      "category": "conforto_ambiental_iluminacao",
+      "question": "Como deve ser projetada a iluminação no ambiente de trabalho e quais medidas de conforto são exigidas para atividades de atenção constante na NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.8 Condições de conforto no ambiente de trabalho"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.3333,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "nr17_17_8_conforto_iluminacao_01",
+            "document_id": "nr17",
+            "section": "17.8 Condições de conforto no ambiente de trabalho",
+            "page": 11,
+            "score": 0.9221,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "nr17_17_7_equipamentos_telas_notebook_01",
+            "document_id": "nr17",
+            "section": "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais",
+            "page": 10,
+            "score": 0.3475,
+            "relevant": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_3_aep_01",
+            "document_id": "nr17",
+            "section": "17.3 Avaliação das situações de trabalho",
+            "page": 2,
+            "score": 0.3168,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "A iluminação deve evitar reflexos e ofuscamento, e a NR-17 atual exige exatamente 750 lux medidos na mesa e temperatura fixa em 21 graus Celsius.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 1,
+          "unsupported_claims": 1,
+          "total_citations": 0,
+          "verified_citations": 0,
+          "fabricated_citations": 0,
+          "faithfulness": 0.5,
+          "hallucination_rate": 0.5,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.4,
+          "matched_concepts": [
+            "iluminação",
+            "ofuscamento"
+          ],
+          "unsupported_claim_examples": [
+            "a NR-17 atual exige exatamente 750 lux medidos na mesa e temperatura fixa em 21 graus Celsius"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Norma Regulamentadora nº 17 (NR-17) — Ergonomia (17.8 Condições de conforto no ambiente de trabalho, pág. 11): 17.8.4 Nos locais de trabalho em ambientes internos onde são executadas atividades que exijam manutenção da solicitação intelectual e atenção constantes, devem ser adotadas medidas de conforto acústico e de conforto térmico. 17.8.1 Em todos os locais e situações de trabalho deve haver iluminação, natural ou artificial, geral ou suplementar, apropriada à natureza da atividade.",
+        "citations": [
+          {
+            "document_id": "nr17",
+            "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+            "section": "17.8 Condições de conforto no ambiente de trabalho",
+            "page": 11,
+            "exact_quote": "17.8.4 Nos locais de trabalho em ambientes internos onde são executadas atividades que exijam manutenção da solicitação intelectual e atenção constantes, devem ser adotadas medidas de conforto acústico e de conforto térmico."
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 0.6,
+          "matched_concepts": [
+            "iluminação",
+            "conforto acústico",
+            "conforto térmico"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-08",
+      "category": "avaliacao_ergonomica_aep_aet",
+      "question": "Qual a diferença entre o momento de realizar a avaliação ergonômica preliminar (AEP) e a Análise Ergonômica do Trabalho (AET) na NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "17.3 Avaliação das situações de trabalho"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.3333,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "nr17_17_3_aep_01",
+            "document_id": "nr17",
+            "section": "17.3 Avaliação das situações de trabalho",
+            "page": 2,
+            "score": 0.8551,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "nr17_17_4_org_pausas_01",
+            "document_id": "nr17",
+            "section": "17.4 Organização do trabalho",
+            "page": 4,
+            "score": 0.5122,
+            "relevant": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_4_pausas_psicofisiologicas_02",
+            "document_id": "nr17",
+            "section": "17.4 Organização do trabalho",
+            "page": 5,
+            "score": 0.4797,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "A AEP é feita apenas por empresas com menos de 50 funcionários, enquanto a AET é obrigatória anualmente para todas as empresas com mais de 50 funcionários segundo o item 17.3.9.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 0,
+          "unsupported_claims": 2,
+          "total_citations": 1,
+          "verified_citations": 0,
+          "fabricated_citations": 1,
+          "faithfulness": 0.0,
+          "hallucination_rate": 1.0,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.0,
+          "matched_concepts": [],
+          "unsupported_claim_examples": [
+            "A AEP é feita apenas por empresas com menos de 50 funcionários",
+            "a AET é obrigatória anualmente para todas as empresas com mais de 50 funcionários segundo o item 17.3.9"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Norma Regulamentadora nº 17 (NR-17) — Ergonomia (17.3 Avaliação das situações de trabalho, pág. 2): 17.3.1 A organização deve realizar a avaliação ergonômica preliminar das situações de trabalho que, em decorrência da natureza e conteúdo das atividades requeridas, demandam adaptação às características psicofisiológicas dos trabalhadores, a fim de subsidiar a implementação das medidas de prevenção e adequações necessárias previstas nesta NR. 17.3.2 A organização deve realizar Análise Ergonômica do Trabalho - AET da situação de trabalho quando observada a necessidade de uma avaliação mais aprofundada da situação ou identificadas inadequações ou insuficiência das ações adotadas.",
+        "citations": [
+          {
+            "document_id": "nr17",
+            "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+            "section": "17.3 Avaliação das situações de trabalho",
+            "page": 2,
+            "exact_quote": "17.3.1 A organização deve realizar a avaliação ergonômica preliminar das situações de trabalho que, em decorrência da natureza e conteúdo das atividades requeridas, demandam adaptação às características psicofisiológicas dos trabalhadores, a fim de subsidiar a implementação das medidas de prevenção e adequações necessárias previstas nesta NR."
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 1.0,
+          "matched_concepts": [
+            "avaliação ergonômica preliminar",
+            "Análise Ergonômica do Trabalho",
+            "avaliação mais aprofundada",
+            "insuficiência das ações"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-09",
+      "category": "oms_comportamento_sedentario",
+      "question": "Quais são as recomendações da OMS (2020) sobre limitar o tempo em comportamento sedentário e interromper períodos prolongados sentado?",
+      "expected_document_id": "oms2020",
+      "expected_sections": [
+        "Recomendações para Adultos (18–64 anos) — Comportamento Sedentário"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.3333,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "oms2020_sedentario_pausas_01",
+            "document_id": "oms2020",
+            "section": "Recomendações para Adultos (18–64 anos) — Comportamento Sedentário",
+            "page": 32,
+            "score": 0.8845,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "oms2020_volume_semanal_02",
+            "document_id": "oms2020",
+            "section": "Recomendações para Adultos (18–64 anos) — Atividade Física Aeróbica",
+            "page": 28,
+            "score": 0.3108,
+            "relevant": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_8_conforto_iluminacao_01",
+            "document_id": "nr17",
+            "section": "17.8 Condições de conforto no ambiente de trabalho",
+            "page": 11,
+            "score": 0.1745,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "A OMS 2020 recomenda limitar o comportamento sedentário e estabelece um limite máximo estrito de 3 horas e 30 minutos sentado por dia para evitar trombose ocupacional.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 0,
+          "unsupported_claims": 2,
+          "total_citations": 1,
+          "verified_citations": 0,
+          "fabricated_citations": 1,
+          "faithfulness": 0.0,
+          "hallucination_rate": 1.0,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.3333,
+          "matched_concepts": [
+            "comportamento sedentário"
+          ],
+          "unsupported_claim_examples": [
+            "A OMS 2020 recomenda limitar o comportamento sedentário",
+            "estabelece um limite máximo estrito de 3 horas e 30 minutos sentado por dia para evitar trombose ocupacional"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Diretrizes da OMS para Atividade Física e Comportamento Sedentário (Recomendações para Adultos (18–64 anos) — Comportamento Sedentário, pág. 32): Para ajudar a reduzir os efeitos prejudiciais de altos níveis de comportamento sedentário na saúde, todos os adultos e idosos devem procurar realizar mais do que os níveis recomendados de atividade física moderada a vigorosa e interromper períodos prolongados na posição sentada com pausas ativas. Adultos devem limitar a quantidade de tempo gasto em comportamento sedentário.",
+        "citations": [
+          {
+            "document_id": "oms2020",
+            "source": "Organização Mundial da Saúde (WHO Guidelines 2020)",
+            "section": "Recomendações para Adultos (18–64 anos) — Comportamento Sedentário",
+            "page": 32,
+            "exact_quote": "Para ajudar a reduzir os efeitos prejudiciais de altos níveis de comportamento sedentário na saúde, todos os adultos e idosos devem procurar realizar mais do que os níveis recomendados de atividade física moderada a vigorosa e interromper períodos prolongados na posição sentada com pausas ativas."
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 0.6667,
+          "matched_concepts": [
+            "comportamento sedentário",
+            "pausas ativas"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-10",
+      "category": "oms_atividade_aerobica_semanal",
+      "question": "Qual o volume semanal de atividade física aeróbica moderada ou vigorosa recomendado pela OMS (2020) para adultos?",
+      "expected_document_id": "oms2020",
+      "expected_sections": [
+        "Recomendações para Adultos (18–64 anos) — Atividade Física Aeróbica"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.3333,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "oms2020_volume_semanal_02",
+            "document_id": "oms2020",
+            "section": "Recomendações para Adultos (18–64 anos) — Atividade Física Aeróbica",
+            "page": 28,
+            "score": 0.8837,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "oms2020_sedentario_pausas_01",
+            "document_id": "oms2020",
+            "section": "Recomendações para Adultos (18–64 anos) — Comportamento Sedentário",
+            "page": 32,
+            "score": 0.6248,
+            "relevant": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_8_conforto_iluminacao_01",
+            "document_id": "nr17",
+            "section": "17.8 Condições de conforto no ambiente de trabalho",
+            "page": 11,
+            "score": 0.1099,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "A OMS recomenda de 150 a 300 minutos de atividade moderada por semana, mas exige que cada sessão dure no mínimo 30 minutos ininterruptos para ter efeito fisiológico.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 1,
+          "unsupported_claims": 1,
+          "total_citations": 0,
+          "verified_citations": 0,
+          "fabricated_citations": 0,
+          "faithfulness": 0.5,
+          "hallucination_rate": 0.5,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.25,
+          "matched_concepts": [
+            "150 a 300 minutos"
+          ],
+          "unsupported_claim_examples": [
+            "exige que cada sessão dure no mínimo 30 minutos ininterruptos para ter efeito fisiológico"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Diretrizes da OMS para Atividade Física e Comportamento Sedentário (Recomendações para Adultos (18–64 anos) — Atividade Física Aeróbica, pág. 28): Adultos devem fazer pelo menos 150 a 300 minutos de atividade física aeróbica de moderada intensidade, ou pelo menos 75 a 150 minutos de atividade física aeróbica de vigorosa intensidade ao longo da semana, para benefícios substanciais à saúde. Todos os adultos devem realizar atividade física regular.",
+        "citations": [
+          {
+            "document_id": "oms2020",
+            "source": "Organização Mundial da Saúde (WHO Guidelines 2020)",
+            "section": "Recomendações para Adultos (18–64 anos) — Atividade Física Aeróbica",
+            "page": 28,
+            "exact_quote": "Adultos devem fazer pelo menos 150 a 300 minutos de atividade física aeróbica de moderada intensidade, ou pelo menos 75 a 150 minutos de atividade física aeróbica de vigorosa intensidade ao longo da semana, para benefícios substanciais à saúde."
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 0.75,
+          "matched_concepts": [
+            "150 a 300 minutos",
+            "moderada intensidade",
+            "75 a 150 minutos"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-11",
+      "category": "nr17_anexo_checkout",
+      "question": "Quais são os requisitos ergonômicos para a cadeira, apoio de pés e balança no posto de trabalho do operador de checkout segundo o Anexo I da NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "Anexo I - Trabalho dos Operadores de Checkout"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.3333,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "nr17_anexo1_checkout_01",
+            "document_id": "nr17",
+            "section": "Anexo I - Trabalho dos Operadores de Checkout",
+            "page": 14,
+            "score": 0.9053,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "nr17_17_6_cadeira_apoio_pes_02",
+            "document_id": "nr17",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 9,
+            "score": 0.3618,
+            "relevant": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_6_mobiliario_assento_01",
+            "document_id": "nr17",
+            "section": "17.6 Mobiliário dos postos de trabalho",
+            "page": 8,
+            "score": 0.2607,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "No checkout, o operador deve ter cadeira ajustável e apoio para os pés acoplado diretamente na base giratória da cadeira, com balança suspensa acima do monitor.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 1,
+          "unsupported_claims": 1,
+          "total_citations": 0,
+          "verified_citations": 0,
+          "fabricated_citations": 0,
+          "faithfulness": 0.5,
+          "hallucination_rate": 0.5,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.5,
+          "matched_concepts": [
+            "apoio para os pés",
+            "balança"
+          ],
+          "unsupported_claim_examples": [
+            "apoio para os pés acoplado diretamente na base giratória da cadeira, com balança suspensa acima do monitor"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Norma Regulamentadora nº 17 (NR-17) — Anexo I (Anexo I - Trabalho dos Operadores de Checkout, pág. 14): 2.1 Em relação ao posto de trabalho do operador de checkout, deve-se instalar cadeira de trabalho com assento e encosto para apoio lombar, com estofamento de densidade adequada, ajustáveis à estatura do trabalhador e à natureza da tarefa, e colocar apoio para os pés, independente da cadeira. Anexo I - Trabalho dos Operadores de Checkout.",
+        "citations": [
+          {
+            "document_id": "nr17",
+            "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+            "section": "Anexo I - Trabalho dos Operadores de Checkout",
+            "page": 14,
+            "exact_quote": "2.1 Em relação ao posto de trabalho do operador de checkout, deve-se instalar cadeira de trabalho com assento e encosto para apoio lombar, com estofamento de densidade adequada, ajustáveis à estatura do trabalhador e à natureza da tarefa, e colocar apoio para os pés, independente da cadeira."
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 0.75,
+          "matched_concepts": [
+            "operador de checkout",
+            "apoio para os pés",
+            "independente da cadeira"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    },
+    {
+      "id": "gt-12",
+      "category": "nr17_anexo_teleatendimento",
+      "question": "Como devem ser concedidas as pausas para recuperação e o ajuste de monitor e teclado no trabalho em teleatendimento/telemarketing segundo o Anexo II da NR-17?",
+      "expected_document_id": "nr17",
+      "expected_sections": [
+        "Anexo II - Trabalho em Teleatendimento/Telemarketing"
+      ],
+      "retrieval": {
+        "hit_at_k": 1,
+        "precision_at_k": 0.3333,
+        "mrr": 1.0,
+        "forbidden_section_leakage": false,
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "nr17_anexo2_teleatendimento_01",
+            "document_id": "nr17",
+            "section": "Anexo II - Trabalho em Teleatendimento/Telemarketing",
+            "page": 19,
+            "score": 0.921,
+            "relevant": true
+          },
+          {
+            "rank": 2,
+            "chunk_id": "nr17_17_7_equipamentos_telas_notebook_01",
+            "document_id": "nr17",
+            "section": "17.7 Trabalho com máquinas, equipamentos e ferramentas manuais",
+            "page": 10,
+            "score": 0.3044,
+            "relevant": false
+          },
+          {
+            "rank": 3,
+            "chunk_id": "nr17_17_4_pausas_psicofisiologicas_02",
+            "document_id": "nr17",
+            "section": "17.4 Organização do trabalho",
+            "page": 5,
+            "score": 0.2199,
+            "relevant": false
+          }
+        ]
+      },
+      "pure_llm": {
+        "answer": "No teleatendimento, as pausas são de dois períodos de 10 minutos, podendo ser fracionadas em 4 pausas de 5 minutos dentro do próprio posto de trabalho conforme o Anexo II.",
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 1,
+          "unsupported_claims": 1,
+          "total_citations": 0,
+          "verified_citations": 0,
+          "fabricated_citations": 0,
+          "faithfulness": 0.5,
+          "hallucination_rate": 0.5,
+          "has_hallucination": true,
+          "has_verified_citation": false,
+          "concept_recall": 0.3333,
+          "matched_concepts": [
+            "dois períodos de 10 minutos"
+          ],
+          "unsupported_claim_examples": [
+            "podendo ser fracionadas em 4 pausas de 5 minutos dentro do próprio posto de trabalho conforme o Anexo II"
+          ]
+        }
+      },
+      "rag": {
+        "answer": "Segundo Norma Regulamentadora nº 17 (NR-17) — Anexo II (Anexo II - Trabalho em Teleatendimento/Telemarketing, pág. 19): 5.4.1 As pausas para recuperação em teleatendimento devem ser concedidas fora do posto de trabalho, em dois períodos de 10 minutos contínuos para jornada de até 6 horas, além do intervalo para repouso e alimentação. Anexo II - Trabalho em Teleatendimento/Telemarketing.",
+        "citations": [
+          {
+            "document_id": "nr17",
+            "source": "Ministério do Trabalho e Emprego (Portaria MTP nº 4.219/2022)",
+            "section": "Anexo II - Trabalho em Teleatendimento/Telemarketing",
+            "page": 19,
+            "exact_quote": "5.4.1 As pausas para recuperação em teleatendimento devem ser concedidas fora do posto de trabalho, em dois períodos de 10 minutos contínuos para jornada de até 6 horas, além do intervalo para repouso e alimentação."
+          }
+        ],
+        "metrics": {
+          "total_claims": 2,
+          "supported_claims": 2,
+          "unsupported_claims": 0,
+          "total_citations": 1,
+          "verified_citations": 1,
+          "fabricated_citations": 0,
+          "faithfulness": 1.0,
+          "hallucination_rate": 0.0,
+          "has_hallucination": false,
+          "has_verified_citation": true,
+          "concept_recall": 0.6667,
+          "matched_concepts": [
+            "fora do posto de trabalho",
+            "dois períodos de 10 minutos"
+          ],
+          "unsupported_claim_examples": []
+        }
+      }
+    }
+  ]
+}

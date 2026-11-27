@@ -4,7 +4,7 @@ import pytest
 
 from knowledge_base.chunk import chunk_text
 from knowledge_base.clean import clean_text, remove_repeated_lines
-from knowledge_base.ingest import UNSPECIFIED_SECTION, atualizar_secao
+from knowledge_base.ingest import UNSPECIFIED_SECTION, atualizar_secao, inferir_escopo
 
 
 def test_chunks_respeitam_tamanho_e_nao_perdem_texto():
@@ -117,6 +117,16 @@ def test_atualizar_secao_fallback_unspecified():
     ) == ("unspecified", "unspecified")
 
 
+def test_inferir_escopo_case_insensitive_e_sem_colisao_anexo_i_ii():
+    assert inferir_escopo("Anexo I - Trabalho dos Operadores de Checkout") == "checkout"
+    assert inferir_escopo("anexo i - checkout") == "checkout"
+    assert inferir_escopo("Anexo II - Trabalho em Teleatendimento/Telemarketing") == "telemarketing"
+    assert inferir_escopo("ANEXO II - TELEATENDIMENTO") == "telemarketing"
+    assert inferir_escopo("17.6 Mobiliário dos postos de trabalho") == "general"
+    assert inferir_escopo("unspecified") == "general"
+    assert inferir_escopo(None) == "general"
+
+
 def test_ingest_ponta_a_ponta_idempotente_e_exporta_chunks_jsonl(tmp_path):
     pytest.importorskip("chromadb")
     from knowledge_base.ingest import main
@@ -161,7 +171,7 @@ def test_ingest_ponta_a_ponta_idempotente_e_exporta_chunks_jsonl(tmp_path):
     col = chromadb.PersistentClient(path=str(tmp_path / "idx")).get_collection("ergonomia")
     assert col.count() == m1["fontes"]["doc"]["chunks"]  # não duplicou e removeu legado
     sample_meta = col.get(limit=1)["metadatas"][0]
-    for campo in ("document_id", "title", "source", "section", "page", "url", "document_type",
+    for campo in ("document_id", "title", "source", "section", "scope", "page", "url", "document_type",
                   "version", "license", "chunk"):
         assert campo in sample_meta
     assert sample_meta["document_id"] == "doc"
@@ -169,10 +179,65 @@ def test_ingest_ponta_a_ponta_idempotente_e_exporta_chunks_jsonl(tmp_path):
     assert sample_meta["document_type"] == "official"
     assert sample_meta["url"] == "https://example.org/doc"
     assert sample_meta["section"] == "unspecified"
+    assert sample_meta["scope"] == "general"
 
     # Valida exportação JSONL para consumo do BM25
     linhas = [json.loads(l) for l in chunks_out.read_text(encoding="utf-8").splitlines() if l.strip()]
     assert len(linhas) == col.count()
     assert set(linhas[0].keys()) == {"id", "text", "metadata"}
     assert linhas[0]["metadata"]["document_id"] == "doc"
+    assert linhas[0]["metadata"]["scope"] == "general"
     assert main(args + ["--strict"]) == 0
+
+
+def test_query_filtra_por_scope_padrao_general(tmp_path, capsys):
+    pytest.importorskip("chromadb")
+    from knowledge_base.ingest import main as ingest_main
+    from knowledge_base.query import main as query_main
+
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    (raw / "nr.txt").write_text(
+        "17.6 Mobiliário dos postos de trabalho\n"
+        "17.6.1 Altura do monitor no escritorio geral.\n\n"
+        "ANEXO II da NR 17 TRABALHO EM TELEATENDIMENTO/TELEMARKETING\n"
+        "3.1 Altura do monitor exclusivo para teleatendimento.\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "s.yaml").write_text(
+        "fontes:\n"
+        "  - id: nr17\n"
+        "    titulo: NR-17\n"
+        "    source: MTE\n"
+        "    document_type: official\n"
+        "    url_oficial: https://example.org/nr17\n"
+        "    arquivo_local: nr.txt\n"
+        "    versao: v1\n"
+        "    licenca: publica\n",
+        encoding="utf-8",
+    )
+    idx_dir = tmp_path / "idx"
+    manifest = tmp_path / "m.json"
+    chunks_out = tmp_path / "chunks.jsonl"
+    assert ingest_main([
+        "--sources", str(tmp_path / "s.yaml"),
+        "--raw-dir", str(raw),
+        "--index-dir", str(idx_dir),
+        "--manifest", str(manifest),
+        "--chunks-out", str(chunks_out),
+        "--embedder", "hash",
+        "--max-chars", "90",
+        "--overlap-chars", "0",
+    ]) == 0
+
+    query_main(["altura do monitor", "-k", "2", "--index-dir", str(idx_dir), "--manifest", str(manifest)])
+    out_general = capsys.readouterr().out
+    assert "[general |" in out_general
+    assert "[telemarketing |" not in out_general
+
+    query_main([
+        "altura do monitor", "-k", "2", "--scope", "telemarketing",
+        "--index-dir", str(idx_dir), "--manifest", str(manifest),
+    ])
+    out_tm = capsys.readouterr().out
+    assert "[telemarketing |" in out_tm

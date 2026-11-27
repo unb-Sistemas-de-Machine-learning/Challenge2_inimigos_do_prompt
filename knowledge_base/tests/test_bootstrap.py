@@ -71,6 +71,8 @@ def test_bootstrap_reconstroi_chroma_a_partir_de_chunks_jsonl_em_tmp_path(tmp_pa
     snap = col.get(ids=["nr17-p6-c0-abc12345"], include=["metadatas", "documents"])
     assert snap["metadatas"][0]["document_id"] == "nr17"
     assert snap["metadatas"][0]["section"] == "17.6 Mobiliário dos postos de trabalho"
+    # Fallback automático de scope quando ausente no JSONL de entrada
+    assert snap["metadatas"][0]["scope"] == "general"
     assert manifest_path.exists()
     m = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert m["parametros"]["embedder"] == "hash"
@@ -97,6 +99,7 @@ def test_bootstrap_corpus_versionado_completo_com_hash(tmp_path):
     assert corpus_manifest.exists(), "knowledge_base/corpus/manifest.json deve estar versionado"
     cm = json.loads(corpus_manifest.read_text(encoding="utf-8"))
     assert not Path(cm["parametros"]["chunks_jsonl"]).is_absolute()
+    assert cm["parametros"]["metadata_schema"] == "spec-6.5-v2"
 
     idx_dir = tmp_path / "chroma"
     manifest_path = tmp_path / "manifest.json"
@@ -111,6 +114,9 @@ def test_bootstrap_corpus_versionado_completo_com_hash(tmp_path):
 
     col = chromadb.PersistentClient(path=str(idx_dir)).get_collection("ergonomia")
     assert col.count() == 507
+    metas = col.get(include=["metadatas"])["metadatas"]
+    scopes = {m.get("scope") for m in metas}
+    assert scopes == {"general", "checkout", "telemarketing"}
     m = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert m["parametros"]["origem_bootstrap"] == "knowledge_base/corpus/chunks.jsonl"
 

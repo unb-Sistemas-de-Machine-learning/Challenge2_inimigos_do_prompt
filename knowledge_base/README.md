@@ -57,8 +57,9 @@ uv run --project backend --extra rag python -m knowledge_base.ingest --from-chun
 ### 2. Consulta, reingestão completa a partir dos PDFs e testes
 
 ```bash
-# Consulta rápida no índice (usa o mesmo embedder registrado em knowledge_base/processed/manifest.json)
+# Consulta rápida no índice (filtra por --scope general por padrão; use --scope all/checkout/telemarketing se necessário)
 uv run --project backend --extra rag python -m knowledge_base.query "altura do monitor" -k 3
+uv run --project backend --extra rag python -m knowledge_base.query "altura do monitor" -k 3 --scope all
 
 # Reingestão completa a partir de knowledge_base/raw/*.pdf (valida SHA-256 quando --strict está ativo)
 uv run --project backend --extra rag python -m knowledge_base.ingest --force --strict
@@ -74,7 +75,7 @@ uv run --project backend --extra dev pytest backend/tests knowledge_base/tests e
 
 - **Vector store:** ChromaDB persistente em `backend/data/chroma` (alinhado ao `CHROMA_PERSIST_DIR=./data/chroma` de `backend/.env.example`), coleção `ergonomia`.
 - **Corpus JSONL para BM25:** `knowledge_base/corpus/chunks.jsonl` (versionado) e `knowledge_base/processed/chunks.jsonl` (cópia de trabalho gerada no ingest/bootstrap) — um objeto JSON por linha (`{"id", "text", "metadata"}`).
-- **Metadados de cada chunk (alinhados ao `SPEC.md` §6.5 + rastreabilidade):** `document_id`, `title`, `source`, `section`, `page`, `url`, `document_type`, `version`, `license`, `chunk`. Ver `docs/adr/0002-contrato-metadados-indice-e-secoes.md`.
+- **Metadados de cada chunk (alinhados ao `SPEC.md` §6.5 + rastreabilidade/escopo `spec-6.5-v2`):** `document_id`, `title`, `source`, `section`, `scope` (`general`, `checkout`, `telemarketing`), `page`, `url`, `document_type`, `version`, `license`, `chunk`. Ver `docs/adr/0002-contrato-metadados-indice-e-secoes.md`.
 - **Manifesto:** `knowledge_base/processed/manifest.json` registra SHA-256 de cada fonte, versão, licença, nº de páginas/chunks e parâmetros de indexação com caminhos relativos.
 - **Consistência de embedder:** a consulta deve usar o mesmo embedder registrado no `manifest.json` (`knowledge_base.query` faz isso automaticamente). Trocar o embedder exige rodar novamente `knowledge_base.bootstrap` ou `knowledge_base.ingest --force`.
 

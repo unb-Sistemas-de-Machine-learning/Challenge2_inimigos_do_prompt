@@ -1,0 +1,1427 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Assistente Web de Monitoramento Postural em Tempo Real e Recomendações Ergonômicas via RAG (Challenge 2 — Inimigos do Prompt)">
+      
+      
+      
+      
+        <link rel="prev" href="../protocolo-avaliacao-rnf07/">
+      
+      
+        <link rel="next" href="../experimento-llm-vs-rag/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/img/ergo-sem-fundo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Concordância do Agente de Visão - ErgoAI Documentação</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Plus+Jakarta+Sans:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Plus Jakarta Sans";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/ergoai.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#avaliacao-de-concordancia-agente-de-visao-vs-checklist-manual-da-equipe" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="ErgoAI Documentação" class="md-header__button md-logo" aria-label="ErgoAI Documentação" data-md-component="logo">
+      
+  <img src="../assets/img/ergo-sem-fundo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ErgoAI Documentação
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Concordância do Agente de Visão
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Alternar para modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Alternar para modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Alternar para modo claro (ErgoAI Cream)"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Alternar para modo claro (ErgoAI Cream)" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/unb-Sistemas-de-Machine-learning/Challenge2_inimigos_do_prompt" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Challenge2_inimigos_do_prompt
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Início
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../especificacao-requisitos/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Especificação de Requisitos
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../roteiro-prototipo/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Roteiro do Protótipo
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../privacidade-foto-setup/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Privacidade na Foto do Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../cartoes-e-esquema/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Cartões e Esquema de Dados
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../protocolo-coleta-landmarks/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Protocolo de Coleta de Landmarks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../protocolo-avaliacao-rnf07/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Protocolo de Avaliação (RNF07)
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Concordância do Agente de Visão
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../experimento-llm-vs-rag/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Experimento LLM Puro vs. RAG
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../validacao-limiares-padroes-posturais/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Validação de Limiares e Padrões Posturais
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../adr/0001-embeddings-vector-store-e-chunking/" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ErgoAI Documentação" class="md-nav__button md-logo" aria-label="ErgoAI Documentação" data-md-component="logo">
+      
+  <img src="../assets/img/ergo-sem-fundo.png" alt="logo">
+
+    </a>
+    ErgoAI Documentação
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/unb-Sistemas-de-Machine-learning/Challenge2_inimigos_do_prompt" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Challenge2_inimigos_do_prompt
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../especificacao-requisitos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Especificação de Requisitos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roteiro-prototipo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roteiro do Protótipo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../privacidade-foto-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Privacidade na Foto do Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cartoes-e-esquema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cartões e Esquema de Dados
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../protocolo-coleta-landmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo de Coleta de Landmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../protocolo-avaliacao-rnf07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo de Avaliação (RNF07)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concordância do Agente de Visão
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concordância do Agente de Visão
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-objetivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Objetivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-checklist-manual-de-ergonomia-6-dimensoes-nr-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Checklist Manual de Ergonomia (6 Dimensões — NR-17)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-metodologia-e-metricas-estatisticas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Metodologia e Métricas Estatísticas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-resultados-consolidados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Resultados Consolidados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Resultados Consolidados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-desempenho-global-n-72-avaliacoes-em-12-fotos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. Desempenho Global (N = 72 avaliações em 12 fotos)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-desempenho-por-dimensao-ergonomica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2. Desempenho por Dimensão Ergonômica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-analise-de-erros-e-limitacoes-documentadas-rf16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3. Análise de Erros e Limitações Documentadas (RF16)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-como-reproduzir-a-avaliacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Como Reproduzir a Avaliação
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../experimento-llm-vs-rag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experimento LLM Puro vs. RAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validacao-limiares-padroes-posturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validação de Limiares e Padrões Posturais
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/0001-embeddings-vector-store-e-chunking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR 0001 — Embeddings, Vector Store e Chunking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/0002-contrato-metadados-indice-e-secoes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR 0002 — Metadados do Índice e Seções
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-objetivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Objetivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-checklist-manual-de-ergonomia-6-dimensoes-nr-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Checklist Manual de Ergonomia (6 Dimensões — NR-17)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-metodologia-e-metricas-estatisticas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Metodologia e Métricas Estatísticas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-resultados-consolidados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Resultados Consolidados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Resultados Consolidados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-desempenho-global-n-72-avaliacoes-em-12-fotos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. Desempenho Global (N = 72 avaliações em 12 fotos)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-desempenho-por-dimensao-ergonomica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2. Desempenho por Dimensão Ergonômica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-analise-de-erros-e-limitacoes-documentadas-rf16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3. Análise de Erros e Limitações Documentadas (RF16)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-como-reproduzir-a-avaliacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Como Reproduzir a Avaliação
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="avaliacao-de-concordancia-agente-de-visao-vs-checklist-manual-da-equipe">Avaliação de Concordância: Agente de Visão vs. Checklist Manual da Equipe<a class="headerlink" href="#avaliacao-de-concordancia-agente-de-visao-vs-checklist-manual-da-equipe" title="Permanent link">&para;</a></h1>
+<p><strong>Escopo:</strong> Issue #4 — Frente 3 (Visão Computacional &amp; Análise Multimodal)<br />
+<strong>Requisitos relacionados:</strong> RF15, RF16, RNF02, RNF07, RNF09 e <a href="../SPEC.md">SPEC.md</a> (§9.2, §10 e §13.1)</p>
+<hr />
+<h2 id="1-objetivo">1. Objetivo<a class="headerlink" href="#1-objetivo" title="Permanent link">&para;</a></h2>
+<p>Avaliar quantitativamente o nível de concordância entre as análises produzidas pelo <strong>Agente de Visão Multimodal (<code>SetupAnalysis</code>)</strong> e o <strong>checklist manual de ergonomia</strong> aplicado pela equipe em um conjunto padronizado de 12 fotos/cenários rotulados de postos de trabalho (<code>setup-photo-01</code> a <code>setup-photo-12</code>).</p>
+<blockquote>
+<p><strong>Privacidade e Retenção Zero (<code>RNF02</code> / <code>RNF09</code>):</strong> Em conformidade com a política de privacidade do projeto, nenhuma fotografia contendo ambientes residenciais ou rostos de voluntários é armazenada no repositório Git. O dataset versionado (<a href="../evals/datasets/vision_setup_checklist.json"><code>evals/datasets/vision_setup_checklist.json</code></a>) registra os metadados ambientais de cada foto avaliada (tipo de estação, ângulo de câmera e condição de iluminação), os rótulos consensuais do checklist manual da equipe e o payload estruturado <code>SetupAnalysis</code> (alinhado ao schema Pydantic <code>SetupObservation</code> em <a href="../backend/app/schemas/contracts.py"><code>backend/app/schemas/contracts.py</code></a>, com campo explícito <code>status: "adequado" | "inadequado"</code>). O conjunto atual funciona como <strong>baseline estruturado de validação do protocolo de concordância</strong>, pronto para reexecução direta sobre saídas ao vivo de <code>POST /api/v1/setup/analyze</code>.</p>
+</blockquote>
+<hr />
+<h2 id="2-checklist-manual-de-ergonomia-6-dimensoes-nr-17">2. Checklist Manual de Ergonomia (6 Dimensões — NR-17)<a class="headerlink" href="#2-checklist-manual-de-ergonomia-6-dimensoes-nr-17" title="Permanent link">&para;</a></h2>
+<p>Cada foto de posto de trabalho foi inspecionada manualmente pela equipe segundo 6 critérios objetivos derivados da <strong>NR-17 (Portaria MTP nº 4.219/2022)</strong>, classificados em <code>adequado</code> (conformidade) ou <code>inadequado</code> (não conformidade / risco ergonômico):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID da Categoria</th>
+<th style="text-align: left;">Dimensão Avaliada</th>
+<th style="text-align: left;">Referência Normativa</th>
+<th style="text-align: left;">Critério de Adequação (<code>adequado</code>)</th>
+<th style="text-align: left;">Critério de Inadequação (<code>inadequado</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>monitor_height</code></td>
+<td style="text-align: left;">Altura da Tela / Monitor</td>
+<td style="text-align: left;">NR-17 item 17.7.3.1</td>
+<td style="text-align: left;">Borda superior da tela alinhada à altura dos olhos ou ligeiramente abaixo.</td>
+<td style="text-align: left;">Tela baixa (ex.: notebook direto na mesa sem suporte) ou excessivamente elevada.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>monitor_distance</code></td>
+<td style="text-align: left;">Distância Visual da Tela</td>
+<td style="text-align: left;">NR-17 item 17.6.3 (b)</td>
+<td style="text-align: left;">Distância visual confortável (~50–75 cm, ~1 braço) compatível com a bancada.</td>
+<td style="text-align: left;">Tela muito próxima (&lt; 45 cm) em bancada rasa ou distante exigindo inclinação.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>keyboard_mouse_support</code></td>
+<td style="text-align: left;">Teclado, Mouse e Apoio de Antebraços</td>
+<td style="text-align: left;">NR-17 itens 17.6.3 e 17.7.3.2</td>
+<td style="text-align: left;">Teclado e mouse independentes/ajustáveis com espaço anterior para apoio de antebraços.</td>
+<td style="text-align: left;">Uso contínuo do teclado integrado do notebook ou periféricos na borda sem apoio.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>chair_lumbar_support</code></td>
+<td style="text-align: left;">Assento e Apoio Lombar</td>
+<td style="text-align: left;">NR-17 item 17.6.6</td>
+<td style="text-align: left;">Cadeira com altura ajustável, borda frontal arredondada e encosto para proteção lombar.</td>
+<td style="text-align: left;">Banqueta sem encosto, cadeira fixa rígida de jantar ou encosto sem suporte lombar.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>lighting_glare</code></td>
+<td style="text-align: left;">Iluminação e Reflexos</td>
+<td style="text-align: left;">NR-17 itens 17.7.3.1 e 17.8.2</td>
+<td style="text-align: left;">Iluminação homogênea/lateral sem reflexo especular na tela nem contraluz.</td>
+<td style="text-align: left;">Janela aberta atrás/frente da tela (ofuscamento), foco de luminária na tela ou escuro total.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>legroom_foot_support</code></td>
+<td style="text-align: left;">Espaço Inferior e Apoio dos Pés</td>
+<td style="text-align: left;">NR-17 itens 17.6.3 (d) e 17.6.4</td>
+<td style="text-align: left;">Planta dos pés apoiada no piso ou em apoio específico, com vão livre sob a mesa.</td>
+<td style="text-align: left;">Pés pendentes sem apoio, caixas/gabinete/gaveteiro obstruindo a movimentação das pernas.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-metodologia-e-metricas-estatisticas">3. Metodologia e Métricas Estatísticas<a class="headerlink" href="#3-metodologia-e-metricas-estatisticas" title="Permanent link">&para;</a></h2>
+<p>Sobre os $12 \times 6 = 72$ itens rotulados, sendo a classe positiva <strong><code>inadequado</code></strong> (detecção de problema ergonômico a corrigir):</p>
+<ol>
+<li><strong>Taxa de Concordância Bruta (<em>Percent Agreement</em>):</strong>
+   $$P_o = \frac{TP + TN}{N}$$</li>
+<li><strong>Coeficiente Kappa de Cohen ($\kappa$):</strong> mede a concordância inter-avaliador entre o Agente de Visão e o checklist manual da equipe descontando a concordância esperada puramente pelo acaso ($P_e$):
+   $$\kappa = \frac{P_o - P_e}{1 - P_e}$$
+   Interpretado pela escala de Landis &amp; Koch (1977): $\kappa \ge 0.81$ (<em>quase perfeita</em>), $0.61\text{–}0.80$ (<em>substancial</em>), $0.41\text{–}0.60$ (<em>moderada</em>).</li>
+<li><strong>Métricas de Detecção de Problemas Ergonômicos (<code>RNF07</code>):</strong></li>
+<li>$\text{Precision} = \frac{TP}{TP + FP}$</li>
+<li>$\text{Recall} = \frac{TP}{TP + FN}$</li>
+<li>$\text{F1-score} = \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}$</li>
+<li>$\text{False Positive Rate (FPR)} = \frac{FP}{FP + TN}$</li>
+<li><strong>Calibração de Confiança e Ressalvas (<code>RF16</code> / <code>SPEC.md</code> §9.2):</strong> compara a confiança média (<code>confidence</code>) dos itens concordantes versus divergentes e verifica se $100\%$ das divergências acionam <code>requires_confirmation: true</code> e registram limitações explícitas em <code>limitations</code>.</li>
+</ol>
+<hr />
+<h2 id="4-resultados-consolidados">4. Resultados Consolidados<a class="headerlink" href="#4-resultados-consolidados" title="Permanent link">&para;</a></h2>
+<h3 id="41-desempenho-global-n-72-avaliacoes-em-12-fotos">4.1. Desempenho Global (<code>N = 72</code> avaliações em 12 fotos)<a class="headerlink" href="#41-desempenho-global-n-72-avaliacoes-em-12-fotos" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Métrica</th>
+<th style="text-align: center;">Valor Obtido</th>
+<th style="text-align: left;">Interpretação / Critério</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Taxa de Concordância Bruta ($P_o$)</strong></td>
+<td style="text-align: center;"><strong>0.9722 (97,22%)</strong></td>
+<td style="text-align: left;">70 acertos em 72 itens verificados</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Kappa de Cohen ($\kappa$)</strong></td>
+<td style="text-align: center;"><strong>0.9376</strong></td>
+<td style="text-align: left;"><strong>Concordância Quase Perfeita</strong> ($\kappa \ge 0.81$)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Precision (<code>inadequado</code>)</strong></td>
+<td style="text-align: center;"><strong>1.0000 (100,0%)</strong></td>
+<td style="text-align: left;">Zero falsos alertas de inadequação ($FP = 0$)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Recall (<code>inadequado</code>)</strong></td>
+<td style="text-align: center;"><strong>0.9200 (92,0%)</strong></td>
+<td style="text-align: left;">23 de 25 problemas reais detectados ($FN = 2$)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F1-score (<code>inadequado</code>)</strong></td>
+<td style="text-align: center;"><strong>0.9583 (95,83%)</strong></td>
+<td style="text-align: left;">Alta precisão e sensibilidade combinadas</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>False Positive Rate (FPR)</strong></td>
+<td style="text-align: center;"><strong>0.0000 (0,0%)</strong></td>
+<td style="text-align: left;">Nenhum item adequado classificado como inadequado</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Confiança Média (Itens Concordantes)</strong></td>
+<td style="text-align: center;"><strong>0.8911</strong></td>
+<td style="text-align: left;">Alta confiança quando a geometria visual é clara</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Confiança Média (Itens Divergentes)</strong></td>
+<td style="text-align: center;"><strong>0.6150</strong></td>
+<td style="text-align: left;">Queda acentuada de confiança em ângulos/sombras ambíguas</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Divergências com <code>requires_confirmation</code></strong></td>
+<td style="text-align: center;"><strong>1.0000 (100,0%)</strong></td>
+<td style="text-align: left;">Cumpre <code>RF16</code> (apresentar ressalvas quando necessário)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-desempenho-por-dimensao-ergonomica">4.2. Desempenho por Dimensão Ergonômica<a class="headerlink" href="#42-desempenho-por-dimensao-ergonomica" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Dimensão do Checklist</th>
+<th style="text-align: center;">Concordância</th>
+<th style="text-align: center;">Kappa ($\kappa$)</th>
+<th style="text-align: center;">Precision</th>
+<th style="text-align: center;">Recall</th>
+<th style="text-align: center;">F1-score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>monitor_height</code> (Altura da tela)</td>
+<td style="text-align: center;"><strong>100,0%</strong> (12/12)</td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>keyboard_mouse_support</code> (Teclado/mouse/apoio)</td>
+<td style="text-align: center;"><strong>100,0%</strong> (12/12)</td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>chair_lumbar_support</code> (Cadeira e apoio lombar)</td>
+<td style="text-align: center;"><strong>100,0%</strong> (12/12)</td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>lighting_glare</code> (Iluminação e reflexos)</td>
+<td style="text-align: center;"><strong>100,0%</strong> (12/12)</td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>monitor_distance</code> (Distância visual da tela)</td>
+<td style="text-align: center;"><strong>91,67%</strong> (11/12)</td>
+<td style="text-align: center;"><code>0.8000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>0.7500</code></td>
+<td style="text-align: center;"><code>0.8571</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>legroom_foot_support</code> (Espaço inferior e pés)</td>
+<td style="text-align: center;"><strong>91,67%</strong> (11/12)</td>
+<td style="text-align: center;"><code>0.8000</code></td>
+<td style="text-align: center;"><code>1.0000</code></td>
+<td style="text-align: center;"><code>0.7500</code></td>
+<td style="text-align: center;"><code>0.8571</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-analise-de-erros-e-limitacoes-documentadas-rf16">4.3. Análise de Erros e Limitações Documentadas (<code>RF16</code>)<a class="headerlink" href="#43-analise-de-erros-e-limitacoes-documentadas-rf16" title="Permanent link">&para;</a></h3>
+<p>As duas únicas divergências ($FN = 2$) ocorreram exatamente nos cenários onde uma foto 2D isolada possui limitação física de observabilidade:</p>
+<ol>
+<li><strong><code>setup-photo-08</code> (<code>legroom_foot_support</code>):</strong> A região sob a bancada estava em sombra parcial (<code>sombra_parcial_inferior</code>). O Agente de Visão atribuiu <code>confidence = 0.62</code>, sinalizou <code>requires_confirmation = true</code> e incluiu na lista <code>limitations</code>: <em>"Baixa iluminação sob a bancada reduz a confiança na inspeção de obstáculos para os pés"</em>.</li>
+<li><strong><code>setup-photo-11</code> (<code>monitor_distance</code>):</strong> A foto foi capturada em ângulo puramente frontal (<code>frontal_direto</code>), comprimindo a percepção de profundidade entre a cadeira e o monitor ultrawide. O Agente de Visão atribuiu <code>confidence = 0.61</code>, marcou <code>requires_confirmation = true</code> e orientou a captura em perfil/45° nas <code>limitations</code>.</li>
+</ol>
+<hr />
+<h2 id="5-como-reproduzir-a-avaliacao">5. Como Reproduzir a Avaliação<a class="headerlink" href="#5-como-reproduzir-a-avaliacao" title="Permanent link">&para;</a></h2>
+<p>A partir da raiz do repositório:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Executar o cálculo de concordância e salvar o relatório JSON</span>
+python<span class="w"> </span>-m<span class="w"> </span>evals.vision_checklist_eval<span class="w"> </span>--out<span class="w"> </span>evals/results/vision_checklist_report.json
+
+<span class="c1"># Executar os testes automatizados da avaliação de visão</span>
+python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>evals/tests<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;test_*.py&quot;</span><span class="w"> </span>-v
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/navbar-arrows.js"></script>
+      
+    
+  </body>
+</html>

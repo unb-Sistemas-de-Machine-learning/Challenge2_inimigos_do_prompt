@@ -1,0 +1,841 @@
+{
+  "version": "1.0.0",
+  "experiment_id": "EXP-04-VISION-CHECKLIST-CONCORDANCE",
+  "title": "Checklist Manual de Ergonomia em Fotos Rotuladas vs. Agente de Visão (SetupAnalysis)",
+  "description": "Conjunto de 12 fotos/cenários de postos de trabalho rotulados manualmente pela equipe segundo checklist oficial de 6 dimensões ergonômicas (NR-17), acompanhado das saídas estruturadas do Agente de Visão (SPEC.md §9.2) para medição de concordância, Kappa de Cohen, Precision, Recall e F1-score.",
+  "privacy_note": "Conforme a política de Retenção Zero (RNF02/RNF09), o repositório público armazena apenas os vetores de rótulos e metadados técnicos anonimizados de cada foto avaliada, sem persistir arquivos de imagem pessoal.",
+  "checklist_criteria": [
+    {
+      "category": "monitor_height",
+      "title": "Altura da Tela / Monitor",
+      "nr17_reference": "NR-17 item 17.7.3.1",
+      "compliant_rule": "Borda superior da tela alinhada à altura dos olhos ou ligeiramente abaixo, mantendo pescoço neutro.",
+      "non_compliant_rule": "Tela significativamente abaixo da linha de visão (ex.: notebook direto na mesa sem suporte) ou excessivamente alta."
+    },
+    {
+      "category": "monitor_distance",
+      "title": "Distância Visual da Tela",
+      "nr17_reference": "NR-17 item 17.6.3 (b)",
+      "compliant_rule": "Distância visual confortável (~50 a 75 cm, cerca de um braço), sem exigir projeção anterior do tronco.",
+      "non_compliant_rule": "Monitor muito próximo (< 45 cm) ou excessivamente distante em bancada estreita/profunda sem ajuste."
+    },
+    {
+      "category": "keyboard_mouse_support",
+      "title": "Teclado, Mouse e Apoio de Antebraços",
+      "nr17_reference": "NR-17 itens 17.6.3 e 17.7.3.2",
+      "compliant_rule": "Teclado e mouse independentes/ajustáveis com espaço suficiente para apoio simétrico dos antebraços.",
+      "non_compliant_rule": "Digitação direta em notebook elevado/inclinado ou borda sem espaço para apoio de punhos e antebraços."
+    },
+    {
+      "category": "chair_lumbar_support",
+      "title": "Assento e Apoio Lombar",
+      "nr17_reference": "NR-17 item 17.6.6",
+      "compliant_rule": "Cadeira com altura ajustável, borda frontal arredondada e encosto adaptado para proteção da região lombar.",
+      "non_compliant_rule": "Banqueta sem encosto, cadeira rígida sem suporte lombar ou postura sem contato com o encosto."
+    },
+    {
+      "category": "lighting_glare",
+      "title": "Iluminação e Ausência de Reflexos/Ofuscamento",
+      "nr17_reference": "NR-17 itens 17.7.3.1 e 17.8.2",
+      "compliant_rule": "Iluminação lateral ou difusa sem reflexo direto na tela e sem janela desprotegida atrás/frente do monitor.",
+      "non_compliant_rule": "Reflexo direto de janela ou luminária na tela, contraluz forte (ofuscamento) ou ambiente escuro com alto contraste."
+    },
+    {
+      "category": "legroom_foot_support",
+      "title": "Espaço Livre Inferior e Apoio dos Pés",
+      "nr17_reference": "NR-17 itens 17.6.3 (d) e 17.6.4",
+      "compliant_rule": "Pés totalmente apoiados no piso ou em apoio para os pés, com espaço livre para movimentação das pernas.",
+      "non_compliant_rule": "Pés pendentes sem apoio, caixas/objetos obstruindo o espaço sob a mesa ou joelhos comprimidos."
+    }
+  ],
+  "categories": [
+    "monitor_height",
+    "monitor_distance",
+    "keyboard_mouse_support",
+    "chair_lumbar_support",
+    "lighting_glare",
+    "legroom_foot_support"
+  ],
+  "labeled_photos": [
+    {
+      "photo_id": "setup-photo-01",
+      "title": "Notebook direto na mesa sem periféricos externos",
+      "environment_type": "home_office_notebook",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "natural_adequada",
+      "manual_checklist": {
+        "monitor_height": "inadequado",
+        "monitor_distance": "inadequado",
+        "keyboard_mouse_support": "inadequado",
+        "chair_lumbar_support": "adequado",
+        "lighting_glare": "adequado",
+        "legroom_foot_support": "adequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000001",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "inadequado",
+            "description": "O notebook está apoiado diretamente sobre o tampo da mesa, posicionando a borda superior da tela significativamente abaixo da linha horizontal dos olhos.",
+            "confidence": 0.94,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "inadequado",
+            "description": "O uso do teclado integrado força uma aproximação visual inferior à distância recomendada de um braço.",
+            "confidence": 0.86,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "inadequado",
+            "description": "Ausência de teclado e mouse externos para uso contínuo de computador portátil (NR-17 item 17.7.3.2).",
+            "confidence": 0.95,
+            "requires_confirmation": false
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "adequado",
+            "description": "Cadeira ergonômica com encosto lombar estruturado e regulagem de altura visível.",
+            "confidence": 0.89,
+            "requires_confirmation": true
+          },
+          {
+            "category": "lighting_glare",
+            "status": "adequado",
+            "description": "Iluminação lateral difusa sem reflexos visíveis no painel da tela.",
+            "confidence": 0.88,
+            "requires_confirmation": true
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "adequado",
+            "description": "Vão inferior da bancada livre para movimentação dos membros inferiores.",
+            "confidence": 0.81,
+            "requires_confirmation": true
+          }
+        ],
+        "limitations": [
+          "A imagem estática não permite medir distâncias físicas em centímetros com precisão clínica."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-02",
+      "title": "Estação desktop completa ergonomicamente ajustada",
+      "environment_type": "escritorio_padrao",
+      "camera_angle": "perfil_lateral",
+      "lighting_condition": "artificial_homogenea",
+      "manual_checklist": {
+        "monitor_height": "adequado",
+        "monitor_distance": "adequado",
+        "keyboard_mouse_support": "adequado",
+        "chair_lumbar_support": "adequado",
+        "lighting_glare": "adequado",
+        "legroom_foot_support": "adequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000002",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "adequado",
+            "description": "Monitor externo ajustado com a borda superior alinhada à linha de visão horizontal.",
+            "confidence": 0.93,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "adequado",
+            "description": "Tela posicionada ao fundo da bancada em distância visual confortável.",
+            "confidence": 0.87,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "adequado",
+            "description": "Teclado e mouse independentes com espaço anterior para apoio dos antebraços.",
+            "confidence": 0.92,
+            "requires_confirmation": false
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "adequado",
+            "description": "Assento com borda frontal arredondada e suporte lombar ajustado.",
+            "confidence": 0.91,
+            "requires_confirmation": true
+          },
+          {
+            "category": "lighting_glare",
+            "status": "adequado",
+            "description": "Iluminação homogênea sem pontos de ofuscamento ou reflexo especular.",
+            "confidence": 0.9,
+            "requires_confirmation": true
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "adequado",
+            "description": "Espaço livre sob a mesa com apoio para os pés posicionado no piso.",
+            "confidence": 0.88,
+            "requires_confirmation": true
+          }
+        ],
+        "limitations": [
+          "A imagem não substitui Avaliação Ergonômica Preliminar (AEP) presencial."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-03",
+      "title": "Notebook em suporte elevado porém sem teclado/mouse externos",
+      "environment_type": "home_office_notebook",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "natural_adequada",
+      "manual_checklist": {
+        "monitor_height": "adequado",
+        "monitor_distance": "adequado",
+        "keyboard_mouse_support": "inadequado",
+        "chair_lumbar_support": "adequado",
+        "lighting_glare": "adequado",
+        "legroom_foot_support": "adequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000003",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "adequado",
+            "description": "Notebook elevado por suporte articulado, alinhando a tela à altura dos olhos.",
+            "confidence": 0.92,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "adequado",
+            "description": "Distância entre o encosto da cadeira e a tela compatível com visualização confortável.",
+            "confidence": 0.84,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "inadequado",
+            "description": "O notebook está em suporte elevado sem teclado e mouse externos conectados, o que exigiria extensão excessiva de punhos e ombros.",
+            "confidence": 0.96,
+            "requires_confirmation": false
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "adequado",
+            "description": "Cadeira com encosto anatômico e apoio de braços regulável.",
+            "confidence": 0.89,
+            "requires_confirmation": true
+          },
+          {
+            "category": "lighting_glare",
+            "status": "adequado",
+            "description": "Sem reflexos diretos na superfície da tela.",
+            "confidence": 0.87,
+            "requires_confirmation": true
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "adequado",
+            "description": "Área inferior desobstruída.",
+            "confidence": 0.82,
+            "requires_confirmation": true
+          }
+        ],
+        "limitations": [
+          "Recomenda-se confirmar se há teclado Bluetooth fora do enquadramento da foto."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-04",
+      "title": "Monitor em frente a janela sem cortina (contraluz e reflexo intenso)",
+      "environment_type": "home_office_desktop",
+      "camera_angle": "frontal_oblíquo",
+      "lighting_condition": "contraluz_ofuscamento",
+      "manual_checklist": {
+        "monitor_height": "adequado",
+        "monitor_distance": "adequado",
+        "keyboard_mouse_support": "adequado",
+        "chair_lumbar_support": "adequado",
+        "lighting_glare": "inadequado",
+        "legroom_foot_support": "adequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000004",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "adequado",
+            "description": "Monitor externo posicionado em altura compatível com a linha de visão.",
+            "confidence": 0.88,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "adequado",
+            "description": "Recuo do monitor adequado sobre a bancada.",
+            "confidence": 0.83,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "adequado",
+            "description": "Teclado e mouse dedicados com apoio de antebraço.",
+            "confidence": 0.91,
+            "requires_confirmation": false
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "adequado",
+            "description": "Cadeira com encosto alto e curvatura lombar.",
+            "confidence": 0.86,
+            "requires_confirmation": true
+          },
+          {
+            "category": "lighting_glare",
+            "status": "inadequado",
+            "description": "Janela aberta diretamente atrás do monitor gera forte contraluz e contraste excessivo no campo visual (NR-17 item 17.8.2).",
+            "confidence": 0.95,
+            "requires_confirmation": false
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "adequado",
+            "description": "Espaço livre sob a bancada.",
+            "confidence": 0.8,
+            "requires_confirmation": true
+          }
+        ],
+        "limitations": [
+          "A intensidade luminosa em lux depende do horário do dia e não pode ser aferida apenas por foto."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-05",
+      "title": "Improviso em mesa de jantar com cadeira rígida sem apoio lombar e pés pendentes",
+      "environment_type": "improvisado_mesa_jantar",
+      "camera_angle": "perfil_lateral",
+      "lighting_condition": "artificial_homogenea",
+      "manual_checklist": {
+        "monitor_height": "inadequado",
+        "monitor_distance": "adequado",
+        "keyboard_mouse_support": "inadequado",
+        "chair_lumbar_support": "inadequado",
+        "lighting_glare": "adequado",
+        "legroom_foot_support": "inadequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000005",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "inadequado",
+            "description": "Notebook direto sobre mesa alta sem suporte, exigindo flexão cervical.",
+            "confidence": 0.93,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "adequado",
+            "description": "Mesa profunda permite distância horizontal razoável até a tela.",
+            "confidence": 0.79,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "inadequado",
+            "description": "Superfície da mesa muito alta em relação ao assento fixo e uso de teclado integrado com borda viva.",
+            "confidence": 0.89,
+            "requires_confirmation": true
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "inadequado",
+            "description": "Cadeira fixa de madeira sem regulagem de altura e sem suporte adaptado para a região lombar (NR-17 item 17.6.6).",
+            "confidence": 0.96,
+            "requires_confirmation": false
+          },
+          {
+            "category": "lighting_glare",
+            "status": "adequado",
+            "description": "Iluminação ambiente sem reflexo direto na tela.",
+            "confidence": 0.85,
+            "requires_confirmation": true
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "inadequado",
+            "description": "Ausência de apoio para os pés compensando a altura fixa da mesa e cadeira.",
+            "confidence": 0.84,
+            "requires_confirmation": true
+          }
+        ],
+        "limitations": [
+          "As proporções antropométricas dependem da estatura do usuário sentado no posto."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-06",
+      "title": "Bancada estreita com monitor muito próximo (< 40 cm) e caixas sob a mesa",
+      "environment_type": "quarto_estudo_compacto",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "natural_adequada",
+      "manual_checklist": {
+        "monitor_height": "adequado",
+        "monitor_distance": "inadequado",
+        "keyboard_mouse_support": "inadequado",
+        "chair_lumbar_support": "adequado",
+        "lighting_glare": "adequado",
+        "legroom_foot_support": "inadequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000006",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "adequado",
+            "description": "Altura vertical do monitor compatível com o nível dos olhos.",
+            "confidence": 0.88,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "inadequado",
+            "description": "Bancada rasa (~40 cm de profundidade) posiciona o monitor grande excessivamente próximo aos olhos.",
+            "confidence": 0.91,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "inadequado",
+            "description": "Teclado colado à borda da bancada sem espaço para apoio de punhos e antebraços.",
+            "confidence": 0.9,
+            "requires_confirmation": true
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "adequado",
+            "description": "Cadeira giratória com apoio lombar e regulagem de altura.",
+            "confidence": 0.87,
+            "requires_confirmation": true
+          },
+          {
+            "category": "lighting_glare",
+            "status": "adequado",
+            "description": "Iluminação uniforme sem reflexos na tela.",
+            "confidence": 0.86,
+            "requires_confirmation": true
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "inadequado",
+            "description": "Caixas e gabinete sob a bancada estreita impedem a movimentação livre das pernas (NR-17 item 17.6.3 d).",
+            "confidence": 0.93,
+            "requires_confirmation": false
+          }
+        ],
+        "limitations": [
+          "A profundidade exata da bancada é estimada visualmente a partir da proporção do teclado."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-07",
+      "title": "Monitor elevado excessivamente sobre pilha de livros + reflexo de luminária",
+      "environment_type": "home_office_desktop",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "reflexo_direto_tela",
+      "manual_checklist": {
+        "monitor_height": "inadequado",
+        "monitor_distance": "adequado",
+        "keyboard_mouse_support": "adequado",
+        "chair_lumbar_support": "adequado",
+        "lighting_glare": "inadequado",
+        "legroom_foot_support": "adequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000007",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "inadequado",
+            "description": "Monitor apoiado sobre pilha alta de livros, deixando o centro e topo da tela acima da linha horizontal dos olhos (risco de extensão cervical).",
+            "confidence": 0.91,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "adequado",
+            "description": "Distância horizontal entre cadeira e monitor adequada.",
+            "confidence": 0.85,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "adequado",
+            "description": "Teclado e mouse externos bem posicionados sobre o tampo.",
+            "confidence": 0.92,
+            "requires_confirmation": false
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "adequado",
+            "description": "Cadeira ergonômica com suporte lombar presente.",
+            "confidence": 0.89,
+            "requires_confirmation": true
+          },
+          {
+            "category": "lighting_glare",
+            "status": "inadequado",
+            "description": "Foco de luz da luminária articulada incide diretamente sobre o painel do monitor gerando reflexo visível.",
+            "confidence": 0.94,
+            "requires_confirmation": false
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "adequado",
+            "description": "Espaço livre sob a mesa para apoio dos pés.",
+            "confidence": 0.83,
+            "requires_confirmation": true
+          }
+        ],
+        "limitations": [
+          "A linha de visão ideal varia conforme a altura do tronco do usuário."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-08",
+      "title": "Setup com dois monitores (secundário rotacionado lateralmente a 60 graus) e sombra sob a mesa",
+      "environment_type": "escritorio_dual_monitor",
+      "camera_angle": "frontal_oblíquo",
+      "lighting_condition": "sombra_parcial_inferior",
+      "manual_checklist": {
+        "monitor_height": "adequado",
+        "monitor_distance": "adequado",
+        "keyboard_mouse_support": "adequado",
+        "chair_lumbar_support": "adequado",
+        "lighting_glare": "adequado",
+        "legroom_foot_support": "inadequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000008",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "adequado",
+            "description": "Ambos os monitores estão nivelados na altura da linha de visão.",
+            "confidence": 0.9,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "adequado",
+            "description": "Monitores posicionados a cerca de um braço de distância.",
+            "confidence": 0.86,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "adequado",
+            "description": "Teclado mecânico com apoio de punho e mouse alinhados ao monitor principal.",
+            "confidence": 0.92,
+            "requires_confirmation": false
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "adequado",
+            "description": "Cadeira com encosto em tela e suporte lombar.",
+            "confidence": 0.89,
+            "requires_confirmation": true
+          },
+          {
+            "category": "lighting_glare",
+            "status": "adequado",
+            "description": "Lightbar sobre o monitor ilumina a bancada sem reflexo na tela.",
+            "confidence": 0.93,
+            "requires_confirmation": true
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "adequado",
+            "description": "Vão sob a mesa aparenta livre, embora em sombra parcial.",
+            "confidence": 0.62,
+            "requires_confirmation": true
+          }
+        ],
+        "limitations": [
+          "Baixa iluminação sob a bancada reduz a confiança na inspeção de obstáculos para os pés."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-09",
+      "title": "Estação com notebook + suporte + teclado/mouse externos + apoio para os pés",
+      "environment_type": "home_office_notebook",
+      "camera_angle": "perfil_lateral",
+      "lighting_condition": "natural_adequada",
+      "manual_checklist": {
+        "monitor_height": "adequado",
+        "monitor_distance": "adequado",
+        "keyboard_mouse_support": "adequado",
+        "chair_lumbar_support": "adequado",
+        "lighting_glare": "adequado",
+        "legroom_foot_support": "adequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000009",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "adequado",
+            "description": "Notebook elevado em suporte com tela na altura dos olhos.",
+            "confidence": 0.95,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "adequado",
+            "description": "Distância visual adequada proporcionada pelo uso de teclado externo.",
+            "confidence": 0.91,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "adequado",
+            "description": "Teclado e mouse sem fio independentes atendendo ao item 17.7.3.2 da NR-17.",
+            "confidence": 0.96,
+            "requires_confirmation": false
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "adequado",
+            "description": "Cadeira regulável com apoio lombar e apoios de braço alinhados à mesa.",
+            "confidence": 0.92,
+            "requires_confirmation": true
+          },
+          {
+            "category": "lighting_glare",
+            "status": "adequado",
+            "description": "Janela posicionada perpendicularmente à tela com persiana translúcida.",
+            "confidence": 0.9,
+            "requires_confirmation": true
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "adequado",
+            "description": "Apoio para os pés inclinado visível sob a mesa com amplo espaço para as pernas.",
+            "confidence": 0.94,
+            "requires_confirmation": false
+          }
+        ],
+        "limitations": [
+          "Análise baseada em foto estática do posto de trabalho."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-10",
+      "title": "Trabalho noturno no escuro apenas com brilho alto do monitor e banqueta sem encosto",
+      "environment_type": "quarto_noturno",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "ambiente_escuro_alto_contraste",
+      "manual_checklist": {
+        "monitor_height": "inadequado",
+        "monitor_distance": "inadequado",
+        "keyboard_mouse_support": "inadequado",
+        "chair_lumbar_support": "inadequado",
+        "lighting_glare": "inadequado",
+        "legroom_foot_support": "adequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000010",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "inadequado",
+            "description": "Tela de notebook baixa sobre mesa compacta.",
+            "confidence": 0.89,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "inadequado",
+            "description": "Proximidade excessiva da tela na bancada curta.",
+            "confidence": 0.85,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "inadequado",
+            "description": "Uso do teclado do próprio notebook sem periféricos externos.",
+            "confidence": 0.93,
+            "requires_confirmation": false
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "inadequado",
+            "description": "Assento tipo banqueta sem encosto para proteção da região lombar (NR-17 item 17.6.6 e).",
+            "confidence": 0.97,
+            "requires_confirmation": false
+          },
+          {
+            "category": "lighting_glare",
+            "status": "inadequado",
+            "description": "Ambiente sem iluminação geral com contraste excessivo entre a tela brilhante e o fundo escuro (NR-17 item 17.8.2).",
+            "confidence": 0.95,
+            "requires_confirmation": false
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "adequado",
+            "description": "Pés apoiados diretamente no piso sem obstruções.",
+            "confidence": 0.78,
+            "requires_confirmation": true
+          }
+        ],
+        "limitations": [
+          "Ambientes com baixa luminosidade podem ocultar pequenos obstáculos sob a mesa."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-11",
+      "title": "Cadeira gamer com almofada lombar desalinhada e monitor ultrawide baixo (ângulo frontal ambíguo)",
+      "environment_type": "home_office_gamer",
+      "camera_angle": "frontal_direto",
+      "lighting_condition": "artificial_led",
+      "manual_checklist": {
+        "monitor_height": "inadequado",
+        "monitor_distance": "inadequado",
+        "keyboard_mouse_support": "adequado",
+        "chair_lumbar_support": "adequado",
+        "lighting_glare": "adequado",
+        "legroom_foot_support": "adequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000011",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "inadequado",
+            "description": "Monitor em ajuste mínimo de haste vertical, abaixo da linha média dos olhos.",
+            "confidence": 0.82,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "adequado",
+            "description": "Em foto frontal direta, a profundidade aparenta adequada, porém requer confirmação lateral.",
+            "confidence": 0.61,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "adequado",
+            "description": "Teclado e mouse independentes com mousepad estendido e espaço para antebraços.",
+            "confidence": 0.93,
+            "requires_confirmation": false
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "adequado",
+            "description": "Cadeira com encosto alto e apoio lombar presente.",
+            "confidence": 0.88,
+            "requires_confirmation": true
+          },
+          {
+            "category": "lighting_glare",
+            "status": "adequado",
+            "description": "Iluminação indireta sem reflexos no painel fosco.",
+            "confidence": 0.87,
+            "requires_confirmation": true
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "adequado",
+            "description": "Vão livre sob a mesa.",
+            "confidence": 0.8,
+            "requires_confirmation": true
+          }
+        ],
+        "limitations": [
+          "Fotos tiradas em ângulo puramente frontal dificultam a estimativa da distância olho-tela (monitor_distance)."
+        ]
+      }
+    },
+    {
+      "photo_id": "setup-photo-12",
+      "title": "Mesa com gaveteiro baixo comprimindo coxas e reflexo lateral de janela na tela",
+      "environment_type": "escritorio_antigo",
+      "camera_angle": "lateral_45_deg",
+      "lighting_condition": "reflexo_lateral_janela",
+      "manual_checklist": {
+        "monitor_height": "adequado",
+        "monitor_distance": "adequado",
+        "keyboard_mouse_support": "adequado",
+        "chair_lumbar_support": "inadequado",
+        "lighting_glare": "inadequado",
+        "legroom_foot_support": "inadequado"
+      },
+      "vision_agent_analysis": {
+        "analysis_id": "10000000-0000-4000-8000-000000000012",
+        "observations": [
+          {
+            "category": "monitor_height",
+            "status": "adequado",
+            "description": "Monitor sobre suporte elevador na altura correta.",
+            "confidence": 0.9,
+            "requires_confirmation": true
+          },
+          {
+            "category": "monitor_distance",
+            "status": "adequado",
+            "description": "Distância visual compatível com a profundidade da escrivaninha.",
+            "confidence": 0.86,
+            "requires_confirmation": true
+          },
+          {
+            "category": "keyboard_mouse_support",
+            "status": "adequado",
+            "description": "Teclado e mouse externos posicionados corretamente.",
+            "confidence": 0.91,
+            "requires_confirmation": false
+          },
+          {
+            "category": "chair_lumbar_support",
+            "status": "inadequado",
+            "description": "Encosto baixo desgastado sem suporte para a curvatura lombar.",
+            "confidence": 0.89,
+            "requires_confirmation": true
+          },
+          {
+            "category": "lighting_glare",
+            "status": "inadequado",
+            "description": "Reflexo especular da janela lateral visível na metade direita da tela (NR-17 item 17.7.3.1).",
+            "confidence": 0.93,
+            "requires_confirmation": false
+          },
+          {
+            "category": "legroom_foot_support",
+            "status": "inadequado",
+            "description": "Gaveteiro central sob o tampo reduz a altura livre para as coxas e impede aproximação adequada (NR-17 item 17.6.3 d).",
+            "confidence": 0.92,
+            "requires_confirmation": false
+          }
+        ],
+        "limitations": [
+          "A folga vertical exata entre as coxas e o gaveteiro depende da regulagem da cadeira."
+        ]
+      }
+    }
+  ]
+}

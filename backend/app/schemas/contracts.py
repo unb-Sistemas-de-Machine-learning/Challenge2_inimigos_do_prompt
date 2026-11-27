@@ -55,6 +55,7 @@ class SafetyDecision(BaseModel):
 
 class SetupObservation(BaseModel):
     category: str
+    status: Literal["adequado", "inadequado"] = "adequado"
     description: str
     confidence: float = Field(ge=0.0, le=1.0)
     requires_confirmation: bool = True

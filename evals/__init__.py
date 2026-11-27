@@ -1,1 +1,1 @@
-"""Avaliação quantitativa (RNF07) para detecção postural e recuperação RAG do ErgoAI."""
+"""Pacote de avaliação quantitativa (RNF07) e experimentos do ErgoAI (SPEC.md §13)."""

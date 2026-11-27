@@ -7,7 +7,7 @@
       "data_acesso": "2026-11-21",
       "paginas": 22,
       "chunks": 71,
-      "impressao": "9f17dd07d1fd3906ed1c658a4d1652acbe18156bbdd961566c9c9d2f342d6fdc|sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2|1000|150|spec-6.5-v1"
+      "impressao": "9f17dd07d1fd3906ed1c658a4d1652acbe18156bbdd961566c9c9d2f342d6fdc|sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2|1000|150|spec-6.5-v2"
     },
     "oms2020": {
       "sha256": "50b66c44e7083cc3752849f301ae1d60d9360d511e34c0c948b39bdf6e13dc88",
@@ -16,7 +16,7 @@
       "data_acesso": "2026-11-21",
       "paginas": 104,
       "chunks": 436,
-      "impressao": "50b66c44e7083cc3752849f301ae1d60d9360d511e34c0c948b39bdf6e13dc88|sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2|1000|150|spec-6.5-v1"
+      "impressao": "50b66c44e7083cc3752849f301ae1d60d9360d511e34c0c948b39bdf6e13dc88|sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2|1000|150|spec-6.5-v2"
     }
   },
   "parametros": {
@@ -24,8 +24,8 @@
     "max_chars": 1000,
     "overlap_chars": 150,
     "colecao": "ergonomia",
-    "metadata_schema": "spec-6.5-v1",
+    "metadata_schema": "spec-6.5-v2",
     "chunks_jsonl": "knowledge_base/corpus/chunks.jsonl"
   },
-  "gerado_em": "2026-11-25T04:26:07.784532+00:00"
+  "gerado_em": "2026-11-27T03:36:26.332108+00:00"
 }

@@ -35,8 +35,9 @@ DEFAULT_CHUNKS_OUT = KB_DIR / "processed" / "chunks.jsonl"
 DEFAULT_CORPUS_CHUNKS = KB_DIR / "corpus" / "chunks.jsonl"
 
 COLECAO = "ergonomia"
-METADATA_SCHEMA_VERSION = "spec-6.5-v1"
+METADATA_SCHEMA_VERSION = "spec-6.5-v2"
 UNSPECIFIED_SECTION = "unspecified"
+SCOPES_VALIDOS = ("general", "checkout", "telemarketing")
 
 # Cabeçalhos reais de anexo em caixa alta (evita casar "Anexo I" no sumário ou em referências no texto).
 # Subtítulo em caixa alta exige palavras inteiras em maiúsculas (não captura o "S" de "Sumário").
@@ -47,6 +48,21 @@ _RE_ANEXO = re.compile(
 )
 # Seções principais de NR (ex.: "17.4 Organização do trabalho"), sem subitens ("17.4.1").
 _RE_SECAO_NR = re.compile(r"^(\d+\.\d+)\s+([A-ZÁÉÍÓÚÂÊÔÃÕÇ][^\n]{2,90})$")
+_RE_SCOPE_ANEXO_II = re.compile(r"\banexo\s+ii\b", re.I)
+_RE_SCOPE_ANEXO_I = re.compile(r"\banexo\s+i\b", re.I)
+
+
+def inferir_escopo(section):
+    """Classifica o escopo de aplicabilidade do chunk a partir da seção (case-insensitive).
+
+    Checa Anexo II antes de Anexo I e usa fronteira de palavra para evitar colisão de prefixo.
+    """
+    s = str(section or "").strip()
+    if _RE_SCOPE_ANEXO_II.search(s):
+        return "telemarketing"
+    if _RE_SCOPE_ANEXO_I.search(s):
+        return "checkout"
+    return "general"
 
 
 def caminho_relativo(path):
@@ -148,6 +164,7 @@ def montar_chunks(fonte, caminho, max_chars, overlap_chars):
                     "title": str(fonte.get("titulo", "")),
                     "source": str(fonte.get("source", "")),
                     "section": secao_chunk,
+                    "scope": inferir_escopo(secao_chunk),
                     "page": num,
                     "url": str(fonte.get("url_oficial", "")),
                     "document_type": str(fonte.get("document_type", "")),
@@ -217,10 +234,16 @@ def reconstruir_de_chunks(chunks_path, index_dir, manifest_path, embedder_name=D
     embedder = get_embedder(embedder_name)
     for ini in range(0, len(registros), 500):
         lote = registros[ini:ini + 500]
+        metadatas_lote = []
+        for r in lote:
+            meta = dict(r["metadata"])
+            if not meta.get("scope"):
+                meta["scope"] = inferir_escopo(meta.get("section"))
+            metadatas_lote.append(meta)
         col.add(
             ids=[r["id"] for r in lote],
             documents=[r["text"] for r in lote],
-            metadatas=[r["metadata"] for r in lote],
+            metadatas=metadatas_lote,
             embeddings=embedder.encode([r["text"] for r in lote]),
         )
 

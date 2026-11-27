@@ -3,7 +3,7 @@ hide:
   - navigation
 ---
 
-# ErgoAI — Documentação Técnica
+# ErgoAI Documentação Técnica
 
 <div class="ergo-doc-hero">
   <div class="ergo-doc-hero-grid">

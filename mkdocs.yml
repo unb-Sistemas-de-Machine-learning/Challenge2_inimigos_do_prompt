@@ -1,4 +1,4 @@
-site_name: ErgoAI. — Documentação
+site_name: ErgoAI Documentação
 site_description: Assistente Web de Monitoramento Postural em Tempo Real e Recomendações Ergonômicas via RAG (Challenge 2 — Inimigos do Prompt)
 repo_name: Challenge2_inimigos_do_prompt
 repo_url: https://github.com/unb-Sistemas-de-Machine-learning/Challenge2_inimigos_do_prompt
@@ -33,6 +33,9 @@ theme:
 
 extra_css:
   - stylesheets/ergoai.css
+
+extra_javascript:
+  - javascripts/navbar-arrows.js
 
 markdown_extensions:
   - admonition

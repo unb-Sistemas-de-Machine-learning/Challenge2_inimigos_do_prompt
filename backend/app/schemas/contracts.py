@@ -69,6 +69,29 @@ class SetupAnalysis(BaseModel):
 
 class ChatRequest(BaseModel):
     question: str = Field(min_length=1, max_length=2000)
+    top_k: int = Field(default=3, ge=1, le=10)
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    grounded: bool
+    confidence: float = Field(ge=0.0, le=1.0)
+    mode: Literal["rag_llm", "rag_extractive", "insufficient_evidence"]
+    evidence: list[EvidenceItem] = Field(default_factory=list)
+
+
+class KnowledgeStatusResponse(BaseModel):
+    status: Literal["indexed", "not_indexed"]
+    detail: str
+    chroma_chunks: int = 0
+    corpus_chunks: int = 0
+    retrieval_mode: Literal["hybrid_chroma_bm25", "bm25_corpus", "unavailable"]
+
+
+class RecommendationResponse(GroundedRecommendation):
+    safety: SafetyDecision
+    mode: Literal["rag_llm", "rag_extractive", "insufficient_evidence"]
+    local_alerts_independent: bool = True
 
 
 class FeedbackRequest(BaseModel):
